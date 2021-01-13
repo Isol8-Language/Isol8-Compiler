@@ -6,6 +6,8 @@ namespace Isol8_Compiler
     {
         static void Main(string[] args)
         {
+            Compiler isol8Compiler = new Compiler("placeholder");
+            
             Console.WriteLine("Hello World!");
         }
     }
