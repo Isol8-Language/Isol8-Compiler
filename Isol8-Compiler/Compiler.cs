@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.ComponentModel.DataAnnotations;
+
 namespace Isol8_Compiler
 {
     class Compiler
@@ -32,10 +34,16 @@ namespace Isol8_Compiler
             CREATE,
             DELETE,
         }
+        private enum Operators
+        {
+            [Display(Name = "+")]
+            Add,
+
+
+        }
         private class Variable
         {
             string name;
-
         }
     }
 }
