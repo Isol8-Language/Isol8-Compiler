@@ -16,7 +16,7 @@ namespace Isol8_Compiler
         //ToDo: Update this list to use the Variable class
         private readonly List<string> variables = new List<string>();
         private readonly List<Declaration> declarationStatements = new List<Declaration>();
-        
+
         private readonly string inputFileName;
         public readonly string outputName;
         public static string GetLastError() => lastError;
@@ -26,7 +26,7 @@ namespace Isol8_Compiler
         }
 
         public Compiler(string file, string outputFile)
-        { 
+        {
             inputFileName = file;
             outputName = outputFile;
         }
@@ -47,8 +47,8 @@ namespace Isol8_Compiler
 
                     //Keyword does not need to be checked as regex will handle this
                     Declaration declaration = new Declaration()
-                    { 
-                        keyword = Enum.Parse<Keywords>(values[0]) 
+                    {
+                        keyword = Enum.Parse<Keywords>(values[0])
                     };
 
                     if (!Patterns.lettersOnly.IsMatch(values[1]) || variables.Contains(values[1]))
@@ -109,23 +109,23 @@ namespace Isol8_Compiler
         public ErrorCodes CreateAssemblyFile()
         {
             //Parse the code and validate
-            ErrorCodes error = ParseFile(); 
+            ErrorCodes error = ParseFile();
             if (error != NO_ERROR)
                 return error;
 
             //Create the output file
             var outputFile = File.Create($"Output\\{outputName}.asm");
-            
+
             //Add the .DATA section
             string output = ".DATA\n";
-            
+
             //For every declaration statement found in the parse
             for (var i = 0; i < declarationStatements.Count; i++)
             {
                 //Tab in and add the variable name,
                 output += "\t" + declarationStatements[i].variableName + " ";
                 //The type,
-                switch(declarationStatements[i].type)
+                switch (declarationStatements[i].type)
                 {
                     case (Types.INT):
                         output += "DD ";
@@ -134,11 +134,11 @@ namespace Isol8_Compiler
                 //And the value.
                 output += declarationStatements[i].value + '\n';
             }
- 
+
             //Add the .CODE section with a PLACEHOLDER entry point (***change this further down the line)
-            output += 
+            output +=
                 ".CODE\n" +
-                "dummyEntry PROC\n"+
+                "dummyEntry PROC\n" +
                 "\tret\n" +
                 "dummyEntry ENDP\n";
 
@@ -149,7 +149,7 @@ namespace Isol8_Compiler
             outputFile.Close();
             return NO_ERROR;
         }
-      
+
         public ErrorCodes Assemble(string fileName)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -176,8 +176,8 @@ namespace Isol8_Compiler
                 string NASMResult = NASM.StandardOutput.ReadToEnd();
                 Console.WriteLine(NASMResult);
                 return NO_ERROR;
-            } 
-            else 
+            }
+            else
             {
                 Process ml64 = new Process()
                 {
@@ -191,7 +191,7 @@ namespace Isol8_Compiler
                         RedirectStandardOutput = true,
                         CreateNoWindow = true,
                     }
-                    
+
                 };
                 try
                 {
@@ -209,7 +209,7 @@ namespace Isol8_Compiler
                     SetLastError(-1, ML64_ERROR, mlResult);
                     return ML64_ERROR;
                 }
-                return NO_ERROR;            
+                return NO_ERROR;
             }
         }
     }
