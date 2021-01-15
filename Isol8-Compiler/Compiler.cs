@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using static Isol8_Compiler.Enumerables;
 using static Isol8_Compiler.Enumerables.ErrorCodes;
+using System.Linq;
+
 namespace Isol8_Compiler
 {
     class Compiler
@@ -31,18 +33,20 @@ namespace Isol8_Compiler
         }
         private ErrorCodes ParseFile()
         {
-            Match syntaxMatch;
-            var fileText = File.ReadLines(inputFileName);
+            var fileText = File.ReadLines(inputFileName).ToList();
             int lineIndex = 0;
 
-            foreach (var line in fileText)
+            
+            
+
+            for(int i = 0; i < fileText.Count; i++)
             {
                 //If a declaration pattern is found
-                if ((syntaxMatch = Patterns.createPattern.Match(line)) != Match.Empty)
+                if ((_ = Patterns.createPattern.Match(fileText[i])) != Match.Empty)
                 {
                     //Generate an array of values and a new declaration.
 
-                    var values = line.Split(" ");
+                    var values = fileText[i].Split(" ");
 
                     //Keyword does not need to be checked as regex will handle this
                     Declaration declaration = new Declaration()
@@ -57,9 +61,9 @@ namespace Isol8_Compiler
                     }
                     else
                     {
-                        for (int i = 0; i < variables.Count; i++)
+                        for (int x = 0; x < variables.Count; x++)
                         {
-                            if (variables[i].name == values[1])
+                            if (variables[x].name == values[1])
                                 return INVALID_VAR_NAME;    //ToDo: SetLastError
                         }
                     }
@@ -84,7 +88,7 @@ namespace Isol8_Compiler
                             declaration.value = trueValue;
                         else
                         {
-                            SetLastError(lineIndex, TYPE_MISMATCH, line);
+                            SetLastError(lineIndex, TYPE_MISMATCH, fileText[i]);
                             return TYPE_MISMATCH;
                         }
                     }
@@ -110,7 +114,25 @@ namespace Isol8_Compiler
                     });
                     declarationStatements.Add(declaration);
                 }
+                else if ((_ = Patterns.functionPattern.Match(fileText[i])) != Match.Empty)
+                {
+                    //Get the values of the function declarations.
+                    var values = fileText[i].Split(new char[] {' ','(', ')' });
 
+                    Function func = new Function();
+                    
+
+                    if (fileText[i+1] == "{")
+                    {
+
+                    }
+                    else
+                    {
+                        //next line is not {, fail
+                    }
+
+                    int me = 5;
+                }
                 else
                 {
                     //No match for line, do what?
@@ -186,7 +208,7 @@ namespace Isol8_Compiler
             }
             catch
             {
-                //ToDo: Error Handling
+                //ToDo: Error Handling -- ToDo: set last error
                 return ML64_ERROR;
             }
 
