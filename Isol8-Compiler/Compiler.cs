@@ -11,10 +11,12 @@ namespace Isol8_Compiler
     class Compiler
     {
         private static string lastError;
+
         //ToDo: Update this list to use the Variable class
         private readonly List<string> variables = new List<string>();
         private readonly List<Declaration> declarationStatements = new List<Declaration>();
-        private readonly string fileName;
+        
+        private readonly string inputFileName;
         public readonly string outputName;
         public static string GetLastError() => lastError;
         private static void SetLastError(int lineIndex, ErrorCodes errorCode, string lineContent)
@@ -24,13 +26,13 @@ namespace Isol8_Compiler
 
         public Compiler(string file, string outputFile)
         { 
-            fileName = file;
+            inputFileName = file;
             outputName = outputFile;
         }
         private ErrorCodes ParseFile()
         {
             Match syntaxMatch;
-            var fileText = File.ReadLines(fileName);
+            var fileText = File.ReadLines(inputFileName);
             int lineIndex = 0;
 
             foreach (var line in fileText)
@@ -67,6 +69,9 @@ namespace Isol8_Compiler
 
                     if (declaration.type == Types.INT)
                     {
+                        if (trueValue.Contains("0x"))
+                            trueValue = Convert.ToInt32(trueValue, 16).ToString();
+
                         if (int.TryParse(trueValue, out _))
                             declaration.value = trueValue;
                         else
@@ -144,7 +149,7 @@ namespace Isol8_Compiler
             return NO_ERROR;
         }
       
-        public ErrorCodes Assemble()
+        public ErrorCodes Assemble(string fileName)
         {
             Process ml64 = new Process()
             {
@@ -152,7 +157,7 @@ namespace Isol8_Compiler
 
                 StartInfo =
                 {
-                    Arguments = $"\"Output.txt\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
                     FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
