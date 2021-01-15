@@ -8,14 +8,34 @@ namespace Isol8_Compiler
     {
         static void Main(string[] args)
         {
-            Compiler isol8Compiler = new Compiler("File.txt");  //Placeholder, constructor does nothing.
+            Console.WriteLine
+                (@"
+██╗███████╗ ██████╗ ██╗      █████╗ 
+██║██╔════╝██╔═══██╗██║     ██╔══██╗
+██║███████╗██║   ██║██║     ╚█████╔╝
+██║╚════██║██║   ██║██║     ██╔══██╗
+██║███████║╚██████╔╝███████╗╚█████╔╝
+╚═╝╚══════╝ ╚═════╝ ╚══════╝ ╚════╝ 
+                ");
+
+            Compiler isol8Compiler = new Compiler("File.txt", "OutputName");
+            Console.WriteLine($"Compiling {isol8Compiler.outputName} to Assembly...");
+            
             ErrorCodes eStatus = isol8Compiler.CreateAssemblyFile();
             if (eStatus != NO_ERROR)
             {
                 Console.WriteLine(GetLastError());
+                return;
             }
-            isol8Compiler.Assemble();
-
+            Console.WriteLine($"{isol8Compiler.outputName} created successfully.");
+            Console.WriteLine("Assembling...");
+            eStatus = isol8Compiler.Assemble();
+            if (eStatus != NO_ERROR)
+            {
+                Console.WriteLine(GetLastError());
+                return;
+            }
+            Console.WriteLine($"{isol8Compiler.outputName}.exe created");
         }
     }
 }

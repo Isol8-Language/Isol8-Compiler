@@ -34,6 +34,12 @@ namespace Isol8_Compiler
             INVALID_VAR_NAME = 0x20002,
             INVALID_TYPE = 0x20003,
             TYPE_MISMATCH = 0x20004,
+            ML64_ERROR = 0x20005,
+        }
+        internal enum VarState
+        {
+            ACTIVE,
+            DELETED
         }
     }
 }

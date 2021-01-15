@@ -11,19 +11,21 @@ namespace Isol8_Compiler
     class Compiler
     {
         private static string lastError;
+        //Update this list to use the Variable class
         private readonly List<string> variables = new List<string>();
         private readonly List<Declaration> declarationStatements = new List<Declaration>();
         private readonly string fileName;
+        public readonly string outputName;
         public static string GetLastError() => lastError;
         private static void SetLastError(int lineIndex, ErrorCodes errorCode, string lineContent)
         {
             lastError = $"Errorcode {errorCode} at line index: {lineIndex}. ({lineContent})";
         }
 
-        public Compiler(string file)
-        {
-            //Do we need a constructor?
+        public Compiler(string file, string outputFile)
+        { 
             fileName = file;
+            outputName = outputFile;
         }
         private ErrorCodes ParseFile()
         {
@@ -37,15 +39,18 @@ namespace Isol8_Compiler
                 if ((syntaxMatch = Patterns.createPattern.Match(line)) != Match.Empty)
                 {
                     //Generate an array of values and a new declaration.
-                    Declaration declaration = new Declaration();
+
                     var values = line.Split(" ");
 
                     //Keyword does not need to be checked as regex will handle this
-                    declaration.keyword = Enum.Parse<Keywords>(values[0]);
+                    Declaration declaration = new Declaration()
+                    { 
+                        keyword = Enum.Parse<Keywords>(values[0]) 
+                    };
 
                     if (!Patterns.lettersOnly.IsMatch(values[1]) || variables.Contains(values[1]))
                     {
-                        //Failure on variable name
+                        //Failure on variable name -- ToDo: SetLastError
                         return INVALID_VAR_NAME;
                     }
 
@@ -53,7 +58,7 @@ namespace Isol8_Compiler
 
                     if (!Enum.TryParse(values[3], out declaration.type))
                     {
-                        //Failure on type
+                        //Failure on type -- ToDo: SetLastError
                         return INVALID_TYPE;
                     };
 
@@ -66,25 +71,26 @@ namespace Isol8_Compiler
                             declaration.value = trueValue;
                         else
                         {
-                            SetLastError(lineIndex, ErrorCodes.TYPE_MISMATCH, line);
+                            SetLastError(lineIndex, TYPE_MISMATCH, line);
                             return TYPE_MISMATCH;
                         }
                     }
                     else if (declaration.type == Types.STRING)
                     {
+                        //ToDo:
                         return default;
                     }
                     else
                     {
-                        //Failure on type match (I.E, INT = "Hello"
+                        //Failure on type match (I.E, INT = "Hello" -- ToDo: SetLastError
                         return TYPE_MISMATCH;
                     }
 
+                    //ToDo: update variables list to variable type
                     variables.Add(declaration.variableName);
                     declarationStatements.Add(declaration);
-
-
                 }
+
                 else
                 {
                     //No match for line, do what?
@@ -96,12 +102,13 @@ namespace Isol8_Compiler
 
         public ErrorCodes CreateAssemblyFile()
         {
+            //Parse the code and validate
             ErrorCodes error = ParseFile(); 
             if (error != NO_ERROR)
                 return error;
 
             //Create the output file
-            var outputFile = File.Create("Output.txt");
+            var outputFile = File.Create($"Output\\{outputName}.asm");
             
             //Add the .DATA section
             string output = ".DATA\n";
@@ -109,13 +116,16 @@ namespace Isol8_Compiler
             //For every declaration statement found in the parse
             for (var i = 0; i < declarationStatements.Count; i++)
             {
-                output += "    " + declarationStatements[i].variableName + " ";
+                //Tab in and add the variable name,
+                output += "\t" + declarationStatements[i].variableName + " ";
+                //The type,
                 switch(declarationStatements[i].type)
                 {
                     case (Types.INT):
                         output += "DD ";
                         break;
                 }
+                //And the value.
                 output += declarationStatements[i].value + '\n';
             }
  
@@ -126,27 +136,23 @@ namespace Isol8_Compiler
                 "\tret\n" +
                 "dummyEntry ENDP\n";
 
-
-
-            //ADd an END directive
+            //Add an END directive
             output += "END";
             outputFile.Write(new UTF8Encoding(true).GetBytes(output));
-
-
 
             outputFile.Close();
             return NO_ERROR;
         }
-        
-        public void Assemble()
+      
+        public ErrorCodes Assemble()
         {
             Process ml64 = new Process()
             {
-                //PLACEHOLDER ENTRY POINT NAME
+                //PLACEHOLDER ENTRY POINT NAME -- ToDo: Fix this
 
                 StartInfo =
                 {
-                    Arguments = $"\"Output.txt\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\Output.exe\"",
+                    Arguments = $"\"Output.txt\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
                     FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
@@ -154,16 +160,23 @@ namespace Isol8_Compiler
                 }
                 
             };
-            ml64.Start();
-            string temp = ml64.StandardOutput.ReadToEnd();
-           
-        }
-        private class Declaration
-        {
-            public Keywords keyword;
-            public string variableName;
-            public Types type;
-            public string value;
+            try
+            {
+                ml64.Start();
+            }
+            catch
+            {
+                //ToDo: Error Handling
+                return ML64_ERROR;
+            }
+
+            string mlResult = ml64.StandardOutput.ReadToEnd();
+            if (mlResult.Contains("error"))
+            {
+                SetLastError(-1, ML64_ERROR, mlResult);
+                return ML64_ERROR;
+            }
+            return NO_ERROR;            
         }
     }
 }
