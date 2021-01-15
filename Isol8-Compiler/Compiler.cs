@@ -10,10 +10,10 @@ namespace Isol8_Compiler
 {
     class Compiler
     {
-        private static string lastError;
+        private static string lastError = "NO_ERROR";
 
         //ToDo: Update this list to use the Variable class
-        private readonly List<string> variables = new List<string>();
+        private readonly List<Variable> variables = new List<Variable>();
         private readonly List<Declaration> declarationStatements = new List<Declaration>();
         
         private readonly string inputFileName;
@@ -50,10 +50,18 @@ namespace Isol8_Compiler
                         keyword = Enum.Parse<Keywords>(values[0]) 
                     };
 
-                    if (!Patterns.lettersOnly.IsMatch(values[1]) || variables.Contains(values[1]))
+                    if (!Patterns.lettersOnly.IsMatch(values[1]))
                     {
                         //Failure on variable name -- ToDo: SetLastError
                         return INVALID_VAR_NAME;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < variables.Count; i++)
+                        {
+                            if (variables[i].name == values[1])
+                                return INVALID_VAR_NAME;    //ToDo: SetLastError
+                        }
                     }
 
                     declaration.variableName = values[1];
@@ -92,7 +100,14 @@ namespace Isol8_Compiler
                     }
 
                     //ToDo: update variables list to variable type
-                    variables.Add(declaration.variableName);
+                    variables.Add(new Variable()
+                    {
+                        name = declaration.variableName,
+                        //Add scope?
+                        status = VarState.ACTIVE,
+                        type = declaration.type,
+                        value = declaration.value,
+                    });
                     declarationStatements.Add(declaration);
                 }
 

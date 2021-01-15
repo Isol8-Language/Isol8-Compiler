@@ -36,6 +36,11 @@ namespace Isol8_Compiler
             TYPE_MISMATCH = 0x20004,
             ML64_ERROR = 0x20005,
         }
+        internal enum Scope
+        {
+            GLOBAL,
+            LOCAL,
+        }
         internal enum VarState
         {
             ACTIVE,
