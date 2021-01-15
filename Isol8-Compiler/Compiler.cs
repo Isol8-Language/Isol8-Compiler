@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using static Isol8_Compiler.Enumerables;
 using static Isol8_Compiler.Enumerables.ErrorCodes;
 namespace Isol8_Compiler
@@ -151,37 +152,65 @@ namespace Isol8_Compiler
       
         public ErrorCodes Assemble(string fileName)
         {
-            Process ml64 = new Process()
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                //PLACEHOLDER ENTRY POINT NAME -- ToDo: Fix this
-
-                StartInfo =
+                Process NASM = new Process()
                 {
-                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
-                    FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true,
+                    StartInfo =
+                    {
+                        FileName = "/bin/bash",
+                        Arguments = "-c \" " + "echo 'Running on Linux!'" + " \"",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                    }
+                };
+                try
+                {
+                    NASM.Start();
                 }
-                
-            };
-            try
-            {
-                ml64.Start();
-            }
-            catch
-            {
-                //ToDo: Error Handling
-                return ML64_ERROR;
-            }
+                catch
+                {
+                    return ML64_ERROR;
+                }
 
-            string mlResult = ml64.StandardOutput.ReadToEnd();
-            if (mlResult.Contains("error"))
+                string NASMResult = NASM.StandardOutput.ReadToEnd();
+                Console.WriteLine(NASMResult);
+                return NO_ERROR;
+            } 
+            else 
             {
-                SetLastError(-1, ML64_ERROR, mlResult);
-                return ML64_ERROR;
+                Process ml64 = new Process()
+                {
+                    //PLACEHOLDER ENTRY POINT NAME -- ToDo: Fix this
+
+                    StartInfo =
+                    {
+                        Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+                        FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true,
+                    }
+                    
+                };
+                try
+                {
+                    ml64.Start();
+                }
+                catch
+                {
+                    //ToDo: Error Handling
+                    return ML64_ERROR;
+                }
+
+                string mlResult = ml64.StandardOutput.ReadToEnd();
+                if (mlResult.Contains("error"))
+                {
+                    SetLastError(-1, ML64_ERROR, mlResult);
+                    return ML64_ERROR;
+                }
+                return NO_ERROR;            
             }
-            return NO_ERROR;            
         }
     }
 }
