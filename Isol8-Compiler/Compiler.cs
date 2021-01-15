@@ -177,40 +177,37 @@ namespace Isol8_Compiler
                 Console.WriteLine(NASMResult);
                 return NO_ERROR;
             }
-            else
+            Process ml64 = new Process()
             {
-                Process ml64 = new Process()
-                {
-                    //PLACEHOLDER ENTRY POINT NAME -- ToDo: Fix this
+                //PLACEHOLDER ENTRY POINT NAME -- ToDo: Fix this
 
-                    StartInfo =
-                    {
-                        Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
-                        FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        CreateNoWindow = true,
-                    }
-
-                };
-                try
+                StartInfo =
                 {
-                    ml64.Start();
-                }
-                catch
-                {
-                    //ToDo: Error Handling
-                    return ML64_ERROR;
+                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:dummyEntry /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+                    FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
                 }
 
-                string mlResult = ml64.StandardOutput.ReadToEnd();
-                if (mlResult.Contains("error"))
-                {
-                    SetLastError(-1, ML64_ERROR, mlResult);
-                    return ML64_ERROR;
-                }
-                return NO_ERROR;
+            };
+            try
+            {
+                ml64.Start();
             }
+            catch
+            {
+                //ToDo: Error Handling
+                return ML64_ERROR;
+            }
+
+            string mlResult = ml64.StandardOutput.ReadToEnd();
+            if (mlResult.Contains("error"))
+            {
+                SetLastError(-1, ML64_ERROR, mlResult);
+                return ML64_ERROR;
+            }
+            return NO_ERROR;
         }
     }
 }
