@@ -11,7 +11,7 @@ namespace Isol8_Compiler
     class Compiler
     {
         private static string lastError;
-        //Update this list to use the Variable class
+        //ToDo: Update this list to use the Variable class
         private readonly List<string> variables = new List<string>();
         private readonly List<Declaration> declarationStatements = new List<Declaration>();
         private readonly string fileName;
