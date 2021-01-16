@@ -69,8 +69,12 @@ namespace Isol8_Compiler
                 }
                 else if (declaration.type == Types.STRING)
                 {
-                    //ToDo:
-                    return default;
+                    if (Patterns.stringPattern.Match(trueValue) != Match.Empty)
+                    {
+                        declaration.value = trueValue;
+                    }
+                    else
+                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
                 }
                 //Create a new variables.
                 variables.Add(new Variable()
@@ -82,7 +86,7 @@ namespace Isol8_Compiler
                     value = declaration.value,
                 });
                 declarationStatements.Add(declaration);
-                return default;
+                return NO_ERROR;
             }
             #endregion
 
@@ -92,7 +96,7 @@ namespace Isol8_Compiler
             {
                 #region Declarations
                 //If a declaration pattern is found
-                if ((Patterns.createPattern.Match(fileText[i])) != Match.Empty)
+                if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
                 {
                     //Generate an array of values.
                     var values = fileText[i].Split(" ");

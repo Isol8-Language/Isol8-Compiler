@@ -55,12 +55,13 @@ namespace Isol8_Compiler
                     case (Types.INT):
                         output += "DD ";
                         break;
+                        //TODO: ADD STRING
                 }
                 //And the value.
                 output += declarationStatements[i].value + '\n';
             }
 
-
+            //Add the .CODE section
             output += ".CODE\n";
             
             //For every function found in the parse.
@@ -68,6 +69,11 @@ namespace Isol8_Compiler
             {
                 output +=
                     functions[i].name + " PROC\n";
+
+
+                //For every local function, sub rsp, X (4 for DD), mov rbp, esp
+
+
 
 
                 //For every instruction of the function.
@@ -80,7 +86,6 @@ namespace Isol8_Compiler
                             $"{functions[i].body[x].lineContent[0]}\n";
                     }
                 }
-
 
                 output += functions[i].name + " ENDP\n";
 
