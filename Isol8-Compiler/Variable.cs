@@ -10,8 +10,8 @@ namespace Isol8_Compiler
     class Variable
     {
         public string name;
-        public Scope scope;   //ToDo -- add enum for scope
-        public VarState status;  //ToDo -- as above
+        public Scope scope;
+        public VarState status;
         public Types type;     
         public string value;
     }   

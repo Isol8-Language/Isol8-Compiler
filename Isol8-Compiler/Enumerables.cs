@@ -36,6 +36,10 @@ namespace Isol8_Compiler
             TYPE_MISMATCH = 0x20004,
             ML64_ERROR = 0x20005,
             INVALID_RETURN_TYPE = 0x20006,
+            DUPLICATE_VAR_NAME = 0x20007,
+            NO_CLOSING_BRACKET = 0x20008,
+            INVALID_VAR_VALUE = 0x20009,
+            NO_OPENING_BRACKET = 0x20010,
         }
         internal enum Scope
         {
@@ -47,6 +51,11 @@ namespace Isol8_Compiler
             ACTIVE,
             DELETED
         }
-        
+        internal enum InstructionTypes
+        {
+            NULL,   //Invalid
+            RET,
+            UNARY,
+        }   
     }
 }

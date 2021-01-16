@@ -12,11 +12,17 @@ namespace Isol8_Compiler
         internal int parameterCount;
         internal string returnType;
         internal List<Parameters> parameters = new List<Parameters>();
+        internal List<Instruction> body = new List<Instruction>();
     }
     internal class Parameters
     {
         public string name;
         public Types type;
-        public List<string> body = new List<string>();
+
+    };
+    internal class Instruction
+    {
+        public InstructionTypes instructionType;
+        public string[] lineContent;
     };
 }
