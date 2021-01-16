@@ -70,6 +70,7 @@ namespace Isol8_Compiler
 
                     declaration.variableName = values[1];
 
+
                     if (!Enum.TryParse(values[3], out declaration.type))
                     {
                         //Failure on type -- ToDo: SetLastError
@@ -119,8 +120,19 @@ namespace Isol8_Compiler
                     //Get the values of the function declarations.
                     var values = fileText[i].Split(new char[] {' ','(', ')' });
 
-                    Function func = new Function();
-                    
+                    if(!Enum.TryParse(values.Last(), out Types _))
+                    {
+                        //Fail on return type -- ToDo: SetLastError
+                        return INVALID_RETURN_TYPE;
+                    }
+
+                    Function func = new Function()
+                    {
+                        name = values[1],
+                        returnType = values.Last(),
+
+                    };
+
 
                     if (fileText[i+1] == "{")
                     {

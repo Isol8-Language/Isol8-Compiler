@@ -35,6 +35,7 @@ namespace Isol8_Compiler
             INVALID_TYPE = 0x20003,
             TYPE_MISMATCH = 0x20004,
             ML64_ERROR = 0x20005,
+            INVALID_RETURN_TYPE = 0x20006,
         }
         internal enum Scope
         {
@@ -46,5 +47,6 @@ namespace Isol8_Compiler
             ACTIVE,
             DELETED
         }
+        
     }
 }
