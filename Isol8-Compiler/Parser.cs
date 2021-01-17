@@ -38,9 +38,7 @@ namespace Isol8_Compiler
                     if (variables[x].name == values[1])
                         return SetLastError(lineIndex, DUPLICATE_VAR_NAME, lineContent);
 
-
                 declaration.variableName = values[1];
-
 
                 if (!Enum.TryParse(values[3], out declaration.type))
                     return SetLastError(lineIndex, INVALID_TYPE, lineContent);
@@ -54,6 +52,7 @@ namespace Isol8_Compiler
                     //If value declared as hex, remove 0x notation. //ToDo: Add try catch for 0xSTRING
                     if (trueValue.Contains("0x"))
                     {
+                        //If the function contains standard numbers or hex digits only (A-F)
                         if (Patterns.standardOrHexDigitsOnly.Match(trueValue) != Match.Empty)
                             trueValue = Convert.ToInt32(trueValue, 16).ToString();
                         else
@@ -61,7 +60,7 @@ namespace Isol8_Compiler
 
                     }
 
-                    //Ensure the assigned value is actually an INT
+                    //Ensure the assigned value is actually an INT when the declare type is INT
                     if (int.TryParse(trueValue, out _))
                         declaration.value = trueValue;
                     else
@@ -69,14 +68,14 @@ namespace Isol8_Compiler
                 }
                 else if (declaration.type == Types.STRING)
                 {
+                    //Ensure the assigned value is actually a String
                     if (Patterns.stringPattern.Match(trueValue) != Match.Empty)
-                    {
                         declaration.value = trueValue;
-                    }
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
                 }
-                //Create a new variables.
+
+                //Create a new variable and add it to the existing variables list.
                 variables.Add(new Variable()
                 {
                     name = declaration.variableName,
@@ -85,10 +84,13 @@ namespace Isol8_Compiler
                     type = declaration.type,
                     value = declaration.value,
                 });
+                
+                //Add the declaration to the declaration list.
                 declarationStatements.Add(declaration);
                 return NO_ERROR;
             }
             #endregion
+
 
             var fileText = File.ReadLines(inputFileName).ToList();
 
@@ -111,18 +113,19 @@ namespace Isol8_Compiler
                 {
                     //Get the values of the function declarations.
                     var values = fileText[i].Split(new char[] { ' ', '(', ')' });
-
-                    if (!Enum.TryParse(values.Last(), out Types _))
-                        return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
-
+                    
+                    //Initialize a new function
                     Function func = new Function()
                     {
                         name = values[1],
-                        returnType = values.Last(),
-
                     };
 
-                    //Check the function open and closes with the correct brackers
+                    //Check the return type is a valid type
+                    if (!Enum.TryParse(values.Last(), out func.returnType))
+                        return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
+    
+
+                    //Check the function open and closes with the correct brackers, and grab the body.
                     if (fileText[i + 1] == "{")
                     {
                         bool closeFunction = false;
@@ -136,22 +139,60 @@ namespace Isol8_Compiler
                                 closeFunction = true;
                                 break;
                             }
-                            else
+
+                            Instruction instruction = new Instruction
                             {
-                                //Remove tabs
-                                Instruction instruction = new Instruction
+                                lineContent = fileText[initialIndex].Replace(";","").Split(' '),
+                            };
+
+                            //If return instruction
+                            if (Patterns.retPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            {
+                                instruction.instructionType = RET;
+
+                                //If function return type is an int
+                                if(func.returnType == Types.INT)
                                 {
-                                    lineContent = fileText[initialIndex].Replace(";","").Split(' '),
-                                };
+                                    //If hex declaration
+                                    if (instruction.lineContent[1].Contains("0x"))
+                                    {
+                                        //Check the conversion is valid
+                                        try
+                                        {
+                                            Convert.ToUInt32(instruction.lineContent[1], 16);
+                                        }
+                                        catch
+                                        {
+                                            return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
+                                        }
 
-                                //If ret type
-                                if (Patterns.retPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
-                                    instruction.instructionType = RET;
-
-                                func.body.Add(instruction);
+                                        //If the first letter is a letter, then add a 0 as it's required
+                                        if (Patterns.lettersOnly.Match(instruction.lineContent[1][2..][0].ToString()) != Match.Empty)
+                                            instruction.lineContent[1] = '0' + instruction.lineContent[1][2..] + 'h';
+                                        
+                                        //Otherwise just cut the 0x off and append a h
+                                        else
+                                            instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
+                                    }
+                                    //Else just check the int is valid
+                                    else
+                                        if (!int.TryParse(instruction.lineContent[1], out _))
+                                            return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
+                                    
+                                }
+                                else
+                                {
+                                    //ToDo: string
+                                }
+                            
                             }
-                                
+
+
+
+                            func.body.Add(instruction);
                         }
+
+                        //If no closing brack located.
                         if (!closeFunction)
                             return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
 

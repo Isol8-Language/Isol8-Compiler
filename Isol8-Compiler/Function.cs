@@ -10,7 +10,7 @@ namespace Isol8_Compiler
     {
         internal string name;
         internal int parameterCount;
-        internal string returnType;
+        internal Types returnType;
         internal List<Parameters> parameters = new List<Parameters>();
         internal List<Instruction> body = new List<Instruction>();
     }

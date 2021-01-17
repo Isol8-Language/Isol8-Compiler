@@ -1,6 +1,9 @@
 CREATE max AS INT 0xFFFF;
-CREATE test AS STRING "HELLO";
 FUNCTION Initial() RET INT
 {
-	RET 0;
+	RET 0x1234A;
+}
+FUNCTION hello() RET INT
+{
+	RET 0xA;
 }
