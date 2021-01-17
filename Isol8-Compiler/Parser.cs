@@ -25,7 +25,7 @@ namespace Isol8_Compiler
                 //Keyword does not need to be checked as regex will handle this.
                 Declaration declaration = new Declaration()
                 {
-                    keyword = Enum.Parse<Keywords>(values[0])
+                    keyword = Enum.Parse<Keywords>(values[0], true)
                 };
 
                 //Check variable name is only letters.
@@ -40,7 +40,7 @@ namespace Isol8_Compiler
 
                 declaration.variableName = values[1];
 
-                if (!Enum.TryParse(values[3], out declaration.type))
+                if (!Enum.TryParse(values[3], true, out declaration.type))
                     return SetLastError(lineIndex, INVALID_TYPE, lineContent);
 
 
@@ -121,7 +121,7 @@ namespace Isol8_Compiler
                     };
 
                     //Check the return type is a valid type
-                    if (!Enum.TryParse(values.Last(), out func.returnType))
+                    if (!Enum.TryParse(values.Last(), true, out func.returnType))
                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
     
 
