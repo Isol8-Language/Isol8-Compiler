@@ -1,9 +1,15 @@
-create max AS int 0xFFFF;
+create exampleInt as int 0xFFFF;
+
+¬¬Example Comment
+create one as int 1;
+create two as int 2;
 Initial() ret int
 {
+	¬¬This is a comment
 	ret 0x1234A;
 }
-hello() ret int
+GlobalMaths() ret int
 {
+	¬¬This is a comment also
 	ret 0xA;
 }

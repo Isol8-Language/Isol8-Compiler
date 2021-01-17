@@ -40,6 +40,7 @@ namespace Isol8_Compiler
             NO_CLOSING_BRACKET = 0x20008,
             INVALID_VAR_VALUE = 0x20009,
             NO_OPENING_BRACKET = 0x20010,
+            DUPLICATE_FUNC_NAME = 0x20011,
         }
         internal enum Scope
         {

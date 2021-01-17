@@ -33,7 +33,7 @@ namespace Isol8_Compiler
                     return SetLastError(lineIndex, INVALID_VAR_NAME, lineContent);
 
 
-                //Check the variable name is not already in use
+                //Check the variable name is not already in use.
                 for (int x = 0; x < variables.Count; x++)
                     if (variables[x].name == values[1])
                         return SetLastError(lineIndex, DUPLICATE_VAR_NAME, lineContent);
@@ -91,11 +91,15 @@ namespace Isol8_Compiler
             }
             #endregion
 
-
             var fileText = File.ReadLines(inputFileName).ToList();
 
             for (int i = 0; i < fileText.Count; i++)
             {
+
+                //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM
+                if (fileText[i].Length >= 2 && fileText[i][0..2] == "¬¬")
+                    continue;
+
                 #region Declarations
                 //If a declaration pattern is found
                 if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
@@ -109,6 +113,7 @@ namespace Isol8_Compiler
                 }
                 #endregion
                 #region Functions
+                //If a cuntion pattern is found
                 else if (Patterns.functionPattern.Match(fileText[i]) != Match.Empty)
                 {
                     //Get the values of the function declarations.
@@ -196,13 +201,16 @@ namespace Isol8_Compiler
                         if (!closeFunction)
                             return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
 
+                        //Check the function name is not already in use.
+                        for (int x = 0; x < functions.Count; x++)
+                        {
+                            if (functions[x].name == func.name)
+                                return SetLastError(i, DUPLICATE_FUNC_NAME, fileText[i]);
+                        }
                         functions.Add(func);
                     }
                     else
                         return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
-
-                    
-
                 }
                 #endregion
                 else
