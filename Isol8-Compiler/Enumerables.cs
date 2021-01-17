@@ -56,7 +56,7 @@ namespace Isol8_Compiler
         {
             NULL,   //Invalid
             RET,
-            UNARY,
+            PLUSEQUALS,
         }   
     }
 }

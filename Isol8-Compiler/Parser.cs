@@ -97,7 +97,7 @@ namespace Isol8_Compiler
             {
 
                 //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM
-                if (fileText[i].Length >= 2 && fileText[i][0..2] == "¬¬")
+                if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
                     continue;
 
                 #region Declarations
@@ -138,6 +138,8 @@ namespace Isol8_Compiler
                         //For each line after the initial {
                         for (int initialIndex = i + 2; initialIndex < fileText.Count; initialIndex++)
                         {
+                            //ToDo: check if comment, add function for this to avoid reptition.
+                            
                             //If end of function
                             if (fileText[initialIndex] == "}")
                             {
@@ -149,7 +151,7 @@ namespace Isol8_Compiler
                             {
                                 lineContent = fileText[initialIndex].Replace(";","").Split(' '),
                             };
-
+                            
                             //If return instruction
                             if (Patterns.retPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
@@ -158,6 +160,8 @@ namespace Isol8_Compiler
                                 //If function return type is an int
                                 if(func.returnType == Types.INT)
                                 {
+                                    //ToDo: if returning variable type, perform check on variable.
+                                    
                                     //If hex declaration
                                     if (instruction.lineContent[1].Contains("0x"))
                                     {
@@ -178,6 +182,8 @@ namespace Isol8_Compiler
                                         //Otherwise just cut the 0x off and append a h
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
+                                    
+                                    
                                     }
                                     //Else just check the int is valid
                                     else
@@ -192,6 +198,39 @@ namespace Isol8_Compiler
                             
                             }
 
+                            else if (Patterns.simpleAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            {
+                                bool exists = false, active = false;
+                                //Ensure the variable we're trying to modify exists and is active
+                                for (int x = 0; x < variables.Count; x++)
+                                {
+                                    if (variables[x].name == values[0])
+                                    {
+                                        exists = true;
+                                        if (variables[x].status == VarState.ACTIVE)
+                                            active = true;
+                                    }
+                                }
+
+                                if (!exists)
+                                    ; //ToDo: fail on non-existant variable.
+
+                                if (!active)
+                                    ; //ToDo: fail on deleted variable.
+
+                                instruction.instructionType = PLUSEQUALS;
+
+                                //ToDo: Check secondary operand is a variable name or int, if variable check it exists etc
+                                
+
+
+                            }
+
+                            //If a declaration pattern is found
+                            else if (Patterns.createPattern.Match(fileText[initialIndex]) != Match.Empty)
+                            {
+                                //ToDo
+                            }
 
 
                             func.body.Add(instruction);

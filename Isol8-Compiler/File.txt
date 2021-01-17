@@ -6,10 +6,13 @@ create two as int 2;
 Initial() ret int
 {
 	¬¬This is a comment
+	one += 1;
 	ret 0x1234A;
 }
 GlobalMaths() ret int
 {
+	¬¬One++;
+
 	¬¬This is a comment also
 	ret 0xA;
 }

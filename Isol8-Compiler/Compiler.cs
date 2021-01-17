@@ -85,6 +85,12 @@ namespace Isol8_Compiler
                             $"{functions[i].body[x].lineContent[1]}\n" +
                             $"{functions[i].body[x].lineContent[0]}\n";
                     }
+                    else if (functions[i].body[x].instructionType == PLUSEQUALS)
+                    {
+                        output += $"\tADD " +
+                            $"{functions[i].body[x].lineContent[0][1..]}, " +
+                            $"{functions[i].body[x].lineContent[2]}\n";
+                    }
                 }
 
                 output += functions[i].name + " ENDP\n";
