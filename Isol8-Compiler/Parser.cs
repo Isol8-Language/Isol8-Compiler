@@ -113,7 +113,7 @@ namespace Isol8_Compiler
                 }
                 #endregion
                 #region Functions
-                //If a cuntion pattern is found
+                //If a funtion pattern is found
                 else if (Patterns.functionPattern.Match(fileText[i]) != Match.Empty)
                 {
                     //Get the values of the function declarations.
