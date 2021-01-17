@@ -117,7 +117,7 @@ namespace Isol8_Compiler
                     //Initialize a new function
                     Function func = new Function()
                     {
-                        name = values[1],
+                        name = values[0],
                     };
 
                     //Check the return type is a valid type
