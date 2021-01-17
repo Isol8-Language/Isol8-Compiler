@@ -96,9 +96,12 @@ namespace Isol8_Compiler
             for (int i = 0; i < fileText.Count; i++)
             {
 
-                //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM
+                //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
                 if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
+                {
+                    fileText.RemoveAt(i);
                     continue;
+                }
 
                 #region Declarations
                 //If a declaration pattern is found
@@ -138,7 +141,6 @@ namespace Isol8_Compiler
                         //For each line after the initial {
                         for (int initialIndex = i + 2; initialIndex < fileText.Count; initialIndex++)
                         {
-                            //ToDo: check if comment, add function for this to avoid reptition.
                             
                             //If end of function
                             if (fileText[initialIndex] == "}")
