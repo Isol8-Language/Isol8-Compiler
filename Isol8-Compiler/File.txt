@@ -1,9 +1,9 @@
 create max AS int 0xFFFF;
-function Initial() ret int
+Initial() ret int
 {
 	ret 0x1234A;
 }
-function hello() ret int
+hello() ret int
 {
 	ret 0xA;
 }

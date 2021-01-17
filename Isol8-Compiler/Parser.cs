@@ -22,7 +22,7 @@ namespace Isol8_Compiler
             #region localFunctions
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
             {
-                //Keyword does not need to be checked as regex will handle this.
+                //Keyword does not need to be checked as regex will handle this. ToDo: error handling
                 Declaration declaration = new Declaration()
                 {
                     keyword = Enum.Parse<Keywords>(values[0], true)
@@ -49,7 +49,7 @@ namespace Isol8_Compiler
 
                 if (declaration.type == Types.INT)
                 {
-                    //If value declared as hex, remove 0x notation. //ToDo: Add try catch for 0xSTRING
+                    //If value declared as hex, remove 0x notation. 
                     if (trueValue.Contains("0x"))
                     {
                         //If the function contains standard numbers or hex digits only (A-F)
