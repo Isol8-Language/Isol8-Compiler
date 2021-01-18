@@ -99,7 +99,7 @@ namespace Isol8_Compiler
                 //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
                 if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
                 {
-                    fileText.RemoveAt(i);
+                    //ToDo: remove from fileText and fix i index
                     continue;
                 }
 
