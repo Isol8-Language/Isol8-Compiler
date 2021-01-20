@@ -1,10 +1,15 @@
 .DATA
-	me DD 10
-	counter DD 200
-	EFFEFF DD 255
-	max DD 65535
+	exampleInt DD 65535
+	one DD 1
+	two DD 2
 .CODE
-dummyEntry PROC
+Initial PROC
+	ADD one, 1
+	mov RAX, 1234Ah
 	ret
-dummyEntry ENDP
+Initial ENDP
+GlobalMaths PROC
+	mov RAX, 0Ah
+	ret
+GlobalMaths ENDP
 END
