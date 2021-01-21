@@ -20,7 +20,7 @@ namespace Isol8_Compiler
         public static readonly Regex retPattern = new Regex(@"^(RET|ret)\s?[a-zA-Z0-9]*?;$");
         #endregion
         #region Maths Patterns
-        public static readonly Regex simpleAdditionOperator = new Regex(" ^[A-Za-z]+ \\+= [A-Za-z0-9];$");
+        public static readonly Regex simpleAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9];$");
         #endregion
     }
 }
