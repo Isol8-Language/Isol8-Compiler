@@ -87,9 +87,16 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
-                        output += $"\tADD " +
-                            $"{functions[i].body[x].lineContent[0][1..]}, " +
+                        //If only adding 1, add some efficiency by using INC as opposed to ADD.
+                        if (functions[i].body[x].lineContent[2] == "1")
+                            output += $"\tinc " +
+                            $"[{functions[i].body[x].lineContent[0][1..]}]\n";
+                        
+                        else
+                            output += $"\tadd " +
+                            $"[{functions[i].body[x].lineContent[0][1..]}], " +
                             $"{functions[i].body[x].lineContent[2]}\n";
+
                     }
                 }
 
