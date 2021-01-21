@@ -14,6 +14,7 @@ namespace Isol8_Compiler
         public static readonly Regex standardOrHexDigitsOnly = new Regex(@"^[0-9a-zA-F]*$");
         public static readonly Regex functionPattern = new Regex(@"[A-Za-z]\w*\((?:(?:[A-Za-z]+) +(?:[A-Za-z]\w*))?(?: *, *(?:[A-Za-z]+) (?:[A-Za-z]\w*))*\) \b(RET|ret)\b (?:[A-Za-z]+)");
         public static readonly Regex stringPattern = new Regex("\".*\"");
+        public static readonly Regex ptrPattern = new Regex("^[a-zA-Z]+ = \\([a-zA-Z]+\\)[a-zA-Z]+;$");
 
         #region Function Patterns
         public static readonly Regex retPattern = new Regex(@"\b(RET|ret)\b \w+");
