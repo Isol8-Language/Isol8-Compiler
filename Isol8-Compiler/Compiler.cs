@@ -110,6 +110,7 @@ namespace Isol8_Compiler
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
+<<<<<<< HEAD
                 Process NASM = new Process()
                 {
                     StartInfo =
@@ -135,6 +136,8 @@ namespace Isol8_Compiler
             }
             Process ml64 = new Process()
             {
+=======
+>>>>>>> master
                 StartInfo =
                 {
                     Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:Initial /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
