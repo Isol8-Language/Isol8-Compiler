@@ -83,9 +83,12 @@ namespace Isol8_Compiler
                 {
                     if (functions[i].body[x].instructionType == RET)
                     {
-                        output += $"\tmov RAX, " +
-                            $"{functions[i].body[x].lineContent[1]}\n" +
-                            $"{functions[i].body[x].lineContent[0]}\n";
+                        if (functions[i].body[x].lineContent.Length >= 2)
+                            output += $"\tmov rax, " +
+                                $"{functions[i].body[x].lineContent[1]}\n" +
+                                $"{functions[i].body[x].lineContent[0]}\n";
+                        else
+                            output += $"{functions[i].body[x].lineContent[0]}\n";
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
@@ -99,6 +102,16 @@ namespace Isol8_Compiler
                             $"[{functions[i].body[x].lineContent[0][1..]}], " +
                             $"{functions[i].body[x].lineContent[2]}\n";
 
+                    }
+                    else if (functions[i].body[x].instructionType == ASSIGNPTR)
+                    {
+                        //ToDo: effiency? 
+                        output += $"\tpush rax\n";
+                        output += $"\tlea " + 
+                            $"rax, " +
+                            $"[{functions[i].body[x].lineContent[4]}]\n";
+                        output += $"\tmov {functions[i].body[x].lineContent[0][1..]}, rax\n";
+                        output += $"\tpop rax\n";
                     }
                 }
 

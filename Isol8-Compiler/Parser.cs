@@ -92,6 +92,25 @@ namespace Isol8_Compiler
                 declarationStatements.Add(declaration);
                 return NO_ERROR;
             }
+            static bool CheckVarState(string varName)
+            {
+                bool exists = false, active = false;
+                //Ensure the variable we're trying to modify exists and is active
+                for (int x = 0; x < variables.Count; x++)
+                {
+                    if (variables[x].name == varName)
+                    {
+                        exists = true;
+                        if (variables[x].status == VarState.ACTIVE)
+                        {
+                            active = true;
+                            return true;
+                        }
+
+                    }
+                }
+                return (exists && active);
+            }
             #endregion
 
             var fileText = File.ReadLines(inputFileName).ToList();
@@ -144,7 +163,8 @@ namespace Isol8_Compiler
                         //For each line after the initial {
                         for (int initialIndex = i + 2; initialIndex < fileText.Count; initialIndex++)
                         {
-                            
+
+
                             //If end of function
                             if (fileText[initialIndex] == "}")
                             {
@@ -154,7 +174,7 @@ namespace Isol8_Compiler
 
                             Instruction instruction = new Instruction
                             {
-                                lineContent = fileText[initialIndex].Replace(";","").Split(' '),
+                                lineContent = fileText[initialIndex].Replace(";","").Split(new char[] { ' ', '(', ')' }),
                             };
                             
                             //If return instruction
@@ -163,12 +183,12 @@ namespace Isol8_Compiler
                                 instruction.instructionType = RET;
 
                                 //If function return type is an int
-                                if(func.returnType == Types.INT)
+                                if(func.returnType == Types.INT && instruction.lineContent.Length >= 2)
                                 {
                                     //ToDo: if returning variable type, perform check on variable.
-                                    
+
                                     //If hex declaration
-                                    if (instruction.lineContent[1].Contains("0x"))
+                                     if (instruction.lineContent[1].Contains("0x"))
                                     {
                                         //Check the conversion is valid
                                         try
@@ -188,13 +208,10 @@ namespace Isol8_Compiler
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
                                     
-                                    
                                     }
                                     //Else just check the int is valid
-                                    else
-                                        if (!int.TryParse(instruction.lineContent[1], out _))
-                                            return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
-                                    
+                                    else if (!int.TryParse(instruction.lineContent[1], out _))
+                                        return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
                                 }
                                 else
                                 {
@@ -205,29 +222,18 @@ namespace Isol8_Compiler
 
                             else if (Patterns.simpleAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
-                                bool exists = false, active = false;
-                                //Ensure the variable we're trying to modify exists and is active
-                                for (int x = 0; x < variables.Count; x++)
-                                {
-                                    if (variables[x].name == values[0])
-                                    {
-                                        exists = true;
-                                        if (variables[x].status == VarState.ACTIVE)
-                                            active = true;
-                                    }
-                                }
+                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
+                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                                else
+                                    instruction.instructionType = PLUSEQUALS;
+                            }
 
-                                if (!exists)
-                                    ; //ToDo: fail on non-existant variable.
+                            else if (Patterns.ptrPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            {
 
-                                if (!active)
-                                    ; //ToDo: fail on deleted variable.
-
-                                instruction.instructionType = PLUSEQUALS;
-
-                                //ToDo: Check secondary operand is a variable name or int, if variable check it exists etc
-                                
-
+                                instruction.instructionType = ASSIGNPTR;
+                                //if (!CheckVarState(fileText[x]))
+                                //    ; // ToDo: fail on non - existant variable OR inactive variable.
 
                             }
 
@@ -242,7 +248,7 @@ namespace Isol8_Compiler
                         }
 
                         //If no closing brack located.
-                        if (!closeFunction)
+                        if (!closeFunction) //ToDo: OR RET
                             return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
 
                         //Check the function name is not already in use.

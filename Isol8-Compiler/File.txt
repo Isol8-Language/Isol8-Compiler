@@ -4,14 +4,11 @@ create onePtr as ptr null;
 
 Initial() ret int
 {
-	¬¬This is a comment
 	one += 1;
-	ret 0x1234A;
+	onePtr = (ptr)one;
+	ret;
 }
-GlobalMaths() ret int
+GlobalTest() ret int
 {
-	¬¬One++;
-
-	¬¬This is a comment also
 	ret 0xA;
 }
