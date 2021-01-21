@@ -22,10 +22,10 @@ namespace Isol8_Compiler
         }
         internal enum Types
         {
-            NULL,   //Invalid
-            [Display(Name = "INT")]
+            NULL,
             INT,
             STRING,
+            PTR,
         }
         internal enum ErrorCodes
         {
