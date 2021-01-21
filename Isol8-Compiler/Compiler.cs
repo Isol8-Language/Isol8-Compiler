@@ -55,7 +55,9 @@ namespace Isol8_Compiler
                     case (Types.INT):
                         output += "DD ";
                         break;
-                        //TODO: ADD STRING
+                    case (Types.PTR):
+                        output += "DQ "; 
+                        break;
                 }
                 //And the value.
                 output += declarationStatements[i].value + '\n';

@@ -47,7 +47,7 @@ namespace Isol8_Compiler
                 //ToDo: Revisit, inefficient as string usage
                 var trueValue = values[4].Replace(";", string.Empty);
 
-                if (declaration.type == Types.INT)
+                if (declaration.type == Types.INT || declaration.type == Types.PTR)
                 {
                     //If value declared as hex, remove 0x notation. 
                     if (trueValue.Contains("0x"))
@@ -61,7 +61,10 @@ namespace Isol8_Compiler
                     }
 
                     //Ensure the assigned value is actually an INT when the declare type is INT
-                    if (int.TryParse(trueValue, out _))
+                    if (trueValue.ToUpper() == "NULL")
+                        declaration.value = "0";
+                    
+                    else if (int.TryParse(trueValue, out _))
                         declaration.value = trueValue;
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
@@ -74,7 +77,7 @@ namespace Isol8_Compiler
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
                 }
-
+               
                 //Create a new variable and add it to the existing variables list.
                 variables.Add(new Variable()
                 {

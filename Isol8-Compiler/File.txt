@@ -1,8 +1,7 @@
-create exampleInt as int 0xFFFF;
-
 ¬¬Example Comment
 create one as int 1;
-create two as int 2;
+create onePtr as ptr null;
+
 Initial() ret int
 {
 	¬¬This is a comment
