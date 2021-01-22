@@ -269,6 +269,5 @@ namespace Isol8_Compiler
             }
             return NO_ERROR;
         }
-
     }
 }
