@@ -8,7 +8,3 @@ Initial() ret int
 	onePtr = (ptr)one;
 	ret;
 }
-GlobalTest() ret int
-{
-	ret 0xA;
-}

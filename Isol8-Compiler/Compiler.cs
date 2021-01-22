@@ -73,7 +73,7 @@ namespace Isol8_Compiler
                     functions[i].name + " PROC\n";
 
 
-                //For every local function, sub rsp, X (4 for DD), mov rbp, esp
+                //ToDo: For every local function, sub rsp, X (4 for DD), mov rbp, esp
 
 
 

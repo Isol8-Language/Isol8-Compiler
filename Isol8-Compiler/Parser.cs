@@ -230,11 +230,10 @@ namespace Isol8_Compiler
 
                             else if (Patterns.ptrPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
-
-                                instruction.instructionType = ASSIGNPTR;
-                                //if (!CheckVarState(fileText[x]))
-                                //    ; // ToDo: fail on non - existant variable OR inactive variable.
-
+                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
+                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                                else
+                                    instruction.instructionType = ASSIGNPTR;
                             }
 
                             //If a declaration pattern is found
