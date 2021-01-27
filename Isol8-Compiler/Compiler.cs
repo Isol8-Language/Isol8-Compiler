@@ -137,7 +137,7 @@ namespace Isol8_Compiler
                     StartInfo =
                     {
                         FileName = "/bin/bash",
-                        Arguments = "-c \" " + "echo 'Running on Linux!'" + " \"",
+                        Arguments = "-c \" " + $"{Environment.CurrentDirectory}/UASM/uasm -elf64 {Environment.CurrentDirectory}/Output'\\\'{fileName}.asm" + " \"",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                     }
