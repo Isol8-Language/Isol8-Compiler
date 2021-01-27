@@ -56,7 +56,9 @@ namespace Isol8_Compiler
                     case (Types.INT):
                         output += "DD ";
                         break;
-                        //TODO: ADD STRING
+                    case (Types.PTR):
+                        output += "DQ "; 
+                        break;
                 }
                 //And the value.
                 output += declarationStatements[i].value + '\n';
@@ -72,7 +74,7 @@ namespace Isol8_Compiler
                     functions[i].name + " PROC\n";
 
 
-                //For every local function, sub rsp, X (4 for DD), mov rbp, esp
+                //ToDo: For every local function, sub rsp, X (4 for DD), mov rbp, esp
 
 
 
@@ -82,15 +84,35 @@ namespace Isol8_Compiler
                 {
                     if (functions[i].body[x].instructionType == RET)
                     {
-                        output += $"\tmov RAX, " +
-                            $"{functions[i].body[x].lineContent[1]}\n" +
-                            $"{functions[i].body[x].lineContent[0]}\n";
+                        if (functions[i].body[x].lineContent.Length >= 2)
+                            output += $"\tmov rax, " +
+                                $"{functions[i].body[x].lineContent[1]}\n" +
+                                $"{functions[i].body[x].lineContent[0]}\n";
+                        else
+                            output += $"{functions[i].body[x].lineContent[0]}\n";
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
-                        output += $"\tADD " +
-                            $"{functions[i].body[x].lineContent[0][1..]}, " +
+                        //If only adding 1, add some efficiency by using INC as opposed to ADD.
+                        if (functions[i].body[x].lineContent[2] == "1")
+                            output += $"\tinc " +
+                            $"[{functions[i].body[x].lineContent[0][1..]}]\n";
+                        
+                        else
+                            output += $"\tadd " +
+                            $"[{functions[i].body[x].lineContent[0][1..]}], " +
                             $"{functions[i].body[x].lineContent[2]}\n";
+
+                    }
+                    else if (functions[i].body[x].instructionType == ASSIGNPTR)
+                    {
+                        //ToDo: effiency? 
+                        output += $"\tpush rax\n";
+                        output += $"\tlea " + 
+                            $"rax, " +
+                            $"[{functions[i].body[x].lineContent[4]}]\n";
+                        output += $"\tmov {functions[i].body[x].lineContent[0][1..]}, rax\n";
+                        output += $"\tpop rax\n";
                     }
                 }
 

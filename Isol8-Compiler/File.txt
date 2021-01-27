@@ -1,18 +1,10 @@
-create exampleInt as int 0xFFFF;
-
 ¬¬Example Comment
 create one as int 1;
-create two as int 2;
+create onePtr as ptr null;
+
 Initial() ret int
 {
-	¬¬This is a comment
 	one += 1;
-	ret 0x1234A;
-}
-GlobalMaths() ret int
-{
-	¬¬One++;
-
-	¬¬This is a comment also
-	ret 0xA;
+	onePtr = (ptr)one;
+	ret;
 }
