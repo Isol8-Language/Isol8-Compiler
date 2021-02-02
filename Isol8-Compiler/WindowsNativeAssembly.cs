@@ -21,7 +21,7 @@ namespace Isol8_Compiler
                 "pop rbp\n";        //Return RBP to original value
         }
             //For me, prints hello + hello
-                     /* 
+            /* 
             EXTERN printf :PROC
             .DATA
                 msg db "hello"
@@ -44,7 +44,8 @@ namespace Isol8_Compiler
                 pop rbp    
                 ret
             Initial ENDP
-            END */
+            END 
+            */
 
     }
 }
