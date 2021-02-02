@@ -6,5 +6,6 @@ Initial() ret int
 {
 	one += 1;
 	onePtr = (ptr)one;
+	out(one);
 	ret;
 }

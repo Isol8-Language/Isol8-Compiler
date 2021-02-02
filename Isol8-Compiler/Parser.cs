@@ -9,6 +9,7 @@ using static Isol8_Compiler.Enumerables.ErrorCodes;
 using static Isol8_Compiler.Enumerables.InstructionTypes;
 using static Isol8_Compiler.Compiler;
 using System.Text.RegularExpressions;
+
 namespace Isol8_Compiler
 {
     public static class Parser
@@ -124,7 +125,6 @@ namespace Isol8_Compiler
                     //ToDo: remove from fileText and fix i index
                     continue;
                 }
-
                 #region Declarations
                 //If a declaration pattern is found
                 if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
@@ -154,7 +154,6 @@ namespace Isol8_Compiler
                     if (!Enum.TryParse(values.Last(), true, out func.returnType))
                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
     
-
                     //Check the function open and closes with the correct brackers, and grab the body.
                     if (fileText[i + 1] == "{")
                     {
@@ -189,7 +188,7 @@ namespace Isol8_Compiler
 
                                     //If hex declaration
                                      if (instruction.lineContent[1].Contains("0x"))
-                                    {
+                                     {
                                         //Check the conversion is valid
                                         try
                                         {
@@ -208,7 +207,7 @@ namespace Isol8_Compiler
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
                                     
-                                    }
+                                     }
                                     //Else just check the int is valid
                                     else if (!int.TryParse(instruction.lineContent[1], out _))
                                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
@@ -242,6 +241,16 @@ namespace Isol8_Compiler
                                 //ToDo
                             }
 
+                            else if (Patterns.outPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            {
+                                
+                                //ToDo: parse variable
+                            }
+
+                            else
+                            {
+                                throw new Exception("toDo");
+                            }
 
                             func.body.Add(instruction);
                         }
