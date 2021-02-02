@@ -67,24 +67,12 @@ namespace Isol8_Compiler
             //Add the .CODE section
             output += ".CODE\n";
 
-            /*IMPORTANT ToDo: Calculate amount of local variables and their sizes, for an example.
-            At runtime, RSP starts misaligned by 8 bytes (not divisible by 16). RSP must be divisible by 16 for printf.
-            RSP must have 32 bytes of shadow space minimum, 4 bytes for each register (8 registerx4).
-            If we have two local variables (two ints) thats 8 bytes, so:
-            sub rsp, 32+8 (shadow space + two local variables) gives up an RSP of 48, which is divisible by 16
-             */
+
 
             //For every function found in the parse.
             for (var i = 0; i < functions.Count; i++)
             {
-                output +=
-                    functions[i].name + " PROC\n";
-
-                //ToDo: see previous comment about RSP alignment, for now assume NO local variables.
-                output += "\tsub rsp, 28h\n";
-
-
-                //ToDo: For every local function, sub rsp, X (4 for DD), mov rbp, esp
+                output += Assembly.CreateFunctionEntry(functions[i].name);
 
                 //For every instruction of the function.
                 for (int x = 0; x < functions[i].body.Count; x++)
