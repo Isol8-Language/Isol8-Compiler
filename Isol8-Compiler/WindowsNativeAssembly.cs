@@ -8,6 +8,12 @@ namespace Isol8_Compiler
 {
     class WindowsNativeAssembly
     {
+        public static string CreatePrintFAssembly(string variableName)
+        {
+            return
+                $"\tlea rcx, [{variableName}]\n" +
+                "\tcall printf\n";
+        }
         void placeholder()
         {
             string output =

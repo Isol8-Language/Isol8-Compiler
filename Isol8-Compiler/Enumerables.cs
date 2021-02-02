@@ -58,6 +58,7 @@ namespace Isol8_Compiler
             RET,
             PLUSEQUALS,
             ASSIGNPTR,
+            OUT,
         }   
     }
 }

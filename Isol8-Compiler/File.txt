@@ -1,10 +1,9 @@
 ¬¬Example Comment
-create one as int 1;
+create one as int 103;
 create onePtr as ptr null;
 
 Initial() ret int
 {
-	one += 1;
 	onePtr = (ptr)one;
 	out(one);
 	ret;

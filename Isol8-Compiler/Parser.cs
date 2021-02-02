@@ -238,12 +238,13 @@ namespace Isol8_Compiler
                             //If a declaration pattern is found
                             else if (Patterns.createPattern.Match(fileText[initialIndex]) != Match.Empty)
                             {
+
                                 //ToDo
                             }
 
                             else if (Patterns.outPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
-                                
+                                instruction.instructionType = OUT;
                                 //ToDo: parse variable
                             }
 
