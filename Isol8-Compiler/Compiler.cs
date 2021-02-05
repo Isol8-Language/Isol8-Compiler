@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using static Isol8_Compiler.Enumerables;
@@ -41,9 +42,9 @@ namespace Isol8_Compiler
 
             //Create the output file
             var outputFile = File.Create($"Output\\{outputName}.asm");
-
-            //Add the .DATA section
-            string output = ".DATA\n";
+            
+            //Add the .DATA section -- ToDo: remove hardcoded printf
+            string output = "EXTERN printf :PROC\n.DATA\n";
             
             //For every declaration statement found in the parse.
             for (var i = 0; i < declarationStatements.Count; i++)
@@ -66,18 +67,13 @@ namespace Isol8_Compiler
 
             //Add the .CODE section
             output += ".CODE\n";
-            
+
+
+
             //For every function found in the parse.
             for (var i = 0; i < functions.Count; i++)
             {
-                output +=
-                    functions[i].name + " PROC\n";
-
-
-                //ToDo: For every local function, sub rsp, X (4 for DD), mov rbp, esp
-
-
-
+                output += Assembly.CreateFunctionEntry(functions[i].name);
 
                 //For every instruction of the function.
                 for (int x = 0; x < functions[i].body.Count; x++)
@@ -113,6 +109,18 @@ namespace Isol8_Compiler
                             $"[{functions[i].body[x].lineContent[4]}]\n";
                         output += $"\tmov {functions[i].body[x].lineContent[0][1..]}, rax\n";
                         output += $"\tpop rax\n";
+                    }
+                    else if (functions[i].body[x].instructionType == OUT)
+                    {
+                        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            output += WindowsNativeAssembly.CreatePrintFAssembly(functions[i].body[x].lineContent[1]);
+                        }
+                        else
+                        {
+                            //ToDo: Brandon
+                            throw new Exception("ToDo: Linux Implementation");
+                        }
                     }
                 }
 
@@ -161,7 +169,7 @@ namespace Isol8_Compiler
             {
                 StartInfo =
                 {
-                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:windows /entry:Initial /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:console /defaultlib:\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64\\msvcrt.lib\" \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64\\legacy_stdio_definitions.lib\" \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64\\legacy_stdio_wide_specifiers.lib\" \"C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.18362.0\\ucrt\\x64\\ucrt.lib\" /entry:Initial /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
                     FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
