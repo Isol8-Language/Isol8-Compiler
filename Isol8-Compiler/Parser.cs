@@ -72,6 +72,13 @@ namespace Isol8_Compiler
                 }
                 else if (declaration.type == Types.STRING)
                 {
+                    trueValue = null;
+                    for (int i = 4; i < values.Length; i++)
+                        trueValue += values[i] + " ";
+
+                    //Remove the last ; and space
+                    trueValue = trueValue.Remove(trueValue.Length-2);
+
                     //Ensure the assigned value is actually a String
                     if (Patterns.stringPattern.Match(trueValue) != Match.Empty)
                         declaration.value = trueValue;

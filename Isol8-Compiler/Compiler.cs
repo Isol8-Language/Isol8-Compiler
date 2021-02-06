@@ -59,9 +59,16 @@ namespace Isol8_Compiler
                     case (Types.PTR):
                         output += "DQ "; 
                         break;
+                    case (Types.STRING):
+                        output += "DB ";
+                        break;
                 }
                 //And the value.
-                output += declarationStatements[i].value + '\n';
+                if (declarationStatements[i].type == Types.STRING)
+                    output += declarationStatements[i].value + ", 10, 0" + '\n';
+
+                else
+                    output += declarationStatements[i].value + '\n';
             }
 
             //Add the .CODE section
@@ -79,12 +86,15 @@ namespace Isol8_Compiler
                 {
                     if (functions[i].body[x].instructionType == RET)
                     {
+                        
+
                         if (functions[i].body[x].lineContent.Length >= 2)
-                            output += $"\tmov rax, " +
-                                $"{functions[i].body[x].lineContent[1]}\n" +
-                                $"{functions[i].body[x].lineContent[0]}\n";
+                            output += Assembly.CreateFunctionClose(functions[i].name, functions[i].body[x].lineContent[1]);
                         else
-                            output += $"{functions[i].body[x].lineContent[0]}\n";
+                            output += Assembly.CreateFunctionClose(functions[i].name);
+
+
+
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
@@ -123,7 +133,7 @@ namespace Isol8_Compiler
                     }
                 }
 
-                output += functions[i].name + " ENDP\n";
+
 
             }
 
@@ -155,11 +165,14 @@ namespace Isol8_Compiler
             }
             catch(Exception ex)
             {
+                //Failed on ML64.exe launching
                 SetLastError(-1, ML64_ERROR, ex.Message);
                 return ML64_ERROR;
             }
 
             string mlResult = ml64.StandardOutput.ReadToEnd();
+
+            //ML64.exe produced an error
             if (mlResult.Contains("error"))
             {
                 SetLastError(-1, ML64_ERROR, mlResult);
