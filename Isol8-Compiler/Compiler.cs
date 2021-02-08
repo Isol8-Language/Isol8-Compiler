@@ -54,21 +54,16 @@ namespace Isol8_Compiler
                 switch(declarationStatements[i].type)
                 {
                     case (Types.INT):
-                        output += "DD ";
+                        output += "DD " + declarationStatements[i].value + '\n';
                         break;
                     case (Types.PTR):
-                        output += "DQ "; 
+                        output += "DQ " + declarationStatements[i].value + '\n'; 
                         break;
                     case (Types.STRING):
-                        output += "DB ";
+                        output += "DB " + declarationStatements[i].value + ", 10, 0" + '\n';
                         break;
                 }
-                //And the value.
-                if (declarationStatements[i].type == Types.STRING)
-                    output += declarationStatements[i].value + ", 10, 0" + '\n';
 
-                else
-                    output += declarationStatements[i].value + '\n';
             }
 
             //Add the .CODE section
@@ -103,6 +98,13 @@ namespace Isol8_Compiler
                             output += $"\tinc " +
                             $"[{functions[i].body[x].lineContent[0][1..]}]\n";
                         
+                        //If the right hand side of the operator is a variable.
+                        if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
+                        {
+                            output += 
+                                $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                $"\tadd [{functions[i].body[x].lineContent[0][1..]}], eax\n";
+                        }
                         else
                             output += $"\tadd " +
                             $"[{functions[i].body[x].lineContent[0][1..]}], " +

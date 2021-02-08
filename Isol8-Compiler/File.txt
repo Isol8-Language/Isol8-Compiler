@@ -1,12 +1,12 @@
 ¬¬Example Comment
 create one as int 103;
 create onePtr as ptr null;
+create oneOne as int 65535;
 create helloWorld as string "Hello World";
 
 Initial() ret int
 {
-	onePtr = (ptr)one;
-	out(helloWorld);
+	one += oneOne;
 	out(one);
 	ret 0;
 }

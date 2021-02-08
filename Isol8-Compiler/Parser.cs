@@ -182,20 +182,20 @@ namespace Isol8_Compiler
                             {
                                 lineContent = fileText[initialIndex].Replace(";","").Split(new char[] { ' ', '(', ')' }),
                             };
-                            
+
                             //If return instruction
                             if (Patterns.retPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
                                 instruction.instructionType = RET;
 
                                 //If function return type is an int
-                                if(func.returnType == Types.INT && instruction.lineContent.Length >= 2)
+                                if (func.returnType == Types.INT && instruction.lineContent.Length >= 2)
                                 {
                                     //ToDo: if returning variable type, perform check on variable.
 
                                     //If hex declaration
-                                     if (instruction.lineContent[1].Contains("0x"))
-                                     {
+                                    if (instruction.lineContent[1].Contains("0x"))
+                                    {
                                         //Check the conversion is valid
                                         try
                                         {
@@ -209,12 +209,12 @@ namespace Isol8_Compiler
                                         //If the first letter is a letter, then add a 0 as it's required
                                         if (Patterns.lettersOnly.Match(instruction.lineContent[1][2..][0].ToString()) != Match.Empty)
                                             instruction.lineContent[1] = '0' + instruction.lineContent[1][2..] + 'h';
-                                        
+
                                         //Otherwise just cut the 0x off and append a h
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
-                                    
-                                     }
+
+                                    }
                                     //Else just check the int is valid
                                     else if (!int.TryParse(instruction.lineContent[1], out _))
                                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
@@ -223,15 +223,29 @@ namespace Isol8_Compiler
                                 {
                                     //ToDo: string
                                 }
-                            
+
                             }
 
-                            else if (Patterns.simpleAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            else if (Patterns.simpleSelfAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
                                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
-                                else
-                                    instruction.instructionType = PLUSEQUALS;
+                                
+                                //If the input value is NOT a number, then it's a variable
+                                else if (!int.TryParse(instruction.lineContent[2], out int result))
+                                    if (!CheckVarState(instruction.lineContent[2].Replace("\t", "")))
+                                        throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+
+                                instruction.instructionType = PLUSEQUALS;
+                            }
+
+                            else if (Patterns.simpleMathsOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            {
+                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
+                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                                throw new NotImplementedException("ToDo");
                             }
 
                             else if (Patterns.ptrPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)

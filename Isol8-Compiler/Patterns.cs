@@ -23,7 +23,8 @@ namespace Isol8_Compiler
 
         #endregion
         #region Maths Patterns
-        public static readonly Regex simpleAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9];$");
+        public static readonly Regex simpleSelfAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9]+;$");
+        public static readonly Regex simpleMathsOperator = new Regex("^[A-Za-z]+ (\\+|-|/|\\*) [A-Za-z0-9];$");
         #endregion
     }
 }
