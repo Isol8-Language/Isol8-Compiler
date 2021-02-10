@@ -42,7 +42,7 @@ namespace Isol8_Compiler
                         var = Parser.variables[i];
             
             //If it's an int then return in a 4 byte register (eax)
-            if (var.type == Enumerables.Types.INT)
+            if (var != null && var.type == Enumerables.Types.INT)
                 ret += $"\tmov eax, {retVal}\n";
 
             else if (retVal != null)

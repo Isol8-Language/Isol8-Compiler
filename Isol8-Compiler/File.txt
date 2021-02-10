@@ -9,5 +9,5 @@ Initial() ret int
 	onePtr = (ptr)one;
 	one += oneOne;
 	out(one);
-	ret one;
+	ret 0;
 }
