@@ -6,7 +6,8 @@ create helloWorld as string "Hello World";
 
 Initial() ret int
 {
+	onePtr = (ptr)one;
 	one += oneOne;
 	out(one);
-	ret 0;
+	ret one;
 }

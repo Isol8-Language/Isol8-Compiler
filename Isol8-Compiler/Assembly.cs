@@ -35,7 +35,17 @@ namespace Isol8_Compiler
             string ret = default;
 
 
-            if (retVal != null)
+            Variable var = default;
+            if (Parser.variables.Any(v => v.name == retVal))
+                for (int i = 0; i < Parser.variables.Count; i++)
+                    if (Parser.variables[i].name == retVal)
+                        var = Parser.variables[i];
+            
+            //If it's an int then return in a 4 byte register (eax)
+            if (var.type == Enumerables.Types.INT)
+                ret += $"\tmov eax, {retVal}\n";
+
+            else if (retVal != null)
                 ret += $"\tmov rax, {retVal}\n";
 
             ret += $"\tadd rsp, {stackSpace.ToString("X")}h\n";

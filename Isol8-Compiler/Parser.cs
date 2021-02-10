@@ -100,6 +100,7 @@ namespace Isol8_Compiler
                 declarationStatements.Add(declaration);
                 return NO_ERROR;
             }
+            //ToDo: is active required?
             static bool CheckVarState(string varName)
             {
                 bool exists = false, active = false;
@@ -214,6 +215,13 @@ namespace Isol8_Compiler
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
 
+                                    }
+
+                                    //If the return value is a variable, the same type of return, and active.
+                                    else if (variables.Any(v => v.name == instruction.lineContent[1] && v.type == Types.INT && v.status == VarState.ACTIVE))
+                                    {
+                                        
+                                        //ToDo: if no longer is here, can just merge with above if?
                                     }
                                     //Else just check the int is valid
                                     else if (!int.TryParse(instruction.lineContent[1], out _))
