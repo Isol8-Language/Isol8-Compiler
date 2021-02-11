@@ -17,10 +17,14 @@ namespace Isol8_Compiler
         public static readonly Regex ptrPattern = new Regex("^[a-zA-Z]+ = \\([a-zA-Z]+\\)[a-zA-Z]+;$");
 
         #region Function Patterns
-        public static readonly Regex retPattern = new Regex(@"^(RET|ret)\s?[a-zA-Z0-9]*?;$");
+        // Use RegexOptions.IgnoreCase
+        public static readonly Regex retPattern = new Regex(@"^ret\s?[a-zA-Z0-9]*?;$", RegexOptions.IgnoreCase);
+        public static readonly Regex outPattern = new Regex(@"^(out|OUT)\s?\([a-zA-Z0-9]*\);$");
+
         #endregion
         #region Maths Patterns
-        public static readonly Regex simpleAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9];$");
+        public static readonly Regex simpleSelfAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9]+;$");
+        public static readonly Regex simpleMathsOperator = new Regex("^[A-Za-z]+ (\\+|-|/|\\*) [A-Za-z0-9];$");
         #endregion
     }
 }
