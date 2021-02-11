@@ -121,7 +121,6 @@ namespace Isol8_Compiler
                         if (variables[x].status == VarState.ACTIVE)
                         {
                             varIndex = x;
-                            active = true;
                             return true;
                         }
 
@@ -316,10 +315,9 @@ namespace Isol8_Compiler
 
                         //Check the function name is not already in use.
                         for (int x = 0; x < functions.Count; x++)
-                        {
                             if (functions[x].name == func.name)
                                 return SetLastError(i, DUPLICATE_FUNC_NAME, fileText[i]);
-                        }
+ 
                         functions.Add(func);
                     }
                     else
