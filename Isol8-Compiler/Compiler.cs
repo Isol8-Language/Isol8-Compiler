@@ -99,7 +99,7 @@ namespace Isol8_Compiler
                             $"[{functions[i].body[x].lineContent[0][1..]}]\n";
                         
                         //If the right hand side of the operator is a variable.
-                        if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
+                        else if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
                         {
                             output += 
                                 $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
@@ -124,6 +124,21 @@ namespace Isol8_Compiler
                     else if (functions[i].body[x].instructionType == OUT)
                     {
                         output += WindowsNativeAssembly.CreatePrintFAssembly(functions[i].body[x].lineContent[1]);
+                    }
+                    else if (functions[i].body[x].instructionType == DELETE)
+                    {
+                        int varIndex = -1;
+                        for (int vari = 0; vari < variables.Count; vari++)
+                        {
+                            if (variables[vari].name == functions[i].body[x].lineContent[1])
+                                varIndex = vari;
+                        }
+
+                        if (variables[varIndex].type == Types.INT)
+                        {
+                            output += Assembly.Delete4ByteVariable(functions[i].body[x].lineContent[1]);
+                        }
+
                     }
                 }
 

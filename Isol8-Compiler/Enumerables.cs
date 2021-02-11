@@ -59,6 +59,7 @@ namespace Isol8_Compiler
             PLUSEQUALS,
             ASSIGNPTR,
             OUT,
+            DELETE,
         }   
     }
 }
