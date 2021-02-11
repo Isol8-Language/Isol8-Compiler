@@ -148,9 +148,8 @@ namespace Isol8_Compiler
                     StartInfo =
                     {
                         FileName = "/bin/bash",
-                        Arguments = "-c \" " + $"{Environment.CurrentDirectory}/UASM/uasm -elf64 {Environment.CurrentDirectory}/Output'\\\'{fileName}.asm" 
-                        + $" && ld -o OutExec -e Initial -lc {Environment.CurrentDirectory}/Output'\\\'{fileName}.o"
-                        + " \"",
+                        Arguments = "-c \" " + $"{Environment.CurrentDirectory}/UASM/uasm -elf64 {Environment.CurrentDirectory}/Output'\\\'{fileName}.asm"
+                        + $" && ld -m elf_x86_64 --dynamic-linker=/lib64/ld-linux-x86-64.so.2 -lc -e Initial -o {fileName} Output'\\\'{fileName}.o",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                     }
