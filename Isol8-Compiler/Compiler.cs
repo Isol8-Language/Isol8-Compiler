@@ -75,7 +75,6 @@ namespace Isol8_Compiler
             {
                 output += Assembly.CreateFunctionEntry(functions[i].name);
 
-                //For every instruction of the function.
                 for (int x = 0; x < functions[i].body.Count; x++)
                 {
                     if (functions[i].body[x].instructionType == RET)
@@ -112,15 +111,7 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == OUT)
                     {
-                        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                        {
-                            output += WindowsNativeAssembly.CreatePrintFAssembly(functions[i].body[x].lineContent[1]);
-                        }
-                        else
-                        {
-                            //ToDo: Brandon
-                            throw new Exception("ToDo: Linux Implementation");
-                        }
+                        output += WindowsNativeAssembly.CreatePrintFAssembly(functions[i].body[x].lineContent[1]);
                     }
                 }
 
@@ -146,7 +137,7 @@ namespace Isol8_Compiler
                     {
                         FileName = "/bin/bash",
                         Arguments = "-c \" " + $"{Environment.CurrentDirectory}/UASM/uasm -elf64 {Environment.CurrentDirectory}/Output'\\\'{fileName}.asm" 
-                        + $" && ld {Environment.CurrentDirectory}/Output'\\\'{fileName}.o"
+                        + $" && ld -o OutExec -e Initial -lc {Environment.CurrentDirectory}/Output'\\\'{fileName}.o"
                         + " \"",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
