@@ -30,14 +30,17 @@ namespace Isol8_Compiler
                 Console.WriteLine(GetLastError());
                 return;
             }
+
             Console.WriteLine($"{isol8Compiler.outputName} created successfully.");
             Console.WriteLine("Assembling...");
+            
             eStatus = isol8Compiler.Assemble(isol8Compiler.outputName);
             if (eStatus != NO_ERROR)
             {
                 Console.WriteLine(GetLastError());
                 return;
             }
+
             Console.WriteLine($"{isol8Compiler.outputName}.exe created");
         }
     }

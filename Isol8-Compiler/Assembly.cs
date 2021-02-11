@@ -8,6 +8,8 @@ namespace Isol8_Compiler
 {
     class Assembly
     {
+        //ToDo: pass out in CFE func?
+        static IntPtr stackSpace;
         public static string CreateFunctionEntry(string functionName, int additionalStackSpace=0)
         {
             /*IMPORTANT ToDo: Calculate amount of local variables and their sizes, for an example.
@@ -20,20 +22,35 @@ namespace Isol8_Compiler
             If designing our own functions, this is important*/
 
             string returnVal = $"{functionName} PROC\n";
-            IntPtr stackSpace = new IntPtr(0x28 + additionalStackSpace);
+            stackSpace = new IntPtr(0x28 + additionalStackSpace);
 
             if (((float)(stackSpace + 8) % 16) != 0)
-            {
                 throw new Exception("ToDo: pad stackalign to be divisible by 16");
-            }
-
             returnVal += $"\tsub rsp, {stackSpace.ToString("X")}h\n";
             return returnVal;
         }
-        public static string CreateFunctionClose(string functionName)
+        public static string CreateFunctionClose(string functionName, string retVal=null)
         {
+            //ToDo: add RSP, stackspace
+            string ret = default;
 
-            return default;
+
+            Variable var = default;
+            if (Parser.variables.Any(v => v.name == retVal))
+                for (int i = 0; i < Parser.variables.Count; i++)
+                    if (Parser.variables[i].name == retVal)
+                        var = Parser.variables[i];
+            
+            //If it's an int then return in a 4 byte register (eax)
+            if (var != null && var.type == Enumerables.Types.INT)
+                ret += $"\tmov eax, {retVal}\n";
+
+            else if (retVal != null)
+                ret += $"\tmov rax, {retVal}\n";
+
+            ret += $"\tadd rsp, {stackSpace.ToString("X")}h\n";
+            ret += $"\tret\n" + $"{functionName} ENDP\n";
+            return ret;
         }
     }
 }

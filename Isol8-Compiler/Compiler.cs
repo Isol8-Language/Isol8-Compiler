@@ -55,14 +55,16 @@ namespace Isol8_Compiler
                 switch (declarationStatements[i].type)
                 {
                     case (Types.INT):
-                        output += "DD ";
+                        output += "DD " + declarationStatements[i].value + '\n';
                         break;
                     case (Types.PTR):
-                        output += "DQ "; 
+                        output += "DQ " + declarationStatements[i].value + '\n'; 
+                        break;
+                    case (Types.STRING):
+                        output += "DB " + declarationStatements[i].value + ", 10, 0" + '\n';
                         break;
                 }
-                //And the value.
-                output += declarationStatements[i].value + '\n';
+
             }
 
             //Add the .CODE section
@@ -79,12 +81,15 @@ namespace Isol8_Compiler
                 {
                     if (functions[i].body[x].instructionType == RET)
                     {
+                        
+
                         if (functions[i].body[x].lineContent.Length >= 2)
-                            output += $"\tmov rax, " +
-                                $"{functions[i].body[x].lineContent[1]}\n" +
-                                $"{functions[i].body[x].lineContent[0]}\n";
+                            output += Assembly.CreateFunctionClose(functions[i].name, functions[i].body[x].lineContent[1]);
                         else
-                            output += $"{functions[i].body[x].lineContent[0]}\n";
+                            output += Assembly.CreateFunctionClose(functions[i].name);
+
+
+
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
@@ -93,6 +98,13 @@ namespace Isol8_Compiler
                             output += $"\tinc " +
                             $"[{functions[i].body[x].lineContent[0][1..]}]\n";
                         
+                        //If the right hand side of the operator is a variable.
+                        if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
+                        {
+                            output += 
+                                $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                $"\tadd [{functions[i].body[x].lineContent[0][1..]}], eax\n";
+                        }
                         else
                             output += $"\tadd " +
                             $"[{functions[i].body[x].lineContent[0][1..]}], " +
@@ -115,7 +127,7 @@ namespace Isol8_Compiler
                     }
                 }
 
-                output += functions[i].name + " ENDP\n";
+
 
             }
 
@@ -174,11 +186,14 @@ namespace Isol8_Compiler
             }
             catch(Exception ex)
             {
+                //Failed on ML64.exe launching
                 SetLastError(-1, ML64_ERROR, ex.Message);
                 return ML64_ERROR;
             }
 
             string mlResult = ml64.StandardOutput.ReadToEnd();
+
+            //ML64.exe produced an error
             if (mlResult.Contains("error"))
             {
                 SetLastError(-1, ML64_ERROR, mlResult);
