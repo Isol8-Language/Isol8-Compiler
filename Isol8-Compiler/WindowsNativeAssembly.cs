@@ -13,13 +13,11 @@ namespace Isol8_Compiler
 
 
             return "\txor edx, edx\n" +
-                    $"\tmov eax, [{variableName}]\n" + 
-                    "\tmov ecx, 0xA\n" + 
-                    "\tdiv ecx\n" + 
-                    "\tadd eax, 0x30\n" + 
-                    "\tadd eax, edx\n" + 
-                    "\tmov ecx, eax\n" + 
-                    "\tcall printf\n";
+                    $"\tmov eax, [{variableName}]\n" +
+                    "\tmov ecx, 0Ah\n" +
+                    "\tdiv ecx\n" +
+                    "\tadd eax, 30h\n" +
+                    "\tadd eax, edx\n";
 
 
             /*return

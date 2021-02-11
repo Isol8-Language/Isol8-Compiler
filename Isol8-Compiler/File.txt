@@ -1,9 +1,7 @@
-create helloWorld as string "Hello World";
-create testString as string "hello again";
+create one as int 1;
 
 Initial() ret int
 {
-	out(helloWorld);
-	out(testString);
+	out(one);
 	ret 0;
 }
