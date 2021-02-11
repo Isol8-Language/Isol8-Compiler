@@ -282,8 +282,9 @@ namespace Isol8_Compiler
 
                             else if (Patterns.outPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
+                                //ToDo: parse variable, check it's active
                                 instruction.instructionType = OUT;
-                                //ToDo: parse variable
+ 
                             }
 
                             else if (Patterns.deletePattern.Match(fileText[initialIndex].Replace("\t","")) != Match.Empty)

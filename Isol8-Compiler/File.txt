@@ -7,7 +7,9 @@ create helloWorld as string "Hello World";
 Initial() ret int
 {
 	one += 1;
+	out(helloWorld);
 	del one;
+	out(one);
 	ret 0;
 }
 TestFunc() ret int
