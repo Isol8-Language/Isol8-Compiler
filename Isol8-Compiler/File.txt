@@ -1,17 +1,9 @@
-¬¬Example Comment
-create one as int 103;
-create onePtr as ptr null;
-create oneOne as int 65535;
 create helloWorld as string "Hello World";
+create testString as string "hello again";
 
 Initial() ret int
 {
-	one += 1;
 	out(helloWorld);
-	del one;
-	ret 0;
-}
-TestFunc() ret int
-{
+	out(testString);
 	ret 0;
 }
