@@ -101,17 +101,26 @@ namespace Isol8_Compiler
                 return NO_ERROR;
             }
             //ToDo: is active required?
-            static bool CheckVarState(string varName)
+            static bool CheckVarState(string varName, out int varIndex)
             {
                 bool exists = false, active = false;
+                varIndex = -1;
+
+                //Check the variable exists
+                if (!variables.Any(v => v.name == varName))
+                    return false;
+                   
+                else
+                    exists = true;
+
                 //Ensure the variable we're trying to modify exists and is active
                 for (int x = 0; x < variables.Count; x++)
                 {
                     if (variables[x].name == varName)
                     {
-                        exists = true;
                         if (variables[x].status == VarState.ACTIVE)
                         {
+                            varIndex = x;
                             active = true;
                             return true;
                         }
@@ -236,12 +245,12 @@ namespace Isol8_Compiler
 
                             else if (Patterns.simpleSelfAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
-                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
+                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
                                 
                                 //If the input value is NOT a number, then it's a variable
                                 else if (!int.TryParse(instruction.lineContent[2], out int result))
-                                    if (!CheckVarState(instruction.lineContent[2].Replace("\t", "")))
+                                    if (!CheckVarState(instruction.lineContent[2].Replace("\t", ""), out _))
                                         throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
 
 
@@ -250,7 +259,7 @@ namespace Isol8_Compiler
 
                             else if (Patterns.simpleMathsOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
-                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
+                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
 
                                 throw new NotImplementedException("ToDo");
@@ -258,7 +267,7 @@ namespace Isol8_Compiler
 
                             else if (Patterns.ptrPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
                             {
-                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", "")))
+                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
                                 else
                                     instruction.instructionType = ASSIGNPTR;
@@ -275,6 +284,21 @@ namespace Isol8_Compiler
                             {
                                 instruction.instructionType = OUT;
                                 //ToDo: parse variable
+                            }
+
+                            else if (Patterns.deletePattern.Match(fileText[initialIndex].Replace("\t","")) != Match.Empty)
+                            {
+
+                                if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int varIndex))
+                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+    
+
+                                if (variables[varIndex].status != VarState.ACTIVE)
+                                    throw new Exception("ToDo: Variable has been deleted prior");
+
+                                variables[varIndex].status = VarState.DELETED;
+                                instruction.instructionType = DELETE;
                             }
 
                             else

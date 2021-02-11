@@ -6,8 +6,11 @@ create helloWorld as string "Hello World";
 
 Initial() ret int
 {
-	onePtr = (ptr)one;
-	one += oneOne;
-	out(one);
+	one += 1;
+	del one;
+	ret 0;
+}
+TestFunc() ret int
+{
 	ret 0;
 }
