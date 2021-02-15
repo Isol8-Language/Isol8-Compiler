@@ -191,9 +191,11 @@ namespace Isol8_Compiler
                             {
                                 lineContent = fileText[initialIndex].Replace(";","").Split(new char[] { ' ', '(', ')' }),
                             };
+                            string patternText = fileText[initialIndex].Replace("\t", "");
+
 
                             //If return instruction
-                            if (Patterns.retPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            if (Patterns.retPattern.Match(patternText) != Match.Empty)
                             {
                                 instruction.instructionType = RET;
 
@@ -242,7 +244,7 @@ namespace Isol8_Compiler
 
                             }
 
-                            else if (Patterns.simpleSelfAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            else if (Patterns.simpleSelfAdditionOperator.Match(patternText) != Match.Empty)
                             {
                                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
@@ -256,7 +258,7 @@ namespace Isol8_Compiler
                                 instruction.instructionType = PLUSEQUALS;
                             }
 
-                            else if (Patterns.simpleMathsOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            else if (Patterns.simpleMathsOperator.Match(patternText) != Match.Empty)
                             {
                                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
@@ -264,7 +266,7 @@ namespace Isol8_Compiler
                                 throw new NotImplementedException("ToDo");
                             }
 
-                            else if (Patterns.ptrPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            else if (Patterns.ptrPattern.Match(patternText) != Match.Empty)
                             {
                                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
@@ -273,20 +275,20 @@ namespace Isol8_Compiler
                             }
 
                             //If a declaration pattern is found
-                            else if (Patterns.createPattern.Match(fileText[initialIndex]) != Match.Empty)
+                            else if (Patterns.createPattern.Match(patternText) != Match.Empty)
                             {
 
                                 //ToDo
                             }
 
-                            else if (Patterns.outPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            else if (Patterns.outPattern.Match(patternText) != Match.Empty)
                             {
                                 //ToDo: parse variable, check it's active
                                 instruction.instructionType = OUT;
  
                             }
 
-                            else if (Patterns.deletePattern.Match(fileText[initialIndex].Replace("\t","")) != Match.Empty)
+                            else if (Patterns.deletePattern.Match(patternText) != Match.Empty)
                             {
 
                                 if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int varIndex))
@@ -299,6 +301,11 @@ namespace Isol8_Compiler
 
                                 variables[varIndex].status = VarState.DELETED;
                                 instruction.instructionType = DELETE;
+                            }
+
+                            else if (Patterns.ifStatement.Match(patternText) != Match.Empty)
+                            {
+
                             }
 
                             else
