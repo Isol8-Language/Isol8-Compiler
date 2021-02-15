@@ -1,15 +1,12 @@
 create one as int 9;
-
+create hello as string "hello";
+create onePtr as ptr null;
 Initial() ret int
 {
+	onePtr = (ptr)one;
 	out(one);
 	one += 1;
-	out(one);
+	one += one;
+	del one;
 	ret 0;
-
-	if [one] == 1
-	{
-	
-	}
-
 }

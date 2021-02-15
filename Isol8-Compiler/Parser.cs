@@ -318,9 +318,10 @@ namespace Isol8_Compiler
                                             break;
                                         }
                                         //ToDo: Turn Previous Pattern Matches Into Function Before Completing this
+                       
                                     }
 
-
+                                    
 
                                     if (!closeIf) //ToDo: OR RET
                                         return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
@@ -335,7 +336,7 @@ namespace Isol8_Compiler
 
                             else
                             {
-                                throw new Exception("toDo");
+                                continue; //ToDo
                             }
 
                             func.body.Add(instruction);

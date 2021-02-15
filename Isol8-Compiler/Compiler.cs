@@ -1,4 +1,6 @@
-﻿using System;
+﻿//Remove this define before release
+#define ASMComment
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -10,6 +12,7 @@ using static Isol8_Compiler.Enumerables.InstructionTypes;
 using static Isol8_Compiler.Enumerables.ErrorCodes;
 using static Isol8_Compiler.Parser;
 using System.Linq;
+
 
 namespace Isol8_Compiler
 {
@@ -74,25 +77,39 @@ namespace Isol8_Compiler
             //For every function found in the parse.
             for (var i = 0; i < functions.Count; i++)
             {
+#if (ASMComment)
+                output += ";START FUNCTION PROLOGUE\n";
+#endif
                 output += Assembly.CreateFunctionEntry(functions[i].name);
+
+#if (ASMComment)
+                output += ";END FUNCTION PROLOGUE\n";
+#endif
 
                 //For every instruction of the function.
                 for (int x = 0; x < functions[i].body.Count; x++)
                 {
                     if (functions[i].body[x].instructionType == RET)
                     {
-                        
+#if (ASMComment)
+                        output += ";START FUNCTION EPILOGUE\n";
+#endif
 
                         if (functions[i].body[x].lineContent.Length >= 2)
                             output += Assembly.CreateFunctionClose(functions[i].name, functions[i].body[x].lineContent[1]);
                         else
                             output += Assembly.CreateFunctionClose(functions[i].name);
 
-
+#if (ASMComment)
+                        output += ";END FUNCTION EPILOGUE\n";
+#endif
 
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
+#if (ASMComment)
+                        output += ";START INC/ADD ROUTINE\n";
+#endif
                         //If only adding 1, add some efficiency by using INC as opposed to ADD.
                         if (functions[i].body[x].lineContent[2] == "1")
                             output += $"\tinc " +
@@ -109,10 +126,15 @@ namespace Isol8_Compiler
                             output += $"\tadd " +
                             $"[{functions[i].body[x].lineContent[0][1..]}], " +
                             $"{functions[i].body[x].lineContent[2]}\n";
-
+#if (ASMComment)
+                        output += ";END INC/ADD ROUTINE\n\n";
+#endif
                     }
                     else if (functions[i].body[x].instructionType == ASSIGNPTR)
                     {
+#if (ASMComment)
+                        output += $";START ASSIGNPTR ROUTINE\n";
+#endif
                         //ToDo: effiency? 
                         output += $"\tpush rax\n";
                         output += $"\tlea " + 
@@ -120,12 +142,21 @@ namespace Isol8_Compiler
                             $"[{functions[i].body[x].lineContent[4]}]\n";
                         output += $"\tmov {functions[i].body[x].lineContent[0][1..]}, rax\n";
                         output += $"\tpop rax\n";
+#if (ASMComment)
+                        output += $";END ASSIGNPTR ROUTINE\n\n";
+#endif                    
                     }
                     else if (functions[i].body[x].instructionType == OUT)
                     {
                         if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                         {
+#if (ASMComment)
+                            output += $";START PRINTF ROUTINE\n";
+#endif
                             output += WindowsNativeAssembly.CreatePrintFAssembly(functions[i].body[x].lineContent[1]);
+#if (ASMComment)
+                            output += $";END PRINTF ROUTINE\n\n";
+#endif
                         }
                         else
                         {
@@ -144,8 +175,17 @@ namespace Isol8_Compiler
 
                         if (variables[varIndex].type == Types.INT)
                         {
+#if (ASMComment)
+                            output += ";START DEL ROUTINE\n";
+#endif
+
                             output += Assembly.Delete4ByteVariable(functions[i].body[x].lineContent[1]);
+#if (ASMComment)
+                            output += ";END DEL ROUTINE\n\n";
+#endif
                         }
+                        else
+                            throw new NotImplementedException("ToDo");
 
                     }
                 }
