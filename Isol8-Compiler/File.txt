@@ -3,7 +3,10 @@ create hello as string "hello";
 create onePtr as ptr null;
 Initial() ret int
 {
+	onePtr = (ptr)one;
+	out(one);
 	one += 1;
 	one += one;
+	del one;
 	ret 0;
 }

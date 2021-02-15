@@ -308,11 +308,15 @@ namespace Isol8_Compiler
 
                             }
 
-   
+                            //If if statement
                             else if (Patterns.ifPattern.Match(patternText) != Match.Empty)
                             {
                                 if (fileText[i + 1] == "{")
                                 {
+                                    
+                                    
+                                    
+                                    
                                     bool closeIf = false;
                                     for (int ifIndex = i + 2; ifIndex < fileText.Count; ifIndex++)
                                     {
@@ -322,10 +326,10 @@ namespace Isol8_Compiler
 
                                         if (fileText[ifIndex] == "}")
                                         {
-
                                             closeIf = true;
                                             break;
                                         }
+
                                         //ToDo: Turn Previous Pattern Matches Into Function Before Completing this
 
                                     }
@@ -342,6 +346,7 @@ namespace Isol8_Compiler
 
                             }
 
+                            //If generic
                             else if (ParseGenerics(patternText, ref instruction) != NO_ERROR)
                                 throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
                             
