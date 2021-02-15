@@ -83,7 +83,7 @@ namespace Isol8_Compiler
                 output += Assembly.CreateFunctionEntry(functions[i].name);
 
 #if (ASMComment)
-                output += ";END FUNCTION PROLOGUE\n";
+                output += ";END FUNCTION PROLOGUE\n\n";
 #endif
 
                 //For every instruction of the function.

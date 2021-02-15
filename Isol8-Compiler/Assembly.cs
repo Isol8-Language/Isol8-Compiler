@@ -25,7 +25,7 @@ namespace Isol8_Compiler
             stackSpace = new IntPtr(0x28 + additionalStackSpace);
 
             if (((float)(stackSpace + 8) % 16) != 0)
-                throw new Exception("ToDo: pad stackalign to be divisible by 16");
+                throw new NotImplementedException("ToDo: pad stackalign to be divisible by 16");
             returnVal += $"\tsub rsp, {stackSpace.ToString("X")}h\n";
             return returnVal;
         }
