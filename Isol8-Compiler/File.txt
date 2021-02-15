@@ -6,4 +6,10 @@ Initial() ret int
 	one += 1;
 	out(one);
 	ret 0;
+
+	if [one] == 1
+	{
+	
+	}
+
 }

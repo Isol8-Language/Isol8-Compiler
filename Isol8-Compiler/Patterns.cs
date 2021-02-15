@@ -20,7 +20,7 @@ namespace Isol8_Compiler
         // Use RegexOptions.IgnoreCase
         public static readonly Regex retPattern = new Regex(@"^ret\s?[a-zA-Z0-9]*?;$", RegexOptions.IgnoreCase);
         public static readonly Regex outPattern = new Regex(@"^(out|OUT)\s?\([a-zA-Z0-9]*\);$");
-        public static readonly Regex ifStatement = new Regex(@"^if ?[[a-zA-Z]+]? == ?[[a-zA-Z0-9]+]?$");
+        public static readonly Regex ifPattern = new Regex(@"^if ?[[a-zA-Z]+]? == ?[[a-zA-Z0-9]+]?$");
 
         #endregion
         #region Maths Patterns
@@ -30,6 +30,5 @@ namespace Isol8_Compiler
         #region Memory Patterns
         public static readonly Regex deletePattern = new Regex("^del\\s[A-Za-z]+;", RegexOptions.IgnoreCase);
         #endregion
-        //if ?[[a-zA-Z]+]? == ?[[a-zA-Z0-9]+]?
     }
 }

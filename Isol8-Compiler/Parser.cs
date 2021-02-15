@@ -21,6 +21,7 @@ namespace Isol8_Compiler
         internal static ErrorCodes ParseFile(string inputFileName)
         {
             #region localFunctions
+            
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
             {
                 //Keyword does not need to be checked as regex will handle this. ToDo: error handling
@@ -230,7 +231,7 @@ namespace Isol8_Compiler
                                     //If the return value is a variable, the same type of return, and active.
                                     else if (variables.Any(v => v.name == instruction.lineContent[1] && v.type == Types.INT && v.status == VarState.ACTIVE))
                                     {
-                                        
+
                                         //ToDo: if no longer is here, can just merge with above if?
                                     }
                                     //Else just check the int is valid
@@ -248,7 +249,7 @@ namespace Isol8_Compiler
                             {
                                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
-                                
+
                                 //If the input value is NOT a number, then it's a variable
                                 else if (!int.TryParse(instruction.lineContent[2], out int result))
                                     if (!CheckVarState(instruction.lineContent[2].Replace("\t", ""), out _))
@@ -285,7 +286,7 @@ namespace Isol8_Compiler
                             {
                                 //ToDo: parse variable, check it's active
                                 instruction.instructionType = OUT;
- 
+
                             }
 
                             else if (Patterns.deletePattern.Match(patternText) != Match.Empty)
@@ -294,7 +295,7 @@ namespace Isol8_Compiler
                                 if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int varIndex))
                                     throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
 
-    
+
 
                                 if (variables[varIndex].status != VarState.ACTIVE)
                                     throw new Exception("ToDo: Variable has been deleted prior");
@@ -303,10 +304,34 @@ namespace Isol8_Compiler
                                 instruction.instructionType = DELETE;
                             }
 
-                            else if (Patterns.ifStatement.Match(patternText) != Match.Empty)
+                            else if (Patterns.ifPattern.Match(patternText) != Match.Empty)
                             {
+                                if (fileText[i + 1] == "{")
+                                {
+                                    bool closeIf = false;
+                                    for (int ifIndex = i + 2; ifIndex < fileText.Count; ifIndex++)
+                                    {
+                                        if (fileText[ifIndex] == "}")
+                                        {
+
+                                            closeIf = true;
+                                            break;
+                                        }
+                                        //ToDo: Turn Previous Pattern Matches Into Function Before Completing this
+                                    }
+
+
+
+                                    if (!closeIf) //ToDo: OR RET
+                                        return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
+                                }
+                                else
+                                    return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
+
+
 
                             }
+                             
 
                             else
                             {
