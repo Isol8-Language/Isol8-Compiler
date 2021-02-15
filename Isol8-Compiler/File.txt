@@ -1,7 +1,9 @@
-create one as int 1;
+create one as int 9;
 
 Initial() ret int
 {
+	out(one);
+	one += 1;
 	out(one);
 	ret 0;
 }

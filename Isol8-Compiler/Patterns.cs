@@ -29,5 +29,6 @@ namespace Isol8_Compiler
         #region Memory Patterns
         public static readonly Regex deletePattern = new Regex("^del\\s[A-Za-z]+;", RegexOptions.IgnoreCase);
         #endregion
+        //if ?[[a-zA-Z]+]? == ?[[a-zA-Z0-9]+]?
     }
 }
