@@ -21,10 +21,8 @@ namespace Isol8_Compiler
         internal static ErrorCodes ParseFile(string inputFileName)
         {
             #region localFunctions
-            //NOT IN USE BUT DO NOT DELETE
             static ErrorCodes ParseGenerics(string line, ref Instruction instruction)
             {
-
                 if (Patterns.deletePattern.Match(line) != Match.Empty)
                     return ParseDelete(ref instruction);
 
@@ -314,14 +312,9 @@ namespace Isol8_Compiler
                                 if (fileText[i + 1] == "{")
                                 {
                                     
-                                    
-                                    
-                                    
                                     bool closeIf = false;
                                     for (int ifIndex = i + 2; ifIndex < fileText.Count; ifIndex++)
                                     {
-
-
 
 
                                         if (fileText[ifIndex] == "}")

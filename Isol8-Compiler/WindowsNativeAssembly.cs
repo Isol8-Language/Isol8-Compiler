@@ -13,7 +13,7 @@ namespace Isol8_Compiler
         public static string CreatePrintFAssembly(string variableName)
         {
             int i;
-            for (i = 0; i < Parser.variables.Count; i++)
+            for (i = 0; i < Parser.variables.Count-1; i++)
                 if (variableName == Parser.variables[i].name)
                     break;
             
