@@ -1,10 +1,15 @@
 create stringVar as string "hello";
-create testBool as bool TRUE;
+create testBool as bool 1;
 create testBoolTwo as bool false;
+create testBoolThree as bool 0;
+create testBoolFour as bool -3;
+create testBoolFive as bool 4556;
 Initial() ret int
 {
 	out(testBool);
-	out(stringVar);
 	out(testBoolTwo);
+	out(testBoolThree);
+	out(testBoolFour);
+	out(testBoolFive);
 	ret 0;
 }
