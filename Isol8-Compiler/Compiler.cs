@@ -65,6 +65,9 @@ namespace Isol8_Compiler
                     case (Types.STRING):
                         output += "DB " + declarationStatements[i].value + ", 10, 0" + '\n';
                         break;
+                    case (Types.BOOL):
+                        output += "DB " + declarationStatements[i].value + '\n';
+                        break;
                 }
 
             }

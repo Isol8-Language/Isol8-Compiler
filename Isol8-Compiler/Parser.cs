@@ -92,6 +92,20 @@ namespace Isol8_Compiler
                         declaration.value = trueValue;
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                } else if (declaration.type == Types.BOOL)
+                {
+
+                    if (trueValue.ToUpper() == "FALSE")
+                    {
+                        declaration.value = "0";
+                    } else if (trueValue.ToUpper() == "TRUE")
+                    {
+                        declaration.value = "1";
+                    } else
+                    {
+                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                    }
+
                 }
                 else if (declaration.type == Types.STRING)
                 {

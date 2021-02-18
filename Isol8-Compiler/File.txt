@@ -1,12 +1,6 @@
-create myInt as int 1;
-create helloWorld as string "Hello World";
-create myPtr as ptr null;
+create boolOne as bool true;
+create boolTwo as BOOL FALSE;
 Initial() ret int
 {
-	myPtr = (ptr)myInt;
-	myInt += 8;
-	out(helloWorld);
-	out(myInt);
-	del myInt;
 	ret 0;
 }
