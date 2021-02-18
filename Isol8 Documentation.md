@@ -15,6 +15,8 @@
 
 ## Documentation To-Do
 - [ ] Increment test cases
+- [ ] Boolean test cases
+- [ ] Printing boolean test cases (section 2)
 <br>
 <br>
 
@@ -30,6 +32,22 @@ Supported variable types:
 int
 string
 ptr
+bool
+```
+Booleans can be defined in multiple ways:
+```
+	// case does not matter
+	create bool_x as bool TRUE;
+	create bool_y as bool false;
+
+	// numeric values instead of true/false
+	create bool_a as bool 1;
+	create bool_b as bool 0;
+
+	// range of values - these get converted into 1 or 0
+	create bool_i as bool 4534;		// true
+	create bool_j as bool -66;		// false
+
 ```
 
 ### Function Declaration
@@ -51,7 +69,7 @@ one +=1; // var "one" now has value 2
 
 ### Pointers
 ```
-<PointerName> = (ptr)<VariableName);
+<PointerName> = (ptr)<VariableName>;
 ```
 
 ### Outputting to console
