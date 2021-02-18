@@ -21,6 +21,29 @@ namespace Isol8_Compiler
         internal static ErrorCodes ParseFile(string inputFileName)
         {
             #region localFunctions
+            static ErrorCodes ParseGenerics(string line, ref Instruction instruction)
+            {
+                if (Patterns.deletePattern.Match(line) != Match.Empty)
+                    return ParseDelete(ref instruction);
+
+                else if (Patterns.simpleSelfAdditionOperator.Match(line) != Match.Empty)
+                    return ParseSelfAddition(ref instruction);
+
+                else if (Patterns.outPattern.Match(line) != Match.Empty)
+                    return ParseOut(ref instruction);
+
+                else if (Patterns.createPattern.Match(line) != Match.Empty)
+                    throw new NotImplementedException("ToDo: Local Variables");
+
+                else if (Patterns.simpleMathsOperator.Match(line) != Match.Empty)
+                    return ParseSimpleMathsOp(ref instruction);
+
+                else if (Patterns.ptrPattern.Match(line) != Match.Empty)
+                    return ParsePtr(ref instruction);
+
+                return NO_PATTERN_MATCH; 
+            }
+
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
             {
                 //Keyword does not need to be checked as regex will handle this. ToDo: error handling
@@ -64,7 +87,7 @@ namespace Isol8_Compiler
                     //Ensure the assigned value is actually an INT when the declare type is INT
                     if (trueValue.ToUpper() == "NULL")
                         declaration.value = "0";
-                    
+
                     else if (int.TryParse(trueValue, out _))
                         declaration.value = trueValue;
                     else
@@ -77,7 +100,7 @@ namespace Isol8_Compiler
                         trueValue += values[i] + " ";
 
                     //Remove the last ; and space
-                    trueValue = trueValue.Remove(trueValue.Length-2);
+                    trueValue = trueValue.Remove(trueValue.Length - 2);
 
                     //Ensure the assigned value is actually a String
                     if (Patterns.stringPattern.Match(trueValue) != Match.Empty)
@@ -85,7 +108,7 @@ namespace Isol8_Compiler
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
                 }
-               
+
                 //Create a new variable and add it to the existing variables list.
                 variables.Add(new Variable()
                 {
@@ -95,38 +118,76 @@ namespace Isol8_Compiler
                     type = declaration.type,
                     value = declaration.value,
                 });
-                
+
                 //Add the declaration to the declaration list.
                 declarationStatements.Add(declaration);
                 return NO_ERROR;
             }
-            //ToDo: is active required?
+            static ErrorCodes ParseDelete(ref Instruction instruction)
+            {
+                if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int varIndex))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                variables[varIndex].status = VarState.DELETED;
+                instruction.instructionType = DELETE;
+
+                return NO_ERROR;
+            }
+            static ErrorCodes ParseSelfAddition(ref Instruction instruction)
+            {
+                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                //If the input value is NOT a number, then it's a variable
+                else if (!int.TryParse(instruction.lineContent[2], out int result))
+                    if (!CheckVarState(instruction.lineContent[2].Replace("\t", ""), out _))
+                        throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                instruction.instructionType = PLUSEQUALS;
+
+                return NO_ERROR;
+            }
+            static ErrorCodes ParseOut(ref Instruction instruction)
+            {
+                //ToDo: parse variable, check it's active
+                instruction.instructionType = OUT;
+                return NO_ERROR;
+            }
+            static ErrorCodes ParseSimpleMathsOp(ref Instruction instruction)
+            {
+                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                throw new NotImplementedException("ToDo");
+            };
+            static ErrorCodes ParsePtr(ref Instruction instruction)
+            {
+                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                else
+                    instruction.instructionType = ASSIGNPTR;
+
+                return NO_ERROR;
+            };
+
             static bool CheckVarState(string varName, out int varIndex)
             {
-                bool exists = false, active = false;
                 varIndex = -1;
 
                 //Check the variable exists
                 if (!variables.Any(v => v.name == varName))
                     return false;
-                   
-                else
-                    exists = true;
+
 
                 //Ensure the variable we're trying to modify exists and is active
                 for (int x = 0; x < variables.Count; x++)
-                {
-                    if (variables[x].name == varName)
+                    if (variables[x].name == varName && variables[x].status == VarState.ACTIVE)
                     {
-                        if (variables[x].status == VarState.ACTIVE)
-                        {
-                            varIndex = x;
-                            return true;
-                        }
-
+                        varIndex = x;
+                        return true;
                     }
-                }
-                return (exists && active);
+
+                return false;
             }
             #endregion
 
@@ -134,6 +195,8 @@ namespace Isol8_Compiler
 
             for (int i = 0; i < fileText.Count; i++)
             {
+                /*Loop will look for global declarations or functions. 
+                 * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/
 
                 //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
                 if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
@@ -141,6 +204,7 @@ namespace Isol8_Compiler
                     //ToDo: remove from fileText and fix i index
                     continue;
                 }
+
                 #region Declarations
                 //If a declaration pattern is found
                 if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
@@ -153,13 +217,14 @@ namespace Isol8_Compiler
                         return errorCode;
                 }
                 #endregion
+
                 #region Functions
                 //If a funtion pattern is found
                 else if (Patterns.functionPattern.Match(fileText[i]) != Match.Empty)
                 {
                     //Get the values of the function declarations.
                     var values = fileText[i].Split(new char[] { ' ', '(', ')' });
-                    
+
                     //Initialize a new function
                     Function func = new Function()
                     {
@@ -169,7 +234,7 @@ namespace Isol8_Compiler
                     //Check the return type is a valid type
                     if (!Enum.TryParse(values.Last(), true, out func.returnType))
                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
-    
+
                     //Check the function open and closes with the correct brackers, and grab the body.
                     if (fileText[i + 1] == "{")
                     {
@@ -178,8 +243,6 @@ namespace Isol8_Compiler
                         //For each line after the initial {
                         for (int initialIndex = i + 2; initialIndex < fileText.Count; initialIndex++)
                         {
-
-
                             //If end of function
                             if (fileText[initialIndex] == "}")
                             {
@@ -189,11 +252,12 @@ namespace Isol8_Compiler
 
                             Instruction instruction = new Instruction
                             {
-                                lineContent = fileText[initialIndex].Replace(";","").Split(new char[] { ' ', '(', ')' }),
+                                lineContent = fileText[initialIndex].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
                             };
+                            string patternText = fileText[initialIndex].Replace("\t", "");
 
                             //If return instruction
-                            if (Patterns.retPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            if (Patterns.retPattern.Match(patternText) != Match.Empty)
                             {
                                 instruction.instructionType = RET;
 
@@ -228,7 +292,7 @@ namespace Isol8_Compiler
                                     //If the return value is a variable, the same type of return, and active.
                                     else if (variables.Any(v => v.name == instruction.lineContent[1] && v.type == Types.INT && v.status == VarState.ACTIVE))
                                     {
-                                        
+
                                         //ToDo: if no longer is here, can just merge with above if?
                                     }
                                     //Else just check the int is valid
@@ -242,69 +306,43 @@ namespace Isol8_Compiler
 
                             }
 
-                            else if (Patterns.simpleSelfAdditionOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
+                            //If if statement
+                            else if (Patterns.ifPattern.Match(patternText) != Match.Empty)
                             {
-                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
-                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
-                                
-                                //If the input value is NOT a number, then it's a variable
-                                else if (!int.TryParse(instruction.lineContent[2], out int result))
-                                    if (!CheckVarState(instruction.lineContent[2].Replace("\t", ""), out _))
-                                        throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                                if (fileText[i + 1] == "{")
+                                {
+                                    
+                                    bool closeIf = false;
+                                    for (int ifIndex = i + 2; ifIndex < fileText.Count; ifIndex++)
+                                    {
 
 
-                                instruction.instructionType = PLUSEQUALS;
-                            }
+                                        if (fileText[ifIndex] == "}")
+                                        {
+                                            closeIf = true;
+                                            break;
+                                        }
 
-                            else if (Patterns.simpleMathsOperator.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
-                            {
-                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
-                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                                        //ToDo: Turn Previous Pattern Matches Into Function Before Completing this
 
-                                throw new NotImplementedException("ToDo");
-                            }
+                                    }
 
-                            else if (Patterns.ptrPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
-                            {
-                                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
-                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+
+                                    if (!closeIf) //ToDo: OR RET
+                                        return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
+                                }
                                 else
-                                    instruction.instructionType = ASSIGNPTR;
+                                    return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
+
+
+
                             }
 
-                            //If a declaration pattern is found
-                            else if (Patterns.createPattern.Match(fileText[initialIndex]) != Match.Empty)
-                            {
-
-                                //ToDo
-                            }
-
-                            else if (Patterns.outPattern.Match(fileText[initialIndex].Replace("\t", "")) != Match.Empty)
-                            {
-                                //ToDo: parse variable, check it's active
-                                instruction.instructionType = OUT;
- 
-                            }
-
-                            else if (Patterns.deletePattern.Match(fileText[initialIndex].Replace("\t","")) != Match.Empty)
-                            {
-
-                                if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int varIndex))
-                                    throw new Exception("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
-
-    
-
-                                if (variables[varIndex].status != VarState.ACTIVE)
-                                    throw new Exception("ToDo: Variable has been deleted prior");
-
-                                variables[varIndex].status = VarState.DELETED;
-                                instruction.instructionType = DELETE;
-                            }
-
-                            else
-                            {
-                                throw new Exception("toDo");
-                            }
+                            //If generic
+                            else if (ParseGenerics(patternText, ref instruction) != NO_ERROR)
+                                throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
+                            
 
                             func.body.Add(instruction);
                         }
@@ -317,7 +355,7 @@ namespace Isol8_Compiler
                         for (int x = 0; x < functions.Count; x++)
                             if (functions[x].name == func.name)
                                 return SetLastError(i, DUPLICATE_FUNC_NAME, fileText[i]);
- 
+
                         functions.Add(func);
                     }
                     else
