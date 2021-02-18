@@ -1,6 +1,10 @@
-create boolOne as bool true;
-create boolTwo as BOOL FALSE;
+create stringVar as string "hello";
+create testBool as bool TRUE;
+create testBoolTwo as bool false;
 Initial() ret int
 {
+	out(testBool);
+	out(stringVar);
+	out(testBoolTwo);
 	ret 0;
 }

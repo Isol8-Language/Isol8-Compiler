@@ -72,6 +72,12 @@ namespace Isol8_Compiler
 
             }
 
+            output += ".CONST\n";
+            output += $"\tISOL8_true_msg DB \"true\", 10, 0\n";
+            output += $"\tISOL8_false_msg DB \"false\", 10, 0\n";
+
+
+
             //Add the .CODE section
             output += ".CODE\n";
 
