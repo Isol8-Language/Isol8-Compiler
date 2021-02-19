@@ -62,6 +62,8 @@ namespace Isol8_Compiler
             ASSIGNPTR,
             OUT,
             DELETE,
+            IF,
+            ENDIF,
         }   
     }
 }

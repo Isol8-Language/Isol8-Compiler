@@ -4,7 +4,10 @@ create testBoolTwo as bool false;
 
 Initial() ret int
 {
-	out(testBoolTwo);
-	out(testBoolTwo);
+	out(stringVar);
+	if testBool == true
+	{
+		out(stringVar);
+	}
 	ret 0;
 }

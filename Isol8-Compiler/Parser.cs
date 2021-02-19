@@ -323,27 +323,41 @@ namespace Isol8_Compiler
                             //If if statement
                             else if (Patterns.ifPattern.Match(patternText) != Match.Empty)
                             {
-                                if (fileText[i + 1] == "{")
+                                instruction.instructionType = IF;
+                                func.body.Add(instruction);
+
+                                if (fileText[initialIndex + 1].Replace("\t", "") == "{")
                                 {
-                                    
+
                                     bool closeIf = false;
-                                    for (int ifIndex = i + 2; ifIndex < fileText.Count; ifIndex++)
+                                    //For every line within the if statement
+                                    for (initialIndex += 2; initialIndex < fileText.Count; initialIndex++)
                                     {
-
-
-                                        if (fileText[ifIndex] == "}")
+                                        //If the if statement is closing
+                                        if (fileText[initialIndex].Replace("\t", "") == "}")
                                         {
                                             closeIf = true;
+                                            func.body.Add(new Instruction()
+                                            {
+                                                instructionType = ENDIF,
+                                                lineContent = null,
+                                            });
                                             break;
                                         }
 
-                                        //ToDo: Turn Previous Pattern Matches Into Function Before Completing this
+                                        Instruction innerInstruction = new Instruction()
+                                        {
+                                            lineContent = fileText[initialIndex].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
+                                        };
+                                        ErrorCodes errorCodes = ParseGenerics(fileText[initialIndex].Replace("\t", ""), ref innerInstruction);
+                                        if (errorCodes != NO_ERROR)
+                                            throw new NotImplementedException("ToDo");
 
+                                        //Add the 
+                                        func.body.Add(innerInstruction);
                                     }
 
-
-
-                                    if (!closeIf) //ToDo: OR RET
+                                    if (!closeIf)
                                         return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
                                 }
                                 else
@@ -354,11 +368,15 @@ namespace Isol8_Compiler
                             }
 
                             //If generic
-                            else if (ParseGenerics(patternText, ref instruction) != NO_ERROR)
-                                throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
+                            else if (ParseGenerics(patternText, ref instruction) == NO_ERROR)
+                            {
+                                func.body.Add(instruction);
+                            }
+                            else
+                                continue;//throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
+                            
                             
 
-                            func.body.Add(instruction);
                         }
 
                         //If no closing brack located.

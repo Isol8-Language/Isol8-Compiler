@@ -195,9 +195,19 @@ namespace Isol8_Compiler
                             throw new NotImplementedException("ToDo");
 
                     }
+                    else if (functions[i].body[x].instructionType == IF)
+                    {
+                        int me = 5;
+                    }
                 }
 
-
+#if (ASMComment)
+                output += ";START FUNCTION EPILOGUE\n";
+#endif
+                output += Assembly.CreateFunctionClose(functions[i].name);
+#if (ASMComment)
+                output += ";END FUNCTION EPILOGUE\n\n";
+#endif
 
             }
 

@@ -60,8 +60,6 @@ namespace Isol8_Compiler
                 "\tcall printf\n";
   
 
-
-
         }
         private static int GenerateLabelIndex() => labelIndex++;
     }
