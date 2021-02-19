@@ -63,10 +63,6 @@ namespace Isol8_Compiler
 
 
         }
-        private static int GenerateLabelIndex()
-        {
-            labelIndex++;
-            return labelIndex;
-        }
+        private static int GenerateLabelIndex() => labelIndex++;
     }
 }
