@@ -10,6 +10,7 @@ namespace Isol8_Compiler
 {
     class WindowsNativeAssembly
     {
+        private static int labelIndex = 0;
         public static string CreatePrintFAssembly(string variableName)
         {
             int i;
@@ -35,20 +36,23 @@ namespace Isol8_Compiler
             }
             else if (Parser.variables[i].type == Types.BOOL)
             {
-                return $"\tcmp {variableName}, 1\n" +
-                             $"\tje {variableName}_1\n" +
-                             $"\tjne {variableName}_2\n" +
-                             $"\n" +
-                             $"\t{variableName}_1:\n" +
-                             $"\t\tlea rcx, [ISOL8_true_msg]\n" +
-                             $"\t\tcall printf\n"+
-                             $"\t\tjmp {variableName}_3\n" +
-                             $"\t{variableName}_2:\n" +
-                             $"\t\tlea rcx, [ISOL8_false_msg]\n" +
-                             $"\t\tcall printf\n" +
-                             $"\t\tjmp {variableName}_3\n" +
-                             $"\t{variableName}_3:\n"+
-                             $"\t\tnop\n";
+                string exitLabel = variableName +  "_Exit_LI" + GenerateLabelIndex().ToString();
+                string trueLabel = variableName + "_True_LI" + GenerateLabelIndex().ToString();
+                string falseLabel = variableName + "_False_LI" + GenerateLabelIndex().ToString();
+                return
+                    $"\tcmp {variableName}, 1\n" +
+                    $"\tje {trueLabel}\n" +
+                    $"\tjne {falseLabel}\n" +
+                    $"\t{trueLabel}:\n" +
+                    $"\t\tlea rcx, [ISOL8_true_msg]\n" +
+                    $"\t\tcall printf\n" +
+                    $"\t\tjmp {exitLabel}\n" +
+                    $"\t{falseLabel}:\n" +
+                    $"\t\tlea rcx, [ISOL8_false_msg]\n" +
+                    $"\t\tcall printf\n" +
+                    //$"\t\tjmp {exitLabel}\n" +
+                    $"\t{exitLabel}:\n";//+
+                    //$"\t\tnop\n";
             }
             else
                 return
@@ -59,6 +63,10 @@ namespace Isol8_Compiler
 
 
         }
-  
+        private static int GenerateLabelIndex()
+        {
+            labelIndex++;
+            return labelIndex;
+        }
     }
 }
