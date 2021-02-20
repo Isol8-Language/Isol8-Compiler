@@ -95,18 +95,14 @@ namespace Isol8_Compiler
                 } else if (declaration.type == Types.BOOL)
                 {
 
-                    if (trueValue.ToUpper() == "FALSE" || Int32.Parse(trueValue) <= 0)
-                    {
+                    if (trueValue.ToUpper() == "FALSE" || (Int32.TryParse(trueValue, out int falseInt) && falseInt <= 0))
                         declaration.value = "0";
-                    } 
-                    else if (trueValue.ToUpper() == "TRUE" || Int32.Parse(trueValue) >= 1)
-                    {
+
+                    else if (trueValue.ToUpper() == "TRUE" || (Int32.TryParse(trueValue, out int trueInt) && trueInt >= 1))
                         declaration.value = "1";
-                    } 
+
                     else
-                    {
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
-                    }
 
                 }
                 else if (declaration.type == Types.STRING)
