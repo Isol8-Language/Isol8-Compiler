@@ -19,6 +19,7 @@ namespace Isol8_Compiler
     class Compiler
     {
         private static string lastError = "NO_ERROR";
+       
         private readonly string inputFileName;
         public readonly string outputName;
         public static string GetLastError() => lastError;
@@ -197,8 +198,33 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == IF)
                     {
+                        string ifnotTrueLabel = "False_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString();
+                        output += $"\tmovzx rax, [{functions[i].body[x].lineContent[1]}]\n";
+                        
+                        //If the condition is a static true or false
+                        if (functions[i].body[x].lineContent[3].ToLower() == "true")
+                            output += "\tcmp rax, 1\n";
+
+                        else if (functions[i].body[x].lineContent[3].ToLower() == "false")
+                            output += "\tcmp rax, 0\n";
+
+                        output += $"\tjne {ifnotTrueLabel}\n";
+
+                        for (int nextIf = x; nextIf < functions[i].body.Count; nextIf++)
+                            if (functions[i].body[nextIf].instructionType == ENDIF)
+                            {
+                                functions[i].body[nextIf].lineContent = new string[] { ifnotTrueLabel };
+                                break;
+                            }
+
+                        
+
+
                         int me = 5;
                     }
+                    else if (functions[i].body[x].instructionType == ENDIF)
+                        output += $"\t{functions[i].body[x].lineContent[0]}:\n";
+                    
                 }
 
 #if (ASMComment)

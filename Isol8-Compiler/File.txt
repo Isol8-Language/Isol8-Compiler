@@ -1,13 +1,18 @@
 create stringVar as string "hello";
-create testBool as bool 1;
+create testBool as bool true;
 create testBoolTwo as bool false;
-
+create myInt as int 5;
 Initial() ret int
 {
-	out(stringVar);
 	if testBool == true
 	{
-		out(stringVar);
+		myInt += 2;
+		out(myInt);
 	}
+	if testBool == false
+	{
+		out(myInt);
+	}
+	del myInt;
 	ret 0;
 }

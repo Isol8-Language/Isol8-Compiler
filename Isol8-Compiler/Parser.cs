@@ -98,10 +98,12 @@ namespace Isol8_Compiler
                     if (trueValue.ToUpper() == "FALSE" || Int32.Parse(trueValue) <= 0)
                     {
                         declaration.value = "0";
-                    } else if (trueValue.ToUpper() == "TRUE" || Int32.Parse(trueValue) >= 1)
+                    } 
+                    else if (trueValue.ToUpper() == "TRUE" || Int32.Parse(trueValue) >= 1)
                     {
                         declaration.value = "1";
-                    } else
+                    } 
+                    else
                     {
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
                     }

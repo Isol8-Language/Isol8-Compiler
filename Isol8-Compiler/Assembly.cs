@@ -52,7 +52,6 @@ namespace Isol8_Compiler
             ret += $"\tret\n" + $"{functionName} ENDP\n";
             return ret;
         }
-
         public static string Delete4ByteVariable(string varName) => $"\tlea rax, {varName}\n" + "\tmov dword ptr [rax], 0\n";
 
     }
