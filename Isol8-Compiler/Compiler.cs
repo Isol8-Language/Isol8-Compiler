@@ -224,7 +224,38 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == ENDIF)
                         output += $"\t{functions[i].body[x].lineContent[0]}:\n";
-                    
+                    else if (functions[i].body[x].instructionType == ASSIGNMENT)
+                    {
+#if (ASMComment)
+                        char registerType = 'r';
+
+                        if (functions[i].body[x].assignmentType == Types.INT)
+                            registerType = 'e';
+                        
+
+
+                        output += ";START REASSIGNMENT ROUTINE\n";
+#endif
+                        output += $"\tlea rax, [{functions[i].body[x].lineContent[0].Replace("\t", "")}]\n";
+
+                        //If the source is an int.
+                        if (int.TryParse(functions[i].body[x].lineContent[2], out _))
+                            output += $"\tmov rcx, {functions[i].body[x].lineContent[2]}\n";
+
+                        //ToDo: If it's a string.
+                        
+                        //Otherwise it's a variable.
+                        else
+                        {
+                            output += $"\tlea rcx, [{functions[i].body[x].lineContent[2]}]\n";
+                            output += $"\tmov {registerType}cx, [rcx]\n";
+                        }
+                        output += $"\tmov [rax], {registerType}cx\n";
+#if (ASMComment)
+                        output += ";END REASSIGNMENT ROUTINE\n\n";
+#endif
+                    }
+
                 }
 
 #if (ASMComment)

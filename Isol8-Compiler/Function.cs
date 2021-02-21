@@ -24,5 +24,6 @@ namespace Isol8_Compiler
     {
         public InstructionTypes instructionType;
         public string[] lineContent;
+        public Types assignmentType = Types.NULL;
     };
 }

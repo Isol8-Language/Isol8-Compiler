@@ -59,6 +59,7 @@ namespace Isol8_Compiler
             NULL,   //Invalid
             RET,
             PLUSEQUALS,
+            ASSIGNMENT,
             ASSIGNPTR,
             OUT,
             DELETE,

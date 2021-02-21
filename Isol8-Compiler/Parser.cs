@@ -41,6 +41,9 @@ namespace Isol8_Compiler
                 else if (Patterns.ptrPattern.Match(line) != Match.Empty)
                     return ParsePtr(ref instruction);
 
+                else if (Patterns.assignPattern.Match(line) != Match.Empty)
+                    return ParseAssignment(ref instruction);
+
                 return NO_PATTERN_MATCH; 
             }
 
@@ -181,6 +184,29 @@ namespace Isol8_Compiler
 
                 return NO_ERROR;
             };
+            static ErrorCodes ParseAssignment(ref Instruction instruction)
+            {
+                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out int varIndex))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                instruction.instructionType = ASSIGNMENT;
+
+                if(variables[varIndex].type == Types.INT)
+                {
+                    instruction.assignmentType = Types.INT;
+                    //ToDo: These if statements can be concatenated
+                    //Check if the assignment is, correctly, another integer
+                    if (int.TryParse(instruction.lineContent[2], out int result))
+                        return NO_ERROR;
+
+                    //Check if it's a variable instead
+                    else if (!CheckVarState(instruction.lineContent[2].Replace("\t",""), out varIndex))
+                        throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                }
+
+                return NO_ERROR;
+            }
 
             static bool CheckVarState(string varName, out int varIndex)
             {
@@ -367,9 +393,8 @@ namespace Isol8_Compiler
 
                             //If generic
                             else if (ParseGenerics(patternText, ref instruction) == NO_ERROR)
-                            {
                                 func.body.Add(instruction);
-                            }
+                            
                             else
                                 continue;//throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
                             
