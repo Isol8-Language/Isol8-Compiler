@@ -191,7 +191,7 @@ namespace Isol8_Compiler
 
                 instruction.instructionType = ASSIGNMENT;
 
-                if(variables[varIndex].type == Types.INT)
+                if (variables[varIndex].type == Types.INT)
                 {
                     instruction.assignmentType = Types.INT;
                     //ToDo: These if statements can be concatenated
@@ -200,10 +200,23 @@ namespace Isol8_Compiler
                         return NO_ERROR;
 
                     //Check if it's a variable instead
-                    else if (!CheckVarState(instruction.lineContent[2].Replace("\t",""), out varIndex))
+                    else if (!CheckVarState(instruction.lineContent[2].Replace("\t", ""), out varIndex))
                         throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
 
                 }
+                else if (variables[varIndex].type == Types.BOOL)
+                {
+                    instruction.assignmentType = Types.BOOL;
+                    string assignmentValue = instruction.lineContent[2].Replace("\t", "");
+                    if (assignmentValue.ToUpper() == "TRUE" || assignmentValue.ToUpper() == "FALSE")
+                        return NO_ERROR;
+
+                    //Check if it's a variable instead
+                    else if (!CheckVarState(assignmentValue, out varIndex))
+                        throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                }
+                else
+                    throw new NotImplementedException();
 
                 return NO_ERROR;
             }

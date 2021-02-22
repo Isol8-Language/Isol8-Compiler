@@ -125,11 +125,10 @@ namespace Isol8_Compiler
                         
                         //If the right hand side of the operator is a variable.
                         else if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
-                        {
                             output += 
                                 $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
                                 $"\tadd [{functions[i].body[x].lineContent[0][1..]}], eax\n";
-                        }
+                        
                         else
                             output += $"\tadd " +
                             $"[{functions[i].body[x].lineContent[0][1..]}], " +
@@ -227,30 +226,40 @@ namespace Isol8_Compiler
                     else if (functions[i].body[x].instructionType == ASSIGNMENT)
                     {
 #if (ASMComment)
-                        char registerType = 'r';
-
-                        if (functions[i].body[x].assignmentType == Types.INT)
-                            registerType = 'e';
-                        
-
-
                         output += ";START REASSIGNMENT ROUTINE\n";
 #endif
+                        //Mov the address of the variable to rax
                         output += $"\tlea rax, [{functions[i].body[x].lineContent[0].Replace("\t", "")}]\n";
 
-                        //If the source is an int.
-                        if (int.TryParse(functions[i].body[x].lineContent[2], out _))
-                            output += $"\tmov rcx, {functions[i].body[x].lineContent[2]}\n";
-
-                        //ToDo: If it's a string.
-                        
-                        //Otherwise it's a variable.
-                        else
+                        if (functions[i].body[x].assignmentType == Types.INT)
                         {
-                            output += $"\tlea rcx, [{functions[i].body[x].lineContent[2]}]\n";
-                            output += $"\tmov {registerType}cx, [rcx]\n";
+ 
+                            //If the source is an int.
+                            if (int.TryParse(functions[i].body[x].lineContent[2], out _))
+                                output += $"\tmov rcx, {functions[i].body[x].lineContent[2]}\n";
+
+                            //Otherwise it's a variable.
+                            else
+                            {
+                                output += $"\tlea rcx, [{functions[i].body[x].lineContent[2]}]\n";
+                                output += $"\tmov ecx, [rcx]\n";
+                            }
+                            output += $"\tmov [rax], ecx\n";
+
                         }
-                        output += $"\tmov [rax], {registerType}cx\n";
+                        //ToDo: If it's a string.
+                        else if (functions[i].body[x].assignmentType == Types.BOOL)
+                        {
+                            if (functions[i].body[x].lineContent[2].ToUpper() == "FALSE")
+                                output += $"\tmov [{functions[i].body[x].lineContent[0].Replace("\t", "")}], 0\n";
+
+                            else if (functions[i].body[x].lineContent[2].ToUpper() == "TRUE")
+                                output += $"\tmov [{functions[i].body[x].lineContent[0].Replace("\t","")}], 1\n";
+                            else //it's a variable
+                                throw new NotImplementedException();
+                        }
+
+
 #if (ASMComment)
                         output += ";END REASSIGNMENT ROUTINE\n\n";
 #endif
