@@ -197,6 +197,9 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == IF)
                     {
+#if (ASMComment)
+                        output += ";START IF ROUTINE\n";
+#endif
                         string ifnotTrueLabel = "False_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString();
                         output += $"\tmovzx rax, [{functions[i].body[x].lineContent[1]}]\n";
                         
@@ -213,16 +216,18 @@ namespace Isol8_Compiler
                             if (functions[i].body[nextIf].instructionType == ENDIF)
                             {
                                 functions[i].body[nextIf].lineContent = new string[] { ifnotTrueLabel };
+
                                 break;
                             }
-
-                        
-
-
-                        int me = 5;
                     }
                     else if (functions[i].body[x].instructionType == ENDIF)
+                    {
                         output += $"\t{functions[i].body[x].lineContent[0]}:\n";
+#if (ASMComment)
+                        output += ";END IF ROUTINE\n\n";
+#endif
+                    }
+
                     else if (functions[i].body[x].instructionType == ASSIGNMENT)
                     {
 #if (ASMComment)

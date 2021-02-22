@@ -46,7 +46,6 @@ namespace Isol8_Compiler
 
                 return NO_PATTERN_MATCH; 
             }
-
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
             {
                 //Keyword does not need to be checked as regex will handle this. ToDo: error handling
@@ -246,6 +245,10 @@ namespace Isol8_Compiler
 
             for (int i = 0; i < fileText.Count; i++)
             {
+                //Ignore white space lines
+                if (fileText[i] == string.Empty)
+                    continue;
+
                 /*Loop will look for global declarations or functions. 
                  * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/
 
@@ -292,10 +295,11 @@ namespace Isol8_Compiler
                         bool closeFunction = false;
 
                         //For each line after the initial {
-                        for (int initialIndex = i + 2; initialIndex < fileText.Count; initialIndex++)
+                        for (i += 2; i < fileText.Count; i++)
                         {
+
                             //If end of function
-                            if (fileText[initialIndex] == "}")
+                            if (fileText[i] == "}")
                             {
                                 closeFunction = true;
                                 break;
@@ -303,9 +307,9 @@ namespace Isol8_Compiler
 
                             Instruction instruction = new Instruction
                             {
-                                lineContent = fileText[initialIndex].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
+                                lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
                             };
-                            string patternText = fileText[initialIndex].Replace("\t", "");
+                            string patternText = fileText[i].Replace("\t", "");
 
                             //If return instruction
                             if (Patterns.retPattern.Match(patternText) != Match.Empty)
@@ -363,15 +367,15 @@ namespace Isol8_Compiler
                                 instruction.instructionType = IF;
                                 func.body.Add(instruction);
 
-                                if (fileText[initialIndex + 1].Replace("\t", "") == "{")
+                                if (fileText[i + 1].Replace("\t", "") == "{")
                                 {
 
                                     bool closeIf = false;
                                     //For every line within the if statement
-                                    for (initialIndex += 2; initialIndex < fileText.Count; initialIndex++)
+                                    for (i += 2; i < fileText.Count; i++)
                                     {
                                         //If the if statement is closing
-                                        if (fileText[initialIndex].Replace("\t", "") == "}")
+                                        if (fileText[i].Replace("\t", "") == "}")
                                         {
                                             closeIf = true;
                                             func.body.Add(new Instruction()
@@ -384,9 +388,9 @@ namespace Isol8_Compiler
 
                                         Instruction innerInstruction = new Instruction()
                                         {
-                                            lineContent = fileText[initialIndex].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
+                                            lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
                                         };
-                                        ErrorCodes errorCodes = ParseGenerics(fileText[initialIndex].Replace("\t", ""), ref innerInstruction);
+                                        ErrorCodes errorCodes = ParseGenerics(fileText[i].Replace("\t", ""), ref innerInstruction);
                                         if (errorCodes != NO_ERROR)
                                             throw new NotImplementedException("ToDo");
 
@@ -432,7 +436,11 @@ namespace Isol8_Compiler
                 #endregion
                 else
                 {
-                    //No match for line, do what?
+                    //Temporary fix:
+                    if (fileText[i].Contains("{") || fileText[i].Contains("}"))
+                        continue;
+                    //if no pattern is found then what?
+                    throw new NotImplementedException();
                 }
             }
             return NO_ERROR;
