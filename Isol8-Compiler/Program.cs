@@ -22,8 +22,8 @@ namespace Isol8_Compiler
             Console.WriteLine($"{Resources.title}");
 
             Compiler isol8Compiler = new Compiler("File.txt", "OutputName");
+         
             Console.WriteLine($"Compiling {isol8Compiler.outputName} to Assembly...");
-            
             ErrorCodes eStatus = isol8Compiler.CreateAssemblyFile();
             if (eStatus != NO_ERROR)
             {

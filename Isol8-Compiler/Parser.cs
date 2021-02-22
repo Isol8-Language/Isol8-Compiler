@@ -20,6 +20,7 @@ namespace Isol8_Compiler
 
         internal static ErrorCodes ParseFile(string inputFileName)
         {
+            //Local functions for use in parsing.
             #region localFunctions
             static ErrorCodes ParseGenerics(string line, ref Instruction instruction)
             {
@@ -64,6 +65,7 @@ namespace Isol8_Compiler
                     if (variables[x].name == values[1])
                         return SetLastError(lineIndex, DUPLICATE_VAR_NAME, lineContent);
 
+                //Set the variable name, assuming it's not in use.
                 declaration.variableName = values[1];
 
                 if (!Enum.TryParse(values[3], true, out declaration.type))
@@ -73,12 +75,14 @@ namespace Isol8_Compiler
                 //ToDo: Revisit, inefficient as string usage
                 var trueValue = values[4].Replace(";", string.Empty);
 
+                //If the type of declaration is an INT or a pointer
                 if (declaration.type == Types.INT || declaration.type == Types.PTR)
                 {
-                    //If value declared as hex, remove 0x notation. 
+                    //If value declared as hex, remove 0x notation for assembly conversion to Xh. 
                     if (trueValue.Contains("0x"))
                     {
-                        //If the function contains standard numbers or hex digits only (A-F)
+                        /*If the function contains standard numbers or hex digits only (A-F),
+                         then convert it to a string integer in base-16 (Hex).*/
                         if (Patterns.standardOrHexDigitsOnly.Match(trueValue) != Match.Empty)
                             trueValue = Convert.ToInt32(trueValue, 16).ToString();
                         else
@@ -86,21 +90,23 @@ namespace Isol8_Compiler
 
                     }
 
-                    //Ensure the assigned value is actually an INT when the declare type is INT
+                    //If the string is NULL then it's essentially 0 in assembly.
                     if (trueValue.ToUpper() == "NULL")
                         declaration.value = "0";
 
+                    //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
                     else if (int.TryParse(trueValue, out _))
                         declaration.value = trueValue;
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
-                } else if (declaration.type == Types.BOOL)
+                } 
+                else if (declaration.type == Types.BOOL)
                 {
-
-                    if (trueValue.ToUpper() == "FALSE" || (Int32.TryParse(trueValue, out int falseInt) && falseInt <= 0))
+                    //IF the value is FALSE or less than, or equal, to 0, then set the value to "0".
+                    if (trueValue.ToUpper() == "FALSE" || (int.TryParse(trueValue, out int falseInt) && falseInt <= 0))
                         declaration.value = "0";
 
-                    else if (trueValue.ToUpper() == "TRUE" || (Int32.TryParse(trueValue, out int trueInt) && trueInt >= 1))
+                    else if (trueValue.ToUpper() == "TRUE" || (int.TryParse(trueValue, out int trueInt) && trueInt >= 1))
                         declaration.value = "1";
 
                     else
@@ -110,6 +116,8 @@ namespace Isol8_Compiler
                 else if (declaration.type == Types.STRING)
                 {
                     trueValue = null;
+                    /*Index 4 will always be the start of the string value in the pattern. ToDo: declare as const?
+                    For every value after 4, append it to the trueValue string.*/
                     for (int i = 4; i < values.Length; i++)
                         trueValue += values[i] + " ";
 
@@ -127,6 +135,7 @@ namespace Isol8_Compiler
                 variables.Add(new Variable()
                 {
                     name = declaration.variableName,
+                    //If the scope is local bool (true) then set scope to local, if not then global.
                     scope = local ? Scope.LOCAL : Scope.GLOBAL,
                     status = VarState.ACTIVE,
                     type = declaration.type,
@@ -219,7 +228,6 @@ namespace Isol8_Compiler
 
                 return NO_ERROR;
             }
-
             static bool CheckVarState(string varName, out int varIndex)
             {
                 varIndex = -1;
@@ -241,11 +249,13 @@ namespace Isol8_Compiler
             }
             #endregion
 
+            //Read all the files into a list of strings.
             var fileText = File.ReadLines(inputFileName).ToList();
 
+            //For every line in the file
             for (int i = 0; i < fileText.Count; i++)
             {
-                //Ignore white space lines
+                //Ignore white space lines.
                 if (fileText[i] == string.Empty)
                     continue;
 
@@ -254,19 +264,19 @@ namespace Isol8_Compiler
 
                 //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
                 if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
-                {
-                    //ToDo: remove from fileText and fix i index
                     continue;
-                }
 
                 #region Declarations
                 //If a declaration pattern is found
                 if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
                 {
-                    //Generate an array of values.
+                    //Generate an array of values from the line, splitting on a space.
                     var values = fileText[i].Split(" ");
 
+                    //Parse the declaration using the ParseDeclaration function.
                     ErrorCodes errorCode = ParseDeclaration(values, fileText[i], i);
+
+                    //If the error code is not NO_ERROR.
                     if (errorCode != NO_ERROR)
                         return errorCode;
                 }
@@ -276,20 +286,21 @@ namespace Isol8_Compiler
                 //If a funtion pattern is found
                 else if (Patterns.functionPattern.Match(fileText[i]) != Match.Empty)
                 {
-                    //Get the values of the function declarations.
+                    //Get the values of the function declarations, split on spaces and paranthesis.
                     var values = fileText[i].Split(new char[] { ' ', '(', ')' });
 
                     //Initialize a new function
                     Function func = new Function()
                     {
+                        //The name is always the first value.
                         name = values[0],
                     };
 
-                    //Check the return type is a valid type
+                    //Check the return type is a valid type, and not made up or incorrect spelt.
                     if (!Enum.TryParse(values.Last(), true, out func.returnType))
                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
 
-                    //Check the function open and closes with the correct brackers, and grab the body.
+                    //Check the function open and closes with the correct brackers, and grab the function body.
                     if (fileText[i + 1] == "{")
                     {
                         bool closeFunction = false;
@@ -297,7 +308,6 @@ namespace Isol8_Compiler
                         //For each line after the initial {
                         for (i += 2; i < fileText.Count; i++)
                         {
-
                             //If end of function
                             if (fileText[i] == "}")
                             {
@@ -305,10 +315,12 @@ namespace Isol8_Compiler
                                 break;
                             }
 
+                            //Create a new instruction and grab the line content, remove the ; and split on the characters.
                             Instruction instruction = new Instruction
                             {
                                 lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
                             };
+                            
                             string patternText = fileText[i].Replace("\t", "");
 
                             //If return instruction
@@ -324,7 +336,7 @@ namespace Isol8_Compiler
                                     //If hex declaration
                                     if (instruction.lineContent[1].Contains("0x"))
                                     {
-                                        //Check the conversion is valid
+                                        //Check the conversion is valid.
                                         try
                                         {
                                             Convert.ToUInt32(instruction.lineContent[1], 16);
@@ -334,11 +346,11 @@ namespace Isol8_Compiler
                                             return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
                                         }
 
-                                        //If the first letter is a letter, then add a 0 as it's required
+                                        //If the first letter is a letter, then add a 0 as it's  in assembly.
                                         if (Patterns.lettersOnly.Match(instruction.lineContent[1][2..][0].ToString()) != Match.Empty)
                                             instruction.lineContent[1] = '0' + instruction.lineContent[1][2..] + 'h';
 
-                                        //Otherwise just cut the 0x off and append a h
+                                        //Otherwise just cut the 0x off and append a h to conform to assembly.
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
 

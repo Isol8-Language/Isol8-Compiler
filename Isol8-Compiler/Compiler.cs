@@ -24,6 +24,7 @@ namespace Isol8_Compiler
         public readonly string outputName;
         public static string GetLastError() => lastError;
 
+        //Set the last error message and return the error code associated with it.
         internal static ErrorCodes SetLastError(int lineIndex, ErrorCodes errorCode, string lineContent)
         {
             lastError = $"Compiler Error: {errorCode} at line index: {lineIndex}. ({lineContent})";
