@@ -65,6 +65,8 @@ namespace Isol8_Compiler
             DELETE,
             IF,
             ENDIF,
+            FOR,
+            ENDFOR,
         }   
     }
 }

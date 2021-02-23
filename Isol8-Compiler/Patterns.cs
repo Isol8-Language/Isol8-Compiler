@@ -19,6 +19,7 @@ namespace Isol8_Compiler
 
         #region Function Patterns
         // Use RegexOptions.IgnoreCase
+        public static readonly Regex forPattern = new Regex(@"^for ?[(][0-9]+[)]$");
         public static readonly Regex retPattern = new Regex(@"^ret\s?[a-zA-Z0-9]*?;$", RegexOptions.IgnoreCase);
         public static readonly Regex outPattern = new Regex(@"^(out|OUT)\s?\([a-zA-Z0-9]*\);$");
         public static readonly Regex ifPattern = new Regex(@"^if ?[[a-zA-Z]+]? == ?[[a-zA-Z0-9]+]?$");

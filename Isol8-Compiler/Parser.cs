@@ -156,6 +156,56 @@ namespace Isol8_Compiler
 
                 return NO_ERROR;
             }
+            static ErrorCodes ParseSubLoop(InstructionTypes type, ref Function func, ref Instruction instruction, List<string> fileText, ref int i)
+            {
+                instruction.instructionType = type;
+                func.body.Add(instruction);
+
+                if (fileText[i + 1].Replace("\t", "") == "{")
+                {
+
+                    bool closeLoop = false;
+                    //For every line within the sub statement
+                    for (i += 2; i < fileText.Count; i++)
+                    {
+                        //If the if statement is closing
+                        if (fileText[i].Replace("\t", "") == "}")
+                        {
+                            closeLoop = true;
+                            func.body.Add(new Instruction()
+                            {
+                                instructionType = type == IF ? ENDIF : ENDFOR,
+                                lineContent = new string[] 
+                                { 
+                                    type == IF ? null : "End_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString(), 
+                                    type == IF ? null : "Continue_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString()
+                                },
+                            });
+                            break;
+                        }
+
+                        Instruction innerInstruction = new Instruction()
+                        {
+                            lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
+                        };
+
+                        ErrorCodes errorCodes = ParseGenerics(fileText[i].Replace("\t", ""), ref innerInstruction);
+                        if (errorCodes != NO_ERROR)
+                            throw new NotImplementedException("ToDo");
+
+                        //Add the inner instruction to the function body.
+                        func.body.Add(innerInstruction);
+                    }
+
+                    if (!closeLoop)
+                        return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
+                    else
+                        return NO_ERROR;
+                }
+                else
+                    return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
+
+            }
             static ErrorCodes ParseSelfAddition(ref Instruction instruction)
             {
                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
@@ -356,12 +406,7 @@ namespace Isol8_Compiler
 
                                     }
 
-                                    //If the return value is a variable, the same type of return, and active.
-                                    else if (variables.Any(v => v.name == instruction.lineContent[1] && v.type == Types.INT && v.status == VarState.ACTIVE))
-                                    {
-
-                                        //ToDo: if no longer is here, can just merge with above if?
-                                    }
+                                    
                                     //Else just check the int is valid
                                     else if (!int.TryParse(instruction.lineContent[1], out _))
                                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
@@ -376,56 +421,25 @@ namespace Isol8_Compiler
                             //If if statement
                             else if (Patterns.ifPattern.Match(patternText) != Match.Empty)
                             {
-                                instruction.instructionType = IF;
-                                func.body.Add(instruction);
-
-                                if (fileText[i + 1].Replace("\t", "") == "{")
-                                {
-
-                                    bool closeIf = false;
-                                    //For every line within the if statement
-                                    for (i += 2; i < fileText.Count; i++)
-                                    {
-                                        //If the if statement is closing
-                                        if (fileText[i].Replace("\t", "") == "}")
-                                        {
-                                            closeIf = true;
-                                            func.body.Add(new Instruction()
-                                            {
-                                                instructionType = ENDIF,
-                                                lineContent = null,
-                                            });
-                                            break;
-                                        }
-
-                                        Instruction innerInstruction = new Instruction()
-                                        {
-                                            lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
-                                        };
-                                        ErrorCodes errorCodes = ParseGenerics(fileText[i].Replace("\t", ""), ref innerInstruction);
-                                        if (errorCodes != NO_ERROR)
-                                            throw new NotImplementedException("ToDo");
-
-                                        //Add the 
-                                        func.body.Add(innerInstruction);
-                                    }
-
-                                    if (!closeIf)
-                                        return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
-                                }
-                                else
-                                    return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
-
-
-
+                                //ToDo, change function to use Set/Get last error
+                                ErrorCodes errorCode = ParseSubLoop(IF, ref func, ref instruction, fileText, ref i);
+                                if (errorCode != NO_ERROR)
+                                    return errorCode;
+                               
                             }
 
+                            else if (Patterns.forPattern.Match(patternText) != Match.Empty)
+                            {
+                                ErrorCodes errorCode = ParseSubLoop(FOR, ref func, ref instruction, fileText, ref i);
+                                if (errorCode != NO_ERROR)
+                                    return errorCode;
+                            }
                             //If generic
                             else if (ParseGenerics(patternText, ref instruction) == NO_ERROR)
                                 func.body.Add(instruction);
                             
                             else
-                                continue;//throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
+                                throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
                             
                             
 

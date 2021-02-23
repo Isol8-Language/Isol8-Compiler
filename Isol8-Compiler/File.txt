@@ -1,4 +1,3 @@
-create stringVar as string "hello";
 create testBool as bool true;
 create testBoolTwo as bool false;
 create myInt as int 1;
@@ -6,11 +5,10 @@ create myInt as int 1;
 create myIntTwo as int 2;
 Initial() ret int
 {
-	if testBoolTwo == false
+	for (9)
 	{
-		testBool = false;
+		out(myInt);
+		myInt += 1;
 	}
-
-	out(testBool);
 	ret 0;
 }
