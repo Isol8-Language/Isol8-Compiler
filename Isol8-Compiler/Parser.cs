@@ -20,6 +20,7 @@ namespace Isol8_Compiler
 
         internal static ErrorCodes ParseFile(string inputFileName)
         {
+            //Local functions for use in parsing.
             #region localFunctions
             static ErrorCodes ParseGenerics(string line, ref Instruction instruction)
             {
@@ -41,9 +42,11 @@ namespace Isol8_Compiler
                 else if (Patterns.ptrPattern.Match(line) != Match.Empty)
                     return ParsePtr(ref instruction);
 
+                else if (Patterns.assignPattern.Match(line) != Match.Empty)
+                    return ParseAssignment(ref instruction);
+
                 return NO_PATTERN_MATCH; 
             }
-
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
             {
                 //Keyword does not need to be checked as regex will handle this. ToDo: error handling
@@ -62,6 +65,7 @@ namespace Isol8_Compiler
                     if (variables[x].name == values[1])
                         return SetLastError(lineIndex, DUPLICATE_VAR_NAME, lineContent);
 
+                //Set the variable name, assuming it's not in use.
                 declaration.variableName = values[1];
 
                 if (!Enum.TryParse(values[3], true, out declaration.type))
@@ -71,12 +75,14 @@ namespace Isol8_Compiler
                 //ToDo: Revisit, inefficient as string usage
                 var trueValue = values[4].Replace(";", string.Empty);
 
+                //If the type of declaration is an INT or a pointer
                 if (declaration.type == Types.INT || declaration.type == Types.PTR)
                 {
-                    //If value declared as hex, remove 0x notation. 
+                    //If value declared as hex, remove 0x notation for assembly conversion to Xh. 
                     if (trueValue.Contains("0x"))
                     {
-                        //If the function contains standard numbers or hex digits only (A-F)
+                        /*If the function contains standard numbers or hex digits only (A-F),
+                         then convert it to a string integer in base-16 (Hex).*/
                         if (Patterns.standardOrHexDigitsOnly.Match(trueValue) != Match.Empty)
                             trueValue = Convert.ToInt32(trueValue, 16).ToString();
                         else
@@ -84,18 +90,34 @@ namespace Isol8_Compiler
 
                     }
 
-                    //Ensure the assigned value is actually an INT when the declare type is INT
+                    //If the string is NULL then it's essentially 0 in assembly.
                     if (trueValue.ToUpper() == "NULL")
                         declaration.value = "0";
 
+                    //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
                     else if (int.TryParse(trueValue, out _))
                         declaration.value = trueValue;
                     else
                         return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                } 
+                else if (declaration.type == Types.BOOL)
+                {
+                    //IF the value is FALSE or less than, or equal, to 0, then set the value to "0".
+                    if (trueValue.ToUpper() == "FALSE" || (int.TryParse(trueValue, out int falseInt) && falseInt <= 0))
+                        declaration.value = "0";
+
+                    else if (trueValue.ToUpper() == "TRUE" || (int.TryParse(trueValue, out int trueInt) && trueInt >= 1))
+                        declaration.value = "1";
+
+                    else
+                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+
                 }
                 else if (declaration.type == Types.STRING)
                 {
                     trueValue = null;
+                    /*Index 4 will always be the start of the string value in the pattern. ToDo: declare as const?
+                    For every value after 4, append it to the trueValue string.*/
                     for (int i = 4; i < values.Length; i++)
                         trueValue += values[i] + " ";
 
@@ -113,6 +135,7 @@ namespace Isol8_Compiler
                 variables.Add(new Variable()
                 {
                     name = declaration.variableName,
+                    //If the scope is local bool (true) then set scope to local, if not then global.
                     scope = local ? Scope.LOCAL : Scope.GLOBAL,
                     status = VarState.ACTIVE,
                     type = declaration.type,
@@ -132,6 +155,56 @@ namespace Isol8_Compiler
                 instruction.instructionType = DELETE;
 
                 return NO_ERROR;
+            }
+            static ErrorCodes ParseSubLoop(InstructionTypes type, ref Function func, ref Instruction instruction, List<string> fileText, ref int i)
+            {
+                instruction.instructionType = type;
+                func.body.Add(instruction);
+
+                if (fileText[i + 1].Replace("\t", "") == "{")
+                {
+
+                    bool closeLoop = false;
+                    //For every line within the sub statement
+                    for (i += 2; i < fileText.Count; i++)
+                    {
+                        //If the if statement is closing
+                        if (fileText[i].Replace("\t", "") == "}")
+                        {
+                            closeLoop = true;
+                            func.body.Add(new Instruction()
+                            {
+                                instructionType = type == IF ? ENDIF : ENDFOR,
+                                lineContent = new string[] 
+                                { 
+                                    type == IF ? null : "End_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString(), 
+                                    type == IF ? null : "Continue_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString()
+                                },
+                            });
+                            break;
+                        }
+
+                        Instruction innerInstruction = new Instruction()
+                        {
+                            lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
+                        };
+
+                        ErrorCodes errorCodes = ParseGenerics(fileText[i].Replace("\t", ""), ref innerInstruction);
+                        if (errorCodes != NO_ERROR)
+                            throw new NotImplementedException("ToDo");
+
+                        //Add the inner instruction to the function body.
+                        func.body.Add(innerInstruction);
+                    }
+
+                    if (!closeLoop)
+                        return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
+                    else
+                        return NO_ERROR;
+                }
+                else
+                    return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
+
             }
             static ErrorCodes ParseSelfAddition(ref Instruction instruction)
             {
@@ -169,7 +242,42 @@ namespace Isol8_Compiler
 
                 return NO_ERROR;
             };
+            static ErrorCodes ParseAssignment(ref Instruction instruction)
+            {
+                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out int varIndex))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
 
+                instruction.instructionType = ASSIGNMENT;
+
+                if (variables[varIndex].type == Types.INT)
+                {
+                    instruction.assignmentType = Types.INT;
+                    //ToDo: These if statements can be concatenated
+                    //Check if the assignment is, correctly, another integer
+                    if (int.TryParse(instruction.lineContent[2], out int result))
+                        return NO_ERROR;
+
+                    //Check if it's a variable instead
+                    else if (!CheckVarState(instruction.lineContent[2].Replace("\t", ""), out varIndex))
+                        throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                }
+                else if (variables[varIndex].type == Types.BOOL)
+                {
+                    instruction.assignmentType = Types.BOOL;
+                    string assignmentValue = instruction.lineContent[2].Replace("\t", "");
+                    if (assignmentValue.ToUpper() == "TRUE" || assignmentValue.ToUpper() == "FALSE")
+                        return NO_ERROR;
+
+                    //Check if it's a variable instead
+                    else if (!CheckVarState(assignmentValue, out varIndex))
+                        throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                }
+                else
+                    throw new NotImplementedException();
+
+                return NO_ERROR;
+            }
             static bool CheckVarState(string varName, out int varIndex)
             {
                 varIndex = -1;
@@ -191,28 +299,34 @@ namespace Isol8_Compiler
             }
             #endregion
 
+            //Read all the files into a list of strings.
             var fileText = File.ReadLines(inputFileName).ToList();
 
+            //For every line in the file
             for (int i = 0; i < fileText.Count; i++)
             {
+                //Ignore white space lines.
+                if (fileText[i] == string.Empty)
+                    continue;
+
                 /*Loop will look for global declarations or functions. 
                  * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/
 
                 //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
                 if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
-                {
-                    //ToDo: remove from fileText and fix i index
                     continue;
-                }
 
                 #region Declarations
                 //If a declaration pattern is found
                 if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
                 {
-                    //Generate an array of values.
+                    //Generate an array of values from the line, splitting on a space.
                     var values = fileText[i].Split(" ");
 
+                    //Parse the declaration using the ParseDeclaration function.
                     ErrorCodes errorCode = ParseDeclaration(values, fileText[i], i);
+
+                    //If the error code is not NO_ERROR.
                     if (errorCode != NO_ERROR)
                         return errorCode;
                 }
@@ -222,39 +336,42 @@ namespace Isol8_Compiler
                 //If a funtion pattern is found
                 else if (Patterns.functionPattern.Match(fileText[i]) != Match.Empty)
                 {
-                    //Get the values of the function declarations.
+                    //Get the values of the function declarations, split on spaces and paranthesis.
                     var values = fileText[i].Split(new char[] { ' ', '(', ')' });
 
                     //Initialize a new function
                     Function func = new Function()
                     {
+                        //The name is always the first value.
                         name = values[0],
                     };
 
-                    //Check the return type is a valid type
+                    //Check the return type is a valid type, and not made up or incorrect spelt.
                     if (!Enum.TryParse(values.Last(), true, out func.returnType))
                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
 
-                    //Check the function open and closes with the correct brackers, and grab the body.
+                    //Check the function open and closes with the correct brackers, and grab the function body.
                     if (fileText[i + 1] == "{")
                     {
                         bool closeFunction = false;
 
                         //For each line after the initial {
-                        for (int initialIndex = i + 2; initialIndex < fileText.Count; initialIndex++)
+                        for (i += 2; i < fileText.Count; i++)
                         {
                             //If end of function
-                            if (fileText[initialIndex] == "}")
+                            if (fileText[i] == "}")
                             {
                                 closeFunction = true;
                                 break;
                             }
 
+                            //Create a new instruction and grab the line content, remove the ; and split on the characters.
                             Instruction instruction = new Instruction
                             {
-                                lineContent = fileText[initialIndex].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
+                                lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
                             };
-                            string patternText = fileText[initialIndex].Replace("\t", "");
+                            
+                            string patternText = fileText[i].Replace("\t", "");
 
                             //If return instruction
                             if (Patterns.retPattern.Match(patternText) != Match.Empty)
@@ -269,7 +386,7 @@ namespace Isol8_Compiler
                                     //If hex declaration
                                     if (instruction.lineContent[1].Contains("0x"))
                                     {
-                                        //Check the conversion is valid
+                                        //Check the conversion is valid.
                                         try
                                         {
                                             Convert.ToUInt32(instruction.lineContent[1], 16);
@@ -279,22 +396,17 @@ namespace Isol8_Compiler
                                             return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
                                         }
 
-                                        //If the first letter is a letter, then add a 0 as it's required
+                                        //If the first letter is a letter, then add a 0 as it's  in assembly.
                                         if (Patterns.lettersOnly.Match(instruction.lineContent[1][2..][0].ToString()) != Match.Empty)
                                             instruction.lineContent[1] = '0' + instruction.lineContent[1][2..] + 'h';
 
-                                        //Otherwise just cut the 0x off and append a h
+                                        //Otherwise just cut the 0x off and append a h to conform to assembly.
                                         else
                                             instruction.lineContent[1] = instruction.lineContent[1][2..] + 'h';
 
                                     }
 
-                                    //If the return value is a variable, the same type of return, and active.
-                                    else if (variables.Any(v => v.name == instruction.lineContent[1] && v.type == Types.INT && v.status == VarState.ACTIVE))
-                                    {
-
-                                        //ToDo: if no longer is here, can just merge with above if?
-                                    }
+                                    
                                     //Else just check the int is valid
                                     else if (!int.TryParse(instruction.lineContent[1], out _))
                                         return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
@@ -309,42 +421,28 @@ namespace Isol8_Compiler
                             //If if statement
                             else if (Patterns.ifPattern.Match(patternText) != Match.Empty)
                             {
-                                if (fileText[i + 1] == "{")
-                                {
-                                    
-                                    bool closeIf = false;
-                                    for (int ifIndex = i + 2; ifIndex < fileText.Count; ifIndex++)
-                                    {
-
-
-                                        if (fileText[ifIndex] == "}")
-                                        {
-                                            closeIf = true;
-                                            break;
-                                        }
-
-                                        //ToDo: Turn Previous Pattern Matches Into Function Before Completing this
-
-                                    }
-
-
-
-                                    if (!closeIf) //ToDo: OR RET
-                                        return SetLastError(i, NO_CLOSING_BRACKET, fileText[i]);
-                                }
-                                else
-                                    return SetLastError(i, NO_OPENING_BRACKET, fileText[i]);
-
-
-
+                                //ToDo, change function to use Set/Get last error
+                                ErrorCodes errorCode = ParseSubLoop(IF, ref func, ref instruction, fileText, ref i);
+                                if (errorCode != NO_ERROR)
+                                    return errorCode;
+                               
                             }
 
+                            else if (Patterns.forPattern.Match(patternText) != Match.Empty)
+                            {
+                                ErrorCodes errorCode = ParseSubLoop(FOR, ref func, ref instruction, fileText, ref i);
+                                if (errorCode != NO_ERROR)
+                                    return errorCode;
+                            }
                             //If generic
-                            else if (ParseGenerics(patternText, ref instruction) != NO_ERROR)
+                            else if (ParseGenerics(patternText, ref instruction) == NO_ERROR)
+                                func.body.Add(instruction);
+                            
+                            else
                                 throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
                             
+                            
 
-                            func.body.Add(instruction);
                         }
 
                         //If no closing brack located.
@@ -364,7 +462,11 @@ namespace Isol8_Compiler
                 #endregion
                 else
                 {
-                    //No match for line, do what?
+                    //Temporary fix:
+                    if (fileText[i].Contains("{") || fileText[i].Contains("}"))
+                        continue;
+                    //if no pattern is found then what?
+                    throw new NotImplementedException();
                 }
             }
             return NO_ERROR;

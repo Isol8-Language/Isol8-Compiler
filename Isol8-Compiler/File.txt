@@ -1,12 +1,14 @@
+create testBool as bool true;
+create testBoolTwo as bool false;
 create myInt as int 1;
-create helloWorld as string "Hello World";
-create myPtr as ptr null;
+
+create myIntTwo as int 2;
 Initial() ret int
 {
-	myPtr = (ptr)myInt;
-	myInt += 8;
-	out(helloWorld);
-	out(myInt);
-	del myInt;
+	for (9)
+	{
+		out(myInt);
+		myInt += 1;
+	}
 	ret 0;
 }

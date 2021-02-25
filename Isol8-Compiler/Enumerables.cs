@@ -26,6 +26,7 @@ namespace Isol8_Compiler
             INT,
             STRING,
             PTR,
+            BOOL,
         }
         internal enum ErrorCodes
         {
@@ -58,9 +59,14 @@ namespace Isol8_Compiler
             NULL,   //Invalid
             RET,
             PLUSEQUALS,
+            ASSIGNMENT,
             ASSIGNPTR,
             OUT,
             DELETE,
+            IF,
+            ENDIF,
+            FOR,
+            ENDFOR,
         }   
     }
 }
