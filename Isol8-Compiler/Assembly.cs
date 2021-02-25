@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace Isol8_Compiler
 {
@@ -47,7 +48,10 @@ namespace Isol8_Compiler
 
             else if (retVal != null)
                 ret += $"\tmov rax, {retVal}\n";
-
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
+                ret += $"mov eax, 60\n";
+                ret += $"syscall";
+            }
             ret += $"\tadd rsp, {stackSpace.ToString("X")}h\n";
             ret += $"\tret\n" + $"{functionName} ENDP\n";
             return ret;
