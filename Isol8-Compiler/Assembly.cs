@@ -48,11 +48,12 @@ namespace Isol8_Compiler
 
             else if (retVal != null)
                 ret += $"\tmov rax, {retVal}\n";
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
-                ret += $"mov eax, 60\n";
-                ret += $"syscall";
-            }
+                
             ret += $"\tadd rsp, {stackSpace.ToString("X")}h\n";
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)){
+                ret += $"\tmov eax, 60\n";
+                ret += $"\tsyscall\n";
+            }
             ret += $"\tret\n" + $"{functionName} ENDP\n";
             return ret;
         }
