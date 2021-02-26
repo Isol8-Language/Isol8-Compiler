@@ -319,6 +319,37 @@ namespace Isol8_Compiler
 #endif
                     }
 
+                    else if(functions[i].body[x].instructionType == PLUS)
+                    {
+
+                        output += ";START ADDITION\n";
+
+                        // array content: [0] [1] [2] [3] [4]
+                        //                 x   =   y   +   z
+                        //                 i   +   j
+
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" + 
+                                            $"\tadd {functions[i].body[x].lineContent[0].Replace("\t","")}, eax\n";
+                                break;
+                            case 5:
+                                output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tadd eax,{functions[i].body[x].lineContent[4]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t","")},eax\n" ;
+                                break;
+                        }
+
+                        output += ";END ADDITION\n\n";
+                    }
+
+                    else if(functions[i].body[x].instructionType == MINUS || functions[i].body[x].instructionType == MULTIPLY || functions[i].body[x].instructionType == DIVIDE)
+                    {
+                        throw new NotImplementedException("ToDo");
+                        // need ASM logic for these instructions
+                    }
+
                     else
                         throw new Exception("This should never occur");
                 }

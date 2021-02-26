@@ -231,7 +231,22 @@ namespace Isol8_Compiler
                 if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
                     throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
 
-                throw new NotImplementedException("ToDo");
+                // array content: [0] [1] [2] [3] [4]
+                //                 x   =   y   +   z
+                //                 i   +   j
+
+                instruction.lineContent[0].Replace("\t", "");
+                int operand_index = instruction.lineContent[1] == "=" ? 3 : 1;  // only looking for +, -, *, /
+
+                switch (instruction.lineContent[operand_index])
+                {
+                    case "+": instruction.instructionType = PLUS; break;
+                    case "-": instruction.instructionType = MINUS; break;
+                    case "*": instruction.instructionType = MULTIPLY; break;
+                    case "/": instruction.instructionType = DIVIDE; break;
+                }
+
+                return NO_ERROR;
             };
             static ErrorCodes ParsePtr(ref Instruction instruction)
             {

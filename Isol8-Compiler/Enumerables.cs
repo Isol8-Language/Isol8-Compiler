@@ -67,6 +67,10 @@ namespace Isol8_Compiler
             ENDIF,
             FOR,
             ENDFOR,
+            PLUS,
+            MINUS,
+            MULTIPLY,
+            DIVIDE,
         }   
     }
 }
