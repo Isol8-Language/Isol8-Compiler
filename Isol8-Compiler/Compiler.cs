@@ -321,9 +321,9 @@ namespace Isol8_Compiler
 
                     else if(functions[i].body[x].instructionType == PLUS)
                     {
-
+#if (ASMComment)
                         output += ";START ADDITION\n";
-
+#endif
                         // array content: [0] [1] [2] [3] [4]
                         //                 x   =   y   +   z
                         //                 i   +   j
@@ -341,7 +341,9 @@ namespace Isol8_Compiler
                                 break;
                         }
 
+#if (ASMComment)
                         output += ";END ADDITION\n\n";
+#endif
                     }
 
                     else if(functions[i].body[x].instructionType == MINUS || functions[i].body[x].instructionType == MULTIPLY || functions[i].body[x].instructionType == DIVIDE)
