@@ -172,6 +172,7 @@ namespace Isol8_Compiler
                 {
 
                     bool closeLoop = false;
+                    int blockStartIndex = func.body.Count-1; //-1 for array [based indexing]
                     //For every line within the sub statement
                     for (i += 2; i < fileText.Count; i++)
                     {
@@ -184,8 +185,9 @@ namespace Isol8_Compiler
                                 instructionType = type == IF ? ENDIF : ENDFOR,
                                 lineContent = new string[] 
                                 { 
-                                    type == IF ? null : "End_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString(), 
-                                    type == IF ? null : "Continue_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString()
+                                    type == IF ? "" : "End_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString(), 
+                                    type == IF ? "" : "Continue_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString(),
+                                    blockStartIndex.ToString()
                                 },
                             });
                             break;
@@ -200,8 +202,6 @@ namespace Isol8_Compiler
                         if (errorCodes != NO_ERROR)
                             throw new NotImplementedException("ToDo");
 
-                        //Add the inner instruction to the function body.
-                        //func.body.Add(innerInstruction);
                     }
 
                     if (!closeLoop)

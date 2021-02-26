@@ -216,7 +216,7 @@ namespace Isol8_Compiler
                         output += $"\tjne {ifnotTrueLabel}\n";
 
                         for (int nextIf = x; nextIf < functions[i].body.Count; nextIf++)
-                            if (functions[i].body[nextIf].instructionType == ENDIF)
+                            if (functions[i].body[nextIf].instructionType == ENDIF && Convert.ToInt32(functions[i].body[nextIf].lineContent[2]) == x)
                             {
                                 functions[i].body[nextIf].lineContent = new string[] { ifnotTrueLabel };
                                 break;

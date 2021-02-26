@@ -1,16 +1,26 @@
 create a as int 5;
 create i as int 0;
 create me as bool false;
+create meme as bool true;
 create container as int 0;
 create newline as string "\n";
 Initial() ret int
 {
-	for (9)
+	if me == false
 	{
-		if me == true
+		for (9)
 		{
 			i += 1;
+			if meme == true
+			{
+				if me == false
+				{
+					if meme == false
+					{
+						out(i);					
+					}
+				}
+			}
 		}
-		out(i);
 	}
 }
