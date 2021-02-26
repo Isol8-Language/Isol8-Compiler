@@ -235,8 +235,8 @@ namespace Isol8_Compiler
 #if (ASMComment)
                         output += ";START FOR ROUTINE\n";
 #endif
-                        string endLoopLabel = "test";
-                        string continueLoopLabel = "test";
+                        string endLoopLabel = "End_For_LI" + WindowsNativeAssembly.GenerateLabelIndex();
+                        string continueLoopLabel = "Continue_Loop_Label_LI" + WindowsNativeAssembly.GenerateLabelIndex(); ;
 
                         for (int xi = x; xi < functions[i].body.Count; xi++)
                         {

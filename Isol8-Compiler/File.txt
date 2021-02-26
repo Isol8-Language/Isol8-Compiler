@@ -1,16 +1,16 @@
-create x as int 3;
-create y as int 6;
-create i as int 1;
-create j as int 2;
+create a as int 5;
+create i as int 0;
+create me as bool false;
 create container as int 0;
 create newline as string "\n";
-
 Initial() ret int
 {
-	container = x + y;
-	out(container);
-	i - j;
-	out(newline);
-	out(i);
-	ret 0;
+	for (9)
+	{
+		if me == true
+		{
+			i += 1;
+		}
+		out(i);
+	}
 }
