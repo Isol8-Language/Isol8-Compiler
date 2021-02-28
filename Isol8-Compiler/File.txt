@@ -1,9 +1,10 @@
 create a as int 5;
+create b as int 2;
+create c as int 7;
+create d as int 3;
 create i as int 0;
 create me as bool false;
 create meme as bool true;
-create container as int 0;
-create newline as string "\n";
 Initial() ret int
 {
 	if me == false
@@ -23,4 +24,7 @@ Initial() ret int
 			}
 		}
 	}
+	a - b;
+	i = d - c;
+	out(i);
 }

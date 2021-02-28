@@ -328,6 +328,7 @@ namespace Isol8_Compiler
                         //                 x   =   y   +   z
                         //                 i   +   j
 
+                        // TODO: add increment operator for when one of the operands is just 1
                         switch (functions[i].body[x].lineContent.Length)
                         {
                             case 3:
@@ -346,7 +347,33 @@ namespace Isol8_Compiler
 #endif
                     }
 
-                    else if(functions[i].body[x].instructionType == MINUS || functions[i].body[x].instructionType == MULTIPLY || functions[i].body[x].instructionType == DIVIDE)
+                    else if(functions[i].body[x].instructionType == MINUS)
+                    {
+                        output += ";START SUBTRACTION\n";
+
+                        // array content: [0] [1] [2] [3] [4]
+                        //                 x   =   y   -   z
+                        //                 i   -   j
+
+                        // TODO: add decrement operator for when one of the operands is just 1
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                output += $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tsub {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                            case 5:
+                                output += $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tsub eax,{functions[i].body[x].lineContent[4]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
+                                break;
+                        }
+
+                        output += ";END SUBTRACTION\n\n";
+
+                    }
+
+                    else if(functions[i].body[x].instructionType == MULTIPLY || functions[i].body[x].instructionType == DIVIDE)
                     {
                         throw new NotImplementedException("ToDo");
                         // need ASM logic for these instructions
