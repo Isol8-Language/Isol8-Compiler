@@ -1,6 +1,6 @@
-create a as int 5;
+create a as int 4;
 create b as int 2;
-create c as int 7;
+create c as int 3;
 create d as int 3;
 create i as int 0;
 create me as bool false;
@@ -24,7 +24,8 @@ Initial() ret int
 			}
 		}
 	}
-	a - b;
-	i = d - c;
-	out(i);
+	a * b;
+	out(a);
+	a = c * d;
+	out(a);
 }

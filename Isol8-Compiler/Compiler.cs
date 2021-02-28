@@ -327,6 +327,7 @@ namespace Isol8_Compiler
                         // array content: [0] [1] [2] [3] [4]
                         //                 x   =   y   +   z
                         //                 i   +   j
+                        // this is the same for all other operators
 
                         // TODO: add increment operator for when one of the operands is just 1
                         switch (functions[i].body[x].lineContent.Length)
@@ -349,31 +350,52 @@ namespace Isol8_Compiler
 
                     else if(functions[i].body[x].instructionType == MINUS)
                     {
+#if (ASMComment)
                         output += ";START SUBTRACTION\n";
-
-                        // array content: [0] [1] [2] [3] [4]
-                        //                 x   =   y   -   z
-                        //                 i   -   j
+#endif
 
                         // TODO: add decrement operator for when one of the operands is just 1
                         switch (functions[i].body[x].lineContent.Length)
                         {
                             case 3:
-                                output += $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
                                             $"\tsub {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
                                 break;
                             case 5:
-                                output += $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
                                             $"\tsub eax,{functions[i].body[x].lineContent[4]}\n" +
                                             $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
                                 break;
                         }
-
+#if (ASMComment)
                         output += ";END SUBTRACTION\n\n";
-
+#endif
                     }
 
-                    else if(functions[i].body[x].instructionType == MULTIPLY || functions[i].body[x].instructionType == DIVIDE)
+                    else if(functions[i].body[x].instructionType == MULTIPLY)
+                    {
+#if (ASMComment)
+                        output += ";START MULTIPLICATION\n";
+#endif
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[0].Replace("\t", "")}\n" +
+                                            $"\tmul {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                            case 5:
+                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n"+
+                                            $"\tmul {functions[i].body[x].lineContent[4]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                        }
+#if (ASMComment)
+                        output += ";END MULTIPLICATION\n\n";
+#endif
+                    }
+
+                    else if(functions[i].body[x].instructionType == DIVIDE)
                     {
                         throw new NotImplementedException("ToDo");
                         // need ASM logic for these instructions
