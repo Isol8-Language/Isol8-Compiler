@@ -24,8 +24,8 @@ Initial() ret int
 			}
 		}
 	}
-	a * b;
+	a + 1;
 	out(a);
-	a = c * d;
+	a = c / d;
 	out(a);
 }

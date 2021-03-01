@@ -397,8 +397,30 @@ namespace Isol8_Compiler
 
                     else if(functions[i].body[x].instructionType == DIVIDE)
                     {
-                        throw new NotImplementedException("ToDo");
-                        // need ASM logic for these instructions
+#if (ASMComment)
+                        output += ";START DIVISION\n";
+#endif
+                        // TODO: signed division
+
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                output += $"\tmov edx, 0\t;clear high dividend\n"+
+                                            $"\tmov eax, {functions[i].body[x].lineContent[0].Replace("\t", "")}\n"+
+                                            $"\tdiv {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                            case 5:
+                                output += $"\tmov edx, 0\t;clear high dividend\n" +
+                                            $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tdiv {functions[i].body[x].lineContent[4]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                        }
+
+#if (ASMComment)
+                        output += ";END DIVISION\n\n";
+#endif
                     }
 
                     else
