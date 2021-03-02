@@ -346,7 +346,9 @@ namespace Isol8_Compiler
                             case 5:
                                 if (functions[i].body[x].lineContent[4] == "1")
                                 {
-                                    output +=   $"\tinc {functions[i].body[x].lineContent[2]}\n";
+                                    output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tinc eax\n" + 
+                                                $"\tmov {functions[i].body[x].lineContent[0]}, eax\n";
                                 } else
                                 {
                                     output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
@@ -366,20 +368,33 @@ namespace Isol8_Compiler
 #if (ASMComment)
                         output += ";START SUBTRACTION\n";
 #endif
-
-                        // TODO: add decrement operator for when one of the operands is just 1
                         switch (functions[i].body[x].lineContent.Length)
                         {
                             case 3:
-                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
-                                            $"\tsub {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                if (functions[i].body[x].lineContent[2] == "1")
+                                {
+                                    output += $"\tdec {functions[i].body[x].lineContent[0].Replace("\t", "")}\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tsub {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                }
                                 break;
                             case 5:
-                                output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
-                                            $"\tsub eax,{functions[i].body[x].lineContent[4]}\n" +
-                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
+                                if (functions[i].body[x].lineContent[4] == "1")
+                                {
+                                    output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tdec eax\n" +
+                                                $"\tmov {functions[i].body[x].lineContent[0]}, eax\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tsub eax,{functions[i].body[x].lineContent[4]}\n" +
+                                                $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
+                                }
                                 break;
                         }
+
 #if (ASMComment)
                         output += ";END SUBTRACTION\n\n";
 #endif
