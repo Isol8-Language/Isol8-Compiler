@@ -216,7 +216,6 @@ namespace Isol8_Compiler
                         if (int.TryParse(functions[i].body[x].lineContent[3], out int result))
                             output += $"\tcmp eax, {result}\n";
                         
-
                         //If the condition is a static true or false
                         else if (functions[i].body[x].lineContent[3].ToLower() == "true")
                             output += "\tcmp rax, 1\n";
@@ -468,6 +467,7 @@ namespace Isol8_Compiler
 
 #if (ASMComment)
                 output += ";START FUNCTION EPILOGUE\n";
+                output += Assembly.CreateInfiniteLoopPLACEHOLDER();
 #endif
                 output += Assembly.CreateFunctionClose(functions[i].name);
 #if (ASMComment)

@@ -453,15 +453,7 @@ namespace Isol8_Compiler
                                 }
 
                             }
-
-
-                            //else if (Patterns.forPattern.Match(patternText) != Match.Empty)
-                            //{
-                            //    ErrorCodes errorCode = ParseSubLoop(FOR, ref func, ref instruction, fileText, ref i);
-                            //    if (errorCode != NO_ERROR)
-                            //        return errorCode;
-                            //}
-                            //If generic
+                           
                             else
                             {
                                 ErrorCodes temp = ParseGenerics(patternText, ref instruction, ref func, fileText, ref i);
@@ -470,9 +462,6 @@ namespace Isol8_Compiler
                             };
 
 
-                            //else
-                            //    throw new NotImplementedException("ToDo"); //ToDo - if no pattern found then what?
-                            
                             
 
                         }
