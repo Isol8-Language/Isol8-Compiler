@@ -23,6 +23,7 @@ namespace Isol8_Compiler
         internal enum Types
         {
             NULL,
+            BYTE,
             INT,
             STRING,
             PTR,

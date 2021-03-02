@@ -3,16 +3,12 @@ b as int 2;
 c as int 3;
 d as int 3;
 i as int 0;
+x as byte 255;
 me as bool false;
 meme as bool true;
-outString as string "True";
 Initial() ret int
 {
-	if c == 3
-	{
-		out(outString);
-	}
-	if c == 3
+	if me == false
 	{
 		for (9)
 		{
@@ -21,7 +17,7 @@ Initial() ret int
 			{
 				if me == false
 				{
-					if meme == true
+					if meme == false
 					{
 						out(i);					
 					}
@@ -33,4 +29,5 @@ Initial() ret int
 	out(a);
 	a = c - 1;
 	out(a);
+	ret 0;
 }

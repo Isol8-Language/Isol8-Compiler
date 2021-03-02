@@ -71,6 +71,10 @@ namespace Isol8_Compiler
                     case (Types.BOOL):
                         output += "DB " + declarationStatements[i].value + '\n';
                         break;
+                    case (Types.BYTE):
+                        output += "DB " + declarationStatements[i].value + '\n';
+                        break;
+
                 }
             }
 
