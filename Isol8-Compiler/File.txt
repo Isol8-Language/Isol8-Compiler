@@ -1,10 +1,10 @@
-create a as int 4;
-create b as int 2;
-create c as int 3;
-create d as int 3;
-create i as int 0;
-create me as bool false;
-create meme as bool true;
+a as int 4;
+b as int 2;
+c as int 3;
+d as int 3;
+i as int 0;
+me as bool false;
+meme as bool true;
 Initial() ret int
 {
 	if me == false

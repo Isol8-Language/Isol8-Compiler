@@ -58,28 +58,28 @@ namespace Isol8_Compiler
                 //Keyword does not need to be checked as regex will handle this. ToDo: error handling
                 Declaration declaration = new Declaration()
                 {
-                    keyword = Enum.Parse<Keywords>(values[0], true)
+                    keyword = Keywords.CREATE
                 };
 
                 //Check variable name is only letters.
-                if (!Patterns.lettersOnly.IsMatch(values[1]))
+                if (!Patterns.lettersOnly.IsMatch(values[0]))
                     return SetLastError(lineIndex, INVALID_VAR_NAME, lineContent);
 
 
                 //Check the variable name is not already in use.
                 for (int x = 0; x < variables.Count; x++)
-                    if (variables[x].name == values[1])
+                    if (variables[x].name == values[0])
                         return SetLastError(lineIndex, DUPLICATE_VAR_NAME, lineContent);
 
                 //Set the variable name, assuming it's not in use.
-                declaration.variableName = values[1];
+                declaration.variableName = values[0];
 
-                if (!Enum.TryParse(values[3], true, out declaration.type))
+                if (!Enum.TryParse(values[2], true, out declaration.type))
                     return SetLastError(lineIndex, INVALID_TYPE, lineContent);
 
 
                 //ToDo: Revisit, inefficient as string usage
-                var trueValue = values[4].Replace(";", string.Empty);
+                var trueValue = values[3].Replace(";", string.Empty);
 
                 //If the type of declaration is an INT or a pointer
                 if (declaration.type == Types.INT || declaration.type == Types.PTR)
