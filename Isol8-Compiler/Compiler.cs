@@ -313,7 +313,6 @@ namespace Isol8_Compiler
                                 throw new NotImplementedException();
                         }
 
-
 #if (ASMComment)
                         output += ";END REASSIGNMENT ROUTINE\n\n";
 #endif
@@ -329,17 +328,31 @@ namespace Isol8_Compiler
                         //                 i   +   j
                         // this is the same for all other operators
 
-                        // TODO: add increment operator for when one of the operands is just 1
                         switch (functions[i].body[x].lineContent.Length)
                         {
                             case 3:
-                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" + 
-                                            $"\tadd {functions[i].body[x].lineContent[0].Replace("\t","")}, eax\n";
+                                // TODO: check which operand is "1", so that 1 + x is a valid expression?
+                                //       (regex would need to be updated in that case)
+                                if (functions[i].body[x].lineContent[2] == "1")
+                                {
+                                    output +=   $"\tinc {functions[i].body[x].lineContent[0].Replace("\n", "")}\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tadd {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                }
                                 break;
+
                             case 5:
-                                output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
-                                            $"\tadd eax,{functions[i].body[x].lineContent[4]}\n" +
-                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t","")},eax\n" ;
+                                if (functions[i].body[x].lineContent[4] == "1")
+                                {
+                                    output +=   $"\tinc {functions[i].body[x].lineContent[2]}\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tadd eax,{functions[i].body[x].lineContent[4]}\n" +
+                                                $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
+                                }
                                 break;
                         }
 

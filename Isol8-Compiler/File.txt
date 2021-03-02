@@ -26,6 +26,6 @@ Initial() ret int
 	}
 	a + 1;
 	out(a);
-	a = c / d;
+	a = c + d;
 	out(a);
 }
