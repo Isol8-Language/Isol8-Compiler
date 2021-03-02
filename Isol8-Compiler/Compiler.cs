@@ -204,10 +204,21 @@ namespace Isol8_Compiler
                         output += ";START IF ROUTINE\n";
 #endif
                         string ifnotTrueLabel = "False_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString();
-                        output += $"\tmovzx rax, [{functions[i].body[x].lineContent[1]}]\n";
+
+                        //if (functions[i].body[x].)
+
+                        if (functions[i].body[x].assignmentType == Types.INT)
+                            output += $"\tmov eax, [{functions[i].body[x].lineContent[1]}]\n";
+                        else
+                            output += $"\tmovzx rax, [{functions[i].body[x].lineContent[1]}]\n";
+
+                        //If the condition is an int
+                        if (int.TryParse(functions[i].body[x].lineContent[3], out int result))
+                            output += $"\tcmp eax, {result}\n";
+                        
 
                         //If the condition is a static true or false
-                        if (functions[i].body[x].lineContent[3].ToLower() == "true")
+                        else if (functions[i].body[x].lineContent[3].ToLower() == "true")
                             output += "\tcmp rax, 1\n";
 
                         else if (functions[i].body[x].lineContent[3].ToLower() == "false")

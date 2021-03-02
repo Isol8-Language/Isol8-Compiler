@@ -5,9 +5,14 @@ d as int 3;
 i as int 0;
 me as bool false;
 meme as bool true;
+outString as string "True";
 Initial() ret int
 {
-	if me == false
+	if c == 3
+	{
+		out(outString);
+	}
+	if c == 3
 	{
 		for (9)
 		{

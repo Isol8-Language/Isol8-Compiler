@@ -124,7 +124,7 @@ namespace Isol8_Compiler
                     trueValue = null;
                     /*Index 4 will always be the start of the string value in the pattern. ToDo: declare as const?
                     For every value after 4, append it to the trueValue string.*/
-                    for (int i = 4; i < values.Length; i++)
+                    for (int i = 3; i < values.Length; i++)
                         trueValue += values[i] + " ";
 
                     //Remove the last ; and space
@@ -165,6 +165,16 @@ namespace Isol8_Compiler
             }
             static ErrorCodes ParseSubLoop(InstructionTypes type, ref Function func, ref Instruction instruction, List<string> fileText, ref int i)
             {
+                if (type == IF)
+                {
+                    if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int index))
+                        throw new NotImplementedException("Fail on non existent var or inactive");
+
+                    instruction.assignmentType = variables[index].type;
+                }
+
+
+
                 instruction.instructionType = type;
                 func.body.Add(instruction);
 
