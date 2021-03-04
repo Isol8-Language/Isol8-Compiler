@@ -33,7 +33,7 @@ namespace Isol8_Compiler
                 else if (Patterns.outPattern.Match(line) != Match.Empty)
                     return ParseOut(ref instruction, ref func);
 
-                else if (Patterns.createPattern.Match(line) != Match.Empty)
+                else if (Patterns.standardDeclarePattern.Match(line) != Match.Empty)
                     throw new NotImplementedException("ToDo: Local Variables");
 
                 else if (Patterns.simpleMathsOperator.Match(line) != Match.Empty)
@@ -65,7 +65,6 @@ namespace Isol8_Compiler
                 if (!Patterns.lettersOnly.IsMatch(values[0]))
                     return SetLastError(lineIndex, INVALID_VAR_NAME, lineContent);
 
-
                 //Check the variable name is not already in use.
                 for (int x = 0; x < variables.Count; x++)
                     if (variables[x].name == values[0])
@@ -82,7 +81,7 @@ namespace Isol8_Compiler
                 var trueValue = values[3].Replace(";", string.Empty);
 
                 //If the type of declaration is an INT or a pointer
-                if (declaration.type == Types.INT || declaration.type == Types.PTR || declaration.type == Types.BYTE)
+                if (declaration.type == Types.INT || declaration.type == Types.PTR || declaration.type == Types.BYTE || declaration.type == Types.INTARRAY)
                 {
                     if (declaration.type == Types.BYTE)
                     {
@@ -319,6 +318,7 @@ namespace Isol8_Compiler
                 func.body.Add(instruction);
                 return NO_ERROR;
             }
+
             static bool CheckVarState(string varName, out int varIndex)
             {
                 varIndex = -1;
@@ -358,13 +358,23 @@ namespace Isol8_Compiler
                     continue;
 
                 #region Declarations
-                //If a declaration pattern is found
-                if (Patterns.createPattern.Match(fileText[i]) != Match.Empty)
+                //If a standard declaration pattern is found
+                if (Patterns.standardDeclarePattern.Match(fileText[i]) != Match.Empty)
                 {
                     //Generate an array of values from the line, splitting on a space.
                     var values = fileText[i].Split(" ");
 
                     //Parse the declaration using the ParseDeclaration function.
+                    ErrorCodes errorCode = ParseDeclaration(values, fileText[i], i);
+
+                    //If the error code is not NO_ERROR.
+                    if (errorCode != NO_ERROR)
+                        return errorCode;
+                }
+                else if (Patterns.delcareArrayPattern.Match(fileText[i]) != Match.Empty)
+                {
+                    var values = fileText[i].Split(new char[] { ' ', '[', ']'});
+                    values[2] += "array";
                     ErrorCodes errorCode = ParseDeclaration(values, fileText[i], i);
 
                     //If the error code is not NO_ERROR.

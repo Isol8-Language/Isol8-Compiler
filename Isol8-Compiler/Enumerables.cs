@@ -28,6 +28,7 @@ namespace Isol8_Compiler
             STRING,
             PTR,
             BOOL,
+            INTARRAY,
         }
         internal enum ErrorCodes
         {
