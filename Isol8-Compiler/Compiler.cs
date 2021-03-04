@@ -76,7 +76,7 @@ namespace Isol8_Compiler
                         break;
                     case (Types.INTARRAY):
                     {
-                        output += $"dw {Convert.ToInt32(declarationStatements[i].value)} dup(0)\n";
+                        output += $"DD {Convert.ToInt32(declarationStatements[i].value)} dup(0)\n";
                         break;
                     }
 
