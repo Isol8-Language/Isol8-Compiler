@@ -1,33 +1,8 @@
-a as int 4;
-b as int 2;
-c as int 3;
-d as int 3;
-i as int 0;
-x as byte 255;
-me as bool false;
-meme as bool true;
+a as int 555;
+aptr as ptr null;
 Initial() ret int
 {
-	if me == false
-	{
-		for (9)
-		{
-			i += 1;
-			if meme == true
-			{
-				if me == false
-				{
-					if meme == false
-					{
-						out(i);					
-					}
-				}
-			}
-		}
-	}
-	a - 1;
-	out(a);
-	a = c - 1;
-	out(a);
+	aptr = (ptr)a;
+	out(aptr);
 	ret 0;
 }

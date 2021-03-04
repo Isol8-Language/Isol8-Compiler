@@ -54,6 +54,49 @@ namespace Isol8_Compiler
                     $"\t{exitLabel}:\n";//+
                     //$"\t\tnop\n";
             }
+            else if (Parser.variables[i].type == Types.PTR)
+            {
+                return  $"\tmov rax, [{variableName}]\n" + 
+                        $"\tmov rbx, [rax]\n" +
+                        $"\tmov r10, 40\n" + 
+                        $"\tmov [rsp+r10], rbx\n" + 
+                        $"\tmov eax, [rsp+r10]\n" +
+                        $"\t_ascii_conv:\n" +                        
+                        $"\t\tmov ecx, 10\n" +
+                        $"\t\txor edx, edx\n" + 
+                        $"\t\tdiv ecx\n" + 
+                        $"\t\tadd edx, 30h\n" +  
+                        $"\t\tmov [rsp+r10], rdx\n" +
+                        $"\t\tlea rcx, [rsp+r10]\n" +
+                        $"\t\tmov rbx, rax\n" + 
+                        $"\t\tcall printf\n" + 
+                        $"\t\tmov rax, rbx\n" +
+                        //$"\t\tinc r10\n" + 
+                        $"\t\ttest eax, eax\n" + 
+                        $"\t\tjnz _ascii_conv\n";
+
+                /*
+                 *  move address into rax
+                    move content into rbx
+                    move 28h into r10
+                    move rbx into stack+r10 offset		; moves original content into stack
+                    move stack+r10 into eax
+                    _ascii:
+	                    move 10 into ecx
+	                    empty edx
+	                    divide eax by ecx, store in eax and reminader in edx
+	                    add 30h to edx
+	                    move edx into stack+r10		    ; store freshly converted char
+	                    load effective address stack+r10 into rcx
+	                    increment r10
+	                    move rax into new stack+r10	    ; storing remaining calc before printf overwrites
+	                    call printf
+	                    move new stack+r10 into rax
+	                    test if eax is zero (test eax, eax)
+	                    jnz _ascii
+                 */
+
+            }
             else
                 return
                 $"\tlea rcx, [{variableName}]\n" +
