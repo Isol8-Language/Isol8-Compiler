@@ -20,19 +20,10 @@ namespace Isol8_Compiler
 
             if (Parser.variables[i].type == Types.INT)
             {
-                return "\txor edx, edx\n" +
-                            $"\tmov eax, [{variableName}]\n" +
-                            $"\tmov ecx, 0Ah\n" +
-                            $"\tdiv ecx\n" +
-                            $"\tadd eax, 30h\n" +
-                            $"\tadd eax, edx\n" +
-                            $"\tmov edx, [{variableName}]\n" +
-                            $"\tmov[rsp], r10\n" +
-                            $"\tmov[{variableName}], eax\n" +
-                            $"\tlea rcx, [{variableName}]\n" +
-                            $"\tcall printf\n" +
-                            $"\tmov edx, [rsp + 8]\n" +
-                            $"\tmov[{variableName}], edx\n";
+                return
+                    $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
+                    $"\tmov edx, [{variableName}]\n" +
+                    $"\tcall printf\n";
             }
             else if (Parser.variables[i].type == Types.BOOL)
             {
