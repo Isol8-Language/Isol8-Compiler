@@ -263,8 +263,16 @@ namespace Isol8_Compiler
             }
             static ErrorCodes ParseOut(ref Instruction instruction, ref Function func)
             {
-                //ToDo: parse variable, check it's active
+                
                 instruction.instructionType = OUT;
+                string variableName;                
+                if(instruction.lineContent[1].Contains("\\n"))
+                {
+                    variableName = instruction.lineContent[1].Replace("\\n", "");
+                }
+
+                //ToDo: parse variable, check it's active etc
+
                 func.body.Add(instruction);
                 return NO_ERROR;
             }

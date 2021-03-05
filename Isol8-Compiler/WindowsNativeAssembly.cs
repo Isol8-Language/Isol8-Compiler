@@ -13,6 +13,15 @@ namespace Isol8_Compiler
         private static int labelIndex = 0;
         public static string CreatePrintFAssembly(string variableName)
         {
+            bool newline = false;
+            string outString;
+            if (variableName.Contains("\\n"))
+            {
+                variableName = variableName.Replace("\\n", "");
+                newline = true;
+            }
+
+
             int i;
             for (i = 0; i < Parser.variables.Count-1; i++)
                 if (variableName == Parser.variables[i].name)
@@ -20,7 +29,7 @@ namespace Isol8_Compiler
 
             if (Parser.variables[i].type == Types.INT)
             {
-                return
+                outString = 
                     $"\tmov edx, [{variableName}]\n" +
                     $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
                     $"\tcall printf\n";
@@ -31,7 +40,7 @@ namespace Isol8_Compiler
                 string exitLabel = variableName +  "_Exit_LI" + GenerateLabelIndex().ToString();
                 string trueLabel = variableName + "_True_LI" + GenerateLabelIndex().ToString();
                 string falseLabel = variableName + "_False_LI" + GenerateLabelIndex().ToString();
-                return
+                outString =
                     $"\tcmp {variableName}, 1\n" +
                     $"\tje {trueLabel}\n" +
                     $"\tjne {falseLabel}\n" +
@@ -48,7 +57,8 @@ namespace Isol8_Compiler
             }
             else if (Parser.variables[i].type == Types.PTR)
             {
-                return  $"\tmov rax, [{variableName}]\n" + 
+                outString =
+                        $"\tmov rax, [{variableName}]\n" + 
                         $"\tmov rbx, [rax]\n" +
                         $"\tmov r10, 40\n" + 
                         $"\tmov [rsp+r10], rbx\n" + 
@@ -90,10 +100,19 @@ namespace Isol8_Compiler
 
             }
             else
-                return
+            {
+                outString =
                 $"\tlea rcx, [{variableName}]\n" +
                 "\tcall printf\n";
-  
+            
+            }
+            if (newline)
+            {
+                outString += "\tlea rcx, [NEW_LINE]\n";
+                outString += "\tcall printf\n";
+            }
+            return outString;
+
 
         }
 

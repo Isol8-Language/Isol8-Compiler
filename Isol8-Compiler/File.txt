@@ -1,9 +1,11 @@
 a as int 0;
+me as string "test";
 aptr as ptr null;
 Initial() ret int
 {
 	in(a);
-	out(a);
+	out(a\n);
+	out(me\n);
 	del a;
 	ret 0;
 }

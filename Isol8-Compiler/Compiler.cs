@@ -68,7 +68,7 @@ namespace Isol8_Compiler
                         output += "DQ " + declarationStatements[i].value + '\n'; 
                         break;
                     case (Types.STRING):
-                        output += "DB " + declarationStatements[i].value + ", 10, 0" + '\n';
+                        output += "DB " + declarationStatements[i].value + /*", 10, 0"+*/ '\n';
                         break;
                     case (Types.BOOL):
                         output += "DB " + declarationStatements[i].value + '\n';
