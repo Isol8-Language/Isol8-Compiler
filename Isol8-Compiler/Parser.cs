@@ -24,8 +24,15 @@ namespace Isol8_Compiler
             #region localFunctions
             static ErrorCodes ParseGenerics(string line, ref Instruction instruction, ref Function func, List<string> fileText, ref int i)
             {
+                ErrorCodes errorCode = NO_ERROR;
                 if (Patterns.deletePattern.Match(line) != Match.Empty)
-                    return ParseDelete(ref instruction, ref func);
+                {
+                    errorCode = ParseDelete(ref instruction, ref func);
+                    if (errorCode != NO_ERROR)
+                        return SetLastError(i, errorCode, fileText[i]);
+                    else return errorCode;
+                }
+
 
                 else if (Patterns.simpleSelfAdditionOperator.Match(line) != Match.Empty)
                     return ParseSelfAddition(ref instruction, ref func);
@@ -54,7 +61,7 @@ namespace Isol8_Compiler
                 else if (Patterns.forPattern.Match(line) != Match.Empty)
                     return ParseSubLoop(FOR, ref func, ref instruction, fileText, ref i);
 
-                return NO_PATTERN_MATCH; 
+                return SetLastError(i, NO_PATTERN_MATCH, fileText[i]);
             }
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
             {
@@ -161,9 +168,19 @@ namespace Isol8_Compiler
             }
             static ErrorCodes ParseDelete(ref Instruction instruction, ref Function func)
             {
-                if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int varIndex))
-                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+                if (!CheckVarState(instruction.lineContent[1], out int varIndex))
+                {
+                    if (varIndex == -1)
+                        return INVALID_VAR_NAME;
+                    if (variables[varIndex].status == VarState.DELETED)
+                        return INACTIVE_VAR;
+                    
+                    else
+                    {
 
+                    }
+                }
+                
                 variables[varIndex].status = VarState.DELETED;
                 instruction.instructionType = DELETE;
 
@@ -174,7 +191,7 @@ namespace Isol8_Compiler
             {
                 if (type == IF)
                 {
-                    if (!CheckVarState(instruction.lineContent[1].Replace("\t", ""), out int index))
+                    if (!CheckVarState(instruction.lineContent[1], out int index))
                         throw new NotImplementedException("Fail on non existent var or inactive");
 
                     instruction.assignmentType = variables[index].type;
@@ -355,9 +372,11 @@ namespace Isol8_Compiler
             //For every line in the file
             for (int i = 0; i < fileText.Count; i++)
             {
-                //Ignore white space lines.
-                if (fileText[i] == string.Empty)
-                    continue;
+                //Remove tabs and leading spaces.
+                for (int b = 0; b < fileText.Count; b++)
+                    fileText[b] = fileText[b].Replace("\t", "").Trim(' ');
+                
+
 
                 /*Loop will look for global declarations or functions. 
                  * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/
@@ -408,7 +427,7 @@ namespace Isol8_Compiler
 
                     //Check the return type is a valid type, and not made up or incorrect spelt.
                     if (!Enum.TryParse(values.Last(), true, out func.returnType))
-                        return SetLastError(i, INVALID_RETURN_TYPE, fileText[i]);
+                        return SetLastError(i, INVALID_RETURN_TYPE, fileText[i].Replace("\t",""));
 
                     //Check the function open and closes with the correct brackers, and grab the function body.
                     if (fileText[i + 1] == "{")
@@ -482,7 +501,9 @@ namespace Isol8_Compiler
                             {
                                 ErrorCodes temp = ParseGenerics(patternText, ref instruction, ref func, fileText, ref i);
                                 if (temp != NO_ERROR)
-                                    throw new NotImplementedException("ToDo");
+                                    return temp;
+                                
+
                             };
 
 
@@ -510,8 +531,9 @@ namespace Isol8_Compiler
                     //Temporary fix:
                     if (fileText[i].Contains("{") || fileText[i].Contains("}"))
                         continue;
-                    //if no pattern is found then what?
-                    throw new NotImplementedException();
+                    
+                    return SetLastError(i, NO_PATTERN_MATCH, fileText[i]);
+                    
                 }
             }
             return NO_ERROR;

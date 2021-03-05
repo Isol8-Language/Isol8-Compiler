@@ -57,8 +57,11 @@ namespace Isol8_Compiler
         public static string CreateInfiniteLoopPLACEHOLDER()
         {
             return
-                $"\tHANGCONSOLE9999:\n" +
-                $"\tjmp HANGCONSOLE9999\n";
+                $"\tlea rcx, [EXIT_MESSAGE]\n" +
+                $"\tcall printf\n" +
+                $"\tlea rdx, [EXIT_LOOP_CODE]\n" +
+                $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n"+
+                $"\tcall scanf\n";
         }
     }
 }

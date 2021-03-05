@@ -1,8 +1,9 @@
-a as int 555;
+a as int 0;
 aptr as ptr null;
 Initial() ret int
 {
 	in(a);
 	out(a);
+	del a;
 	ret 0;
 }

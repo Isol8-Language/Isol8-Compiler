@@ -24,6 +24,7 @@ namespace Isol8_Compiler
                     $"\tmov edx, [{variableName}]\n" +
                     $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
                     $"\tcall printf\n";
+                    
             }
             else if (Parser.variables[i].type == Types.BOOL)
             {

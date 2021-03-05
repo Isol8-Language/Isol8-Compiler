@@ -44,13 +44,15 @@ namespace Isol8_Compiler
             ErrorCodes error = ParseFile(inputFileName); 
             if (error != NO_ERROR)
                 return error;
+        
 
             //Create the output file
             var outputFile = File.Create($"Output\\{outputName}.asm");
             
             //Add the .DATA section -- ToDo: remove hardcoded printf
             string output = "EXTERN printf :PROC\nEXTERN scanf :PROC\n.DATA\n";
-            
+            output += $"\tEXIT_LOOP_CODE DD 0\n";
+
             //For every declaration statement found in the parse.
             for (var i = 0; i < declarationStatements.Count; i++)
             {
@@ -88,8 +90,10 @@ namespace Isol8_Compiler
             // TODO: Is there a better way to print true/false for booleans
             //       without using constants?
             output += ".CONST\n";
+            output += $"\tNEW_LINE DB 10, 0\n";
             output += $"\tISOL8_true_msg DB \"true\", 10, 0\n";
             output += $"\tISOL8_false_msg DB \"false\", 10, 0\n";
+            output += $"\tEXIT_MESSAGE DB \"Press Enter To Exit...\",10,0\n";
             output += $"\tPRINTF_DECIMAL_FLAG DD \"d%\"\n";
             output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
 
