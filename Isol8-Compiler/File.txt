@@ -11,6 +11,7 @@ Initial() ret int
 	in(b);
 	out(output\n);
 	a = a - b;
+
 	out(a\n);
 	ret 0;
 }

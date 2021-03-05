@@ -61,6 +61,8 @@ namespace Isol8_Compiler
                 else if (Patterns.forPattern.Match(line) != Match.Empty)
                     return ParseSubLoop(FOR, ref func, ref instruction, fileText, ref i);
 
+                else if (line == string.Empty)
+                    return NO_ERROR;
                 return SetLastError(i, NO_PATTERN_MATCH, fileText[i]);
             }
             static ErrorCodes ParseDeclaration(string[] values, string lineContent, int lineIndex, bool local = false)
