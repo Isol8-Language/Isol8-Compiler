@@ -68,7 +68,7 @@ namespace Isol8_Compiler
                         output += "DQ " + declarationStatements[i].value + '\n'; 
                         break;
                     case (Types.STRING):
-                        output += "DB " + declarationStatements[i].value + /*", 10, 0"+*/ '\n';
+                        output += "DB " + declarationStatements[i].value + ", 0" +/*", 10, 0"+*/ '\n';
                         break;
                     case (Types.BOOL):
                         output += "DB " + declarationStatements[i].value + '\n';
@@ -145,7 +145,7 @@ namespace Isol8_Compiler
                         else if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
                             output +=
                                 $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
-                                $"\tadd [{functions[i].body[x].lineContent[0][1..]}], eax\n";
+                                $"\tadd [{functions[i].body[x].lineContent[0]}], eax\n";
 
                         else
                             output += $"\tadd " +

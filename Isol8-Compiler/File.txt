@@ -1,11 +1,16 @@
 a as int 0;
-me as string "test";
+b as int 0;
+input as string "Please input a number";
+output as string "Your result is:";
 aptr as ptr null;
 Initial() ret int
 {
+	out(input\n);
 	in(a);
-	out(a\n);
-	out(me\n);
-	del a;
+	out(input\n);
+	in(b);
+	out(output);
+	a += b;
+	out(a);
 	ret 0;
 }
