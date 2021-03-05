@@ -33,6 +33,9 @@ namespace Isol8_Compiler
                 else if (Patterns.outPattern.Match(line) != Match.Empty)
                     return ParseOut(ref instruction, ref func);
 
+                else if (Patterns.inPattern.Match(line) != Match.Empty)
+                    return ParseIn(ref instruction, ref func);
+
                 else if (Patterns.standardDeclarePattern.Match(line) != Match.Empty)
                     throw new NotImplementedException("ToDo: Local Variables");
 
@@ -245,6 +248,12 @@ namespace Isol8_Compiler
             {
                 //ToDo: parse variable, check it's active
                 instruction.instructionType = OUT;
+                func.body.Add(instruction);
+                return NO_ERROR;
+            }
+            static ErrorCodes ParseIn(ref Instruction instruction, ref Function func)
+            {
+                instruction.instructionType = IN;
                 func.body.Add(instruction);
                 return NO_ERROR;
             }

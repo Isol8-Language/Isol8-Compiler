@@ -95,6 +95,32 @@ namespace Isol8_Compiler
   
 
         }
+
+        public static string CreateScanFAssembly(string variableName)
+        {
+
+            int i;
+            for (i = 0; i < Parser.variables.Count - 1; i++)
+                if (variableName == Parser.variables[i].name)
+                    break;
+
+            if (Parser.variables[i].type == Types.INT)
+            {
+                return  $"\tlea rdx, [{variableName}]\n" + 
+                        $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" + 
+                        $"\tcall scanf\n";
+            } /*else if (Parser.variables[i].type == Types.STRING)
+            {
+                return  $"\tlea rdx, [{variableName}]\n" + 
+                        $"\tlea rcx, [PRINTF_STRING_FLAG]\n" + 
+                        $"\tcall scanf_s\n";
+            }*/else
+            {
+                throw new NotImplementedException("Todo");
+            }
+
+        }
+
         public static int GenerateLabelIndex() => labelIndex++;
     }
 }

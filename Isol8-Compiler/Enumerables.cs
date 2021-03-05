@@ -64,6 +64,7 @@ namespace Isol8_Compiler
             ASSIGNMENT,
             ASSIGNPTR,
             OUT,
+            IN,
             DELETE,
             IF,
             ENDIF,

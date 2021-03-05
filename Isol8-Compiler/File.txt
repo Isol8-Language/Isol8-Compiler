@@ -3,8 +3,7 @@ b as int[10];
 aptr as ptr null;
 Initial() ret int
 {
+	in(a);
 	out(a);
-	aptr = (ptr)a;
-	out(aptr);
 	ret 0;
 }

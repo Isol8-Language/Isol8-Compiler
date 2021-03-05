@@ -49,7 +49,7 @@ namespace Isol8_Compiler
             var outputFile = File.Create($"Output\\{outputName}.asm");
             
             //Add the .DATA section -- ToDo: remove hardcoded printf
-            string output = "EXTERN printf :PROC\n.DATA\n";
+            string output = "EXTERN printf :PROC\nEXTERN scanf :PROC\n.DATA\n";
             
             //For every declaration statement found in the parse.
             for (var i = 0; i < declarationStatements.Count; i++)
@@ -91,6 +91,7 @@ namespace Isol8_Compiler
             output += $"\tISOL8_true_msg DB \"true\", 10, 0\n";
             output += $"\tISOL8_false_msg DB \"false\", 10, 0\n";
             output += $"\tPRINTF_DECIMAL_FLAG DB \"%d\"\n";
+            output += $"\tPRINTF_STRING_FLAG DB \"%s\"\n";
 
             //Add the .CODE section
             output += ".CODE\n";
@@ -182,6 +183,17 @@ namespace Isol8_Compiler
                         {
                             //ToDo: Brandon
                             throw new Exception("ToDo: Linux Implementation");
+                        }
+                    }
+                    else if (functions[i].body[x].instructionType == IN)
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            output += $";START SCANF ROUTINE\n";
+
+                            output += WindowsNativeAssembly.CreateScanFAssembly(functions[i].body[x].lineContent[1]);
+
+                            output += $";END SCANF ROUTINE\n\n";
                         }
                     }
                     else if (functions[i].body[x].instructionType == DELETE)
