@@ -31,7 +31,7 @@ namespace Isol8_Compiler
                 return;
             }
 
-            Console.WriteLine($"{isol8Compiler.outputName} created successfully.");
+            Console.WriteLine($"{isol8Compiler.outputName}.asm created successfully.");
             Console.WriteLine("Assembling...");
             
             eStatus = isol8Compiler.Assemble(isol8Compiler.outputName);

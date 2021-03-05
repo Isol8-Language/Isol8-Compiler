@@ -9,8 +9,8 @@ Initial() ret int
 	in(a);
 	out(input\n);
 	in(b);
-	out(output);
-	a += b;
-	out(a);
+	out(output\n);
+	a = a - b;
+	out(a\n);
 	ret 0;
 }
