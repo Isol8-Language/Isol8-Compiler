@@ -21,8 +21,8 @@ namespace Isol8_Compiler
             if (Parser.variables[i].type == Types.INT)
             {
                 return
-                    $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
                     $"\tmov edx, [{variableName}]\n" +
+                    $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
                     $"\tcall printf\n";
             }
             else if (Parser.variables[i].type == Types.BOOL)

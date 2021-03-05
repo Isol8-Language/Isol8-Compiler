@@ -75,7 +75,7 @@ namespace Isol8_Compiler
                         output += "DB " + declarationStatements[i].value + '\n';
                         break;
                     case (Types.INTARRAY):
-                    {
+                   {
                         output += $"DD {Convert.ToInt32(declarationStatements[i].value)} dup(0)\n";
                         break;
                     }
@@ -90,8 +90,8 @@ namespace Isol8_Compiler
             output += ".CONST\n";
             output += $"\tISOL8_true_msg DB \"true\", 10, 0\n";
             output += $"\tISOL8_false_msg DB \"false\", 10, 0\n";
-            output += $"\tPRINTF_DECIMAL_FLAG DB \"%d\"\n";
-            output += $"\tPRINTF_STRING_FLAG DB \"%s\"\n";
+            output += $"\tPRINTF_DECIMAL_FLAG DD \"d%\"\n";
+            output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
 
             //Add the .CODE section
             output += ".CODE\n";

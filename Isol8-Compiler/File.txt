@@ -1,5 +1,4 @@
 a as int 555;
-b as int[10];
 aptr as ptr null;
 Initial() ret int
 {
