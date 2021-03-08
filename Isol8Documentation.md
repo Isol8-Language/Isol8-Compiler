@@ -6,9 +6,12 @@
 	- [Variable Declaration](#variable-declaration)
 	- [Function Declaration](#function-declaration)
 	- [Maths Operations](#maths-operations)
+	- [Arrays](#arrays)
 	- [Pointers](#pointers)
 	- [Input / Output](#input--output)
 	- [Deleting Variables](#deleting-variables)
+	- [If Statements](#if-statements)
+	- [For Loops](#for-loops)
 
 ## Documentation To-Do
 - [ ] ...
@@ -98,7 +101,14 @@ intVar += 1;		// 'intVar' now equals 2
 ```
 ____
 
-
+### Arrays
+```
+<Variable> as <ArrayType>[<ArrayLength>];
+```
+```
+b as int[10];
+```
+___
 ### Pointers
 ```
 <PointerName> = (ptr)<VariableName>;
@@ -119,3 +129,20 @@ ___
 ```
 del <VariableName>;
 ```
+___
+### If Statements
+```
+if <value> == <value>
+{
+	<action>
+}
+```
+___
+### For Loops
+```
+for (<count>)
+{
+	<action>
+}
+```
+___
