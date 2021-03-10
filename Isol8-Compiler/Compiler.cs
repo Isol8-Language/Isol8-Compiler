@@ -98,7 +98,7 @@ namespace Isol8_Compiler
             output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
 
             //Add the .CODE section
-            output += ".CODE\n";
+            output += ".CODE\n";    
 
             //For every function found in the parse.
             for (var i = 0; i < functions.Count; i++)
@@ -294,9 +294,8 @@ namespace Isol8_Compiler
                         }
 
                         if (Convert.ToInt32(functions[i].body[x].lineContent[2]) >= int.MaxValue)
-                        {
                             throw new NotImplementedException("64-bit loops not yet implemented");
-                        }
+                        
                         register = "eax";
                         countRegister = "ecx";
 
@@ -322,6 +321,9 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == BREAK)
                     {
+#if (ASMComment)
+                        output += ";BREAK\n";
+#endif
                         output += $"\tjmp {functions[i].body[x].lineContent[0]}\n";
                     }
 

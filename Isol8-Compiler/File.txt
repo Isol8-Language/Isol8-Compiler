@@ -1,17 +1,26 @@
 a as int 0;
-myBreak as string "Broken";
+b as int 0;
+input as string "Please input a number";
+output as string "Your result is:";
+aptr as ptr null;
+myBool as bool true;
 Initial() ret int
 {
+	out(input\n);
+	in(a);
+	out(input\n);
+	in(b);
+	out(output\n);
+	a = a - b;
+	
 	for (9)
 	{
 		out(a\n);
-		if a == 5
+		if myBool == true
 		{
 			break;
 		}
-		a = a + 1;
 	}
-	out(myBreak\n);
 
 	ret 0;
 }
