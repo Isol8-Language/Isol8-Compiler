@@ -177,10 +177,6 @@ namespace Isol8_Compiler
                     if (variables[varIndex].status == VarState.DELETED)
                         return INACTIVE_VAR;
                     
-                    else
-                    {
-
-                    }
                 }
                 
                 variables[varIndex].status = VarState.DELETED;
@@ -198,8 +194,6 @@ namespace Isol8_Compiler
 
                     instruction.assignmentType = variables[index].type;
                 }
-
-
 
                 instruction.instructionType = type;
                 func.body.Add(instruction);
@@ -234,7 +228,15 @@ namespace Isol8_Compiler
                             lineContent = fileText[i].Replace(";", "").Split(new char[] { ' ', '(', ')' }),
                         };
 
-                        ErrorCodes errorCodes = ParseGenerics(fileText[i].Replace("\t", ""), ref innerInstruction, ref func, fileText, ref i);
+                        //If there's a break
+                        if (Patterns.breakPattern.Match(fileText[i]) != Match.Empty)
+                        {
+                            innerInstruction.instructionType = BREAK;
+                            func.body.Add(innerInstruction);
+                            continue;
+                        }
+
+                        ErrorCodes errorCodes = ParseGenerics(fileText[i]/*.Replace("\t", "")*/, ref innerInstruction, ref func, fileText, ref i);
                         if (errorCodes != NO_ERROR)
                             throw new NotImplementedException("ToDo");
 

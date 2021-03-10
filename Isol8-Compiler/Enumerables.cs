@@ -67,6 +67,7 @@ namespace Isol8_Compiler
             OUT,
             IN,
             DELETE,
+            BREAK,
             IF,
             ENDIF,
             FOR,

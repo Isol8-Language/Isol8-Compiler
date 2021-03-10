@@ -272,19 +272,26 @@ namespace Isol8_Compiler
 #if (ASMComment)
                         output += ";START FOR ROUTINE\n";
 #endif
-                        string endLoopLabel = "End_For_LI" + WindowsNativeAssembly.GenerateLabelIndex();
+                        string endLoopLabel = "End_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex();
                         string continueLoopLabel = "Continue_Loop_Label_LI" + WindowsNativeAssembly.GenerateLabelIndex(); ;
+
 
                         for (int xi = x; xi < functions[i].body.Count; xi++)
                         {
                             if (functions[i].body[xi].instructionType == ENDFOR)
                             {
+
                                 endLoopLabel = functions[i].body[xi].lineContent[0];
                                 continueLoopLabel = functions[i].body[xi].lineContent[1];
+                                for (int xii = x; xii < functions[i].body.Count; xii++)
+                                {
+                                    if (functions[i].body[xii].instructionType == BREAK)
+                                        functions[i].body[xii].lineContent[0] = endLoopLabel;
+
+                                }
                                 break;
                             }
                         }
-
 
                         if (Convert.ToInt32(functions[i].body[x].lineContent[2]) >= int.MaxValue)
                         {
@@ -312,6 +319,10 @@ namespace Isol8_Compiler
                         output += ";END FOR ROUTINE\n";
 #endif
 
+                    }
+                    else if (functions[i].body[x].instructionType == BREAK)
+                    {
+                        output += $"\tjmp {functions[i].body[x].lineContent[0]}\n";
                     }
 
                     else if (functions[i].body[x].instructionType == ASSIGNMENT)
@@ -399,7 +410,6 @@ namespace Isol8_Compiler
                         output += ";END ADDITION\n\n";
 #endif
                     }
-
                     else if(functions[i].body[x].instructionType == MINUS)
                     {
 #if (ASMComment)
@@ -436,7 +446,6 @@ namespace Isol8_Compiler
                         output += ";END SUBTRACTION\n\n";
 #endif
                     }
-
                     else if(functions[i].body[x].instructionType == MULTIPLY)
                     {
 #if (ASMComment)
@@ -459,7 +468,6 @@ namespace Isol8_Compiler
                         output += ";END MULTIPLICATION\n\n";
 #endif
                     }
-
                     else if(functions[i].body[x].instructionType == DIVIDE)
                     {
 #if (ASMComment)

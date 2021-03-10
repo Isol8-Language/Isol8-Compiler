@@ -24,7 +24,7 @@ namespace Isol8_Compiler
         public static readonly Regex outPattern = new Regex(@"^OUT\s?\([a-zA-Z0-9]*\\?n?\);$", RegexOptions.IgnoreCase);
         public static readonly Regex inPattern = new Regex(@"^(in|IN)\s?\([a-zA-Z0-9]*\);$");
         public static readonly Regex ifPattern = new Regex(@"^if ?[[a-zA-Z]+]? == ?[[a-zA-Z0-9]+]?$");
-
+        public static readonly Regex breakPattern = new Regex(@"^break;$", RegexOptions.IgnoreCase);
         #endregion
         #region Maths Patterns
         public static readonly Regex simpleSelfAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9]+;$");
