@@ -23,10 +23,12 @@ namespace Isol8_Compiler
         internal enum Types
         {
             NULL,
+            BYTE,
             INT,
             STRING,
             PTR,
             BOOL,
+            INTARRAY,
         }
         internal enum ErrorCodes
         {
@@ -43,6 +45,7 @@ namespace Isol8_Compiler
             NO_OPENING_BRACKET = 0x20010,
             DUPLICATE_FUNC_NAME = 0x20011,
             NO_PATTERN_MATCH = 0x20012,
+            INACTIVE_VAR = 0x20013,
         }
         internal enum Scope
         {
@@ -62,11 +65,17 @@ namespace Isol8_Compiler
             ASSIGNMENT,
             ASSIGNPTR,
             OUT,
+            IN,
             DELETE,
+            BREAK,
             IF,
             ENDIF,
             FOR,
             ENDFOR,
+            PLUS,
+            MINUS,
+            MULTIPLY,
+            DIVIDE,
         }   
     }
 }

@@ -45,13 +45,15 @@ namespace Isol8_Compiler
             ErrorCodes error = ParseFile(inputFileName); 
             if (error != NO_ERROR)
                 return error;
+        
 
             //Create the output file
             var outputFile = File.Create($"Output\\{outputName}.asm");
             
             //Add the .DATA section -- ToDo: remove hardcoded printf
-            string output = "EXTERN printf :PROC\n.DATA\n";
-            
+            string output = "EXTERN printf :PROC\nEXTERN scanf :PROC\n.DATA\n";
+            output += $"\tEXIT_LOOP_CODE DD 0\n";
+
             //For every declaration statement found in the parse.
             for (var i = 0; i < declarationStatements.Count; i++)
             {
@@ -67,11 +69,21 @@ namespace Isol8_Compiler
                         output += "DQ " + declarationStatements[i].value + '\n'; 
                         break;
                     case (Types.STRING):
-                        output += "DB " + declarationStatements[i].value + ", 10, 0" + '\n';
+                        output += "DB " + declarationStatements[i].value + ", 0" +/*", 10, 0"+*/ '\n';
                         break;
                     case (Types.BOOL):
                         output += "DB " + declarationStatements[i].value + '\n';
                         break;
+                    case (Types.BYTE):
+                        output += "DB " + declarationStatements[i].value + '\n';
+                        break;
+                    case (Types.INTARRAY):
+                   {
+                        output += $"DD {Convert.ToInt32(declarationStatements[i].value)} dup(0)\n";
+                        break;
+                    }
+
+
                 }
             }
 
@@ -79,11 +91,15 @@ namespace Isol8_Compiler
             // TODO: Is there a better way to print true/false for booleans
             //       without using constants?
             output += ".CONST\n";
+            output += $"\tNEW_LINE DB 10, 0\n";
             output += $"\tISOL8_true_msg DB \"true\", 10, 0\n";
             output += $"\tISOL8_false_msg DB \"false\", 10, 0\n";
+            output += $"\tEXIT_MESSAGE DB \"Press Enter To Exit...\",10,0\n";
+            output += $"\tPRINTF_DECIMAL_FLAG DD \"d%\"\n";
+            output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
 
             //Add the .CODE section
-            output += ".CODE\n";
+            output += ".CODE\n";    
 
             //For every function found in the parse.
             for (var i = 0; i < functions.Count; i++)
@@ -130,7 +146,7 @@ namespace Isol8_Compiler
                         else if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
                             output +=
                                 $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
-                                $"\tadd [{functions[i].body[x].lineContent[0][1..]}], eax\n";
+                                $"\tadd [{functions[i].body[x].lineContent[0]}], eax\n";
 
                         else
                             output += $"\tadd " +
@@ -174,6 +190,17 @@ namespace Isol8_Compiler
                             throw new Exception("ToDo: Linux Implementation");
                         }
                     }
+                    else if (functions[i].body[x].instructionType == IN)
+                    {
+                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        {
+                            output += $";START SCANF ROUTINE\n";
+
+                            output += WindowsNativeAssembly.CreateScanFAssembly(functions[i].body[x].lineContent[1]);
+
+                            output += $";END SCANF ROUTINE\n\n";
+                        }
+                    }
                     else if (functions[i].body[x].instructionType == DELETE)
                     {
                         int varIndex = -1;
@@ -205,10 +232,20 @@ namespace Isol8_Compiler
                         output += ";START IF ROUTINE\n";
 #endif
                         string ifnotTrueLabel = "False_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString();
-                        output += $"\tmovzx rax, [{functions[i].body[x].lineContent[1]}]\n";
 
+                        //if (functions[i].body[x].)
+
+                        if (functions[i].body[x].assignmentType == Types.INT)
+                            output += $"\tmov eax, [{functions[i].body[x].lineContent[1]}]\n";
+                        else
+                            output += $"\tmovzx rax, [{functions[i].body[x].lineContent[1]}]\n";
+
+                        //If the condition is an int
+                        if (int.TryParse(functions[i].body[x].lineContent[3], out int result))
+                            output += $"\tcmp eax, {result}\n";
+                        
                         //If the condition is a static true or false
-                        if (functions[i].body[x].lineContent[3].ToLower() == "true")
+                        else if (functions[i].body[x].lineContent[3].ToLower() == "true")
                             output += "\tcmp rax, 1\n";
 
                         else if (functions[i].body[x].lineContent[3].ToLower() == "false")
@@ -217,7 +254,7 @@ namespace Isol8_Compiler
                         output += $"\tjne {ifnotTrueLabel}\n";
 
                         for (int nextIf = x; nextIf < functions[i].body.Count; nextIf++)
-                            if (functions[i].body[nextIf].instructionType == ENDIF)
+                            if (functions[i].body[nextIf].instructionType == ENDIF && Convert.ToInt32(functions[i].body[nextIf].lineContent[2]) == x)
                             {
                                 functions[i].body[nextIf].lineContent = new string[] { ifnotTrueLabel };
                                 break;
@@ -236,24 +273,30 @@ namespace Isol8_Compiler
 #if (ASMComment)
                         output += ";START FOR ROUTINE\n";
 #endif
-                        string endLoopLabel = "test";
-                        string continueLoopLabel = "test";
+                        string endLoopLabel = "End_Loop_LI" + WindowsNativeAssembly.GenerateLabelIndex();
+                        string continueLoopLabel = "Continue_Loop_Label_LI" + WindowsNativeAssembly.GenerateLabelIndex(); ;
+
 
                         for (int xi = x; xi < functions[i].body.Count; xi++)
                         {
                             if (functions[i].body[xi].instructionType == ENDFOR)
                             {
+
                                 endLoopLabel = functions[i].body[xi].lineContent[0];
                                 continueLoopLabel = functions[i].body[xi].lineContent[1];
+                                for (int xii = x; xii < functions[i].body.Count; xii++)
+                                {
+                                    if (functions[i].body[xii].instructionType == BREAK)
+                                        functions[i].body[xii].lineContent[0] = endLoopLabel;
+
+                                }
                                 break;
                             }
                         }
 
-
                         if (Convert.ToInt32(functions[i].body[x].lineContent[2]) >= int.MaxValue)
-                        {
                             throw new NotImplementedException("64-bit loops not yet implemented");
-                        }
+                        
                         register = "eax";
                         countRegister = "ecx";
 
@@ -276,6 +319,13 @@ namespace Isol8_Compiler
                         output += ";END FOR ROUTINE\n";
 #endif
 
+                    }
+                    else if (functions[i].body[x].instructionType == BREAK)
+                    {
+#if (ASMComment)
+                        output += ";BREAK\n";
+#endif
+                        output += $"\tjmp {functions[i].body[x].lineContent[0]}\n";
                     }
 
                     else if (functions[i].body[x].instructionType == ASSIGNMENT)
@@ -314,9 +364,138 @@ namespace Isol8_Compiler
                                 throw new NotImplementedException();
                         }
 
-
 #if (ASMComment)
                         output += ";END REASSIGNMENT ROUTINE\n\n";
+#endif
+                    }
+
+                    else if(functions[i].body[x].instructionType == PLUS)
+                    {
+#if (ASMComment)
+                        output += ";START ADDITION\n";
+#endif
+                        // array content: [0] [1] [2] [3] [4]
+                        //                 x   =   y   +   z
+                        //                 i   +   j
+                        // this is the same for all other operators
+
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                // TODO: check which operand is "1", so that 1 + x is a valid expression?
+                                //       (regex would need to be updated in that case)
+                                if (functions[i].body[x].lineContent[2] == "1")
+                                {
+                                    output +=   $"\tinc {functions[i].body[x].lineContent[0].Replace("\n", "")}\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tadd {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                }
+                                break;
+
+                            case 5:
+                                if (functions[i].body[x].lineContent[4] == "1")
+                                {
+                                    output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tinc eax\n" + 
+                                                $"\tmov {functions[i].body[x].lineContent[0]}, eax\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tadd eax,{functions[i].body[x].lineContent[4]}\n" +
+                                                $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
+                                }
+                                break;
+                        }
+
+#if (ASMComment)
+                        output += ";END ADDITION\n\n";
+#endif
+                    }
+                    else if(functions[i].body[x].instructionType == MINUS)
+                    {
+#if (ASMComment)
+                        output += ";START SUBTRACTION\n";
+#endif
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                if (functions[i].body[x].lineContent[2] == "1")
+                                {
+                                    output += $"\tdec {functions[i].body[x].lineContent[0].Replace("\t", "")}\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tsub {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                }
+                                break;
+                            case 5:
+                                if (functions[i].body[x].lineContent[4] == "1")
+                                {
+                                    output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tdec eax\n" +
+                                                $"\tmov {functions[i].body[x].lineContent[0]}, eax\n";
+                                } else
+                                {
+                                    output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
+                                                $"\tsub eax,{functions[i].body[x].lineContent[4]}\n" +
+                                                $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
+                                }
+                                break;
+                        }
+
+#if (ASMComment)
+                        output += ";END SUBTRACTION\n\n";
+#endif
+                    }
+                    else if(functions[i].body[x].instructionType == MULTIPLY)
+                    {
+#if (ASMComment)
+                        output += ";START MULTIPLICATION\n";
+#endif
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[0].Replace("\t", "")}\n" +
+                                            $"\tmul {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                            case 5:
+                                output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n"+
+                                            $"\tmul {functions[i].body[x].lineContent[4]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                        }
+#if (ASMComment)
+                        output += ";END MULTIPLICATION\n\n";
+#endif
+                    }
+                    else if(functions[i].body[x].instructionType == DIVIDE)
+                    {
+#if (ASMComment)
+                        output += ";START DIVISION\n";
+#endif
+                        // TODO: signed division
+
+                        switch (functions[i].body[x].lineContent.Length)
+                        {
+                            case 3:
+                                output += $"\tmov edx, 0\t;clear high dividend\n"+
+                                            $"\tmov eax, {functions[i].body[x].lineContent[0].Replace("\t", "")}\n"+
+                                            $"\tdiv {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                            case 5:
+                                output += $"\tmov edx, 0\t;clear high dividend\n" +
+                                            $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                            $"\tdiv {functions[i].body[x].lineContent[4]}\n" +
+                                            $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
+                                break;
+                        }
+
+#if (ASMComment)
+                        output += ";END DIVISION\n\n";
 #endif
                     }
 
@@ -326,6 +505,7 @@ namespace Isol8_Compiler
 
 #if (ASMComment)
                 output += ";START FUNCTION EPILOGUE\n";
+                output += Assembly.CreateInfiniteLoopPLACEHOLDER();
 #endif
                 output += Assembly.CreateFunctionClose(functions[i].name);
 #if (ASMComment)

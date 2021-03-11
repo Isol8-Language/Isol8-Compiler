@@ -59,5 +59,14 @@ namespace Isol8_Compiler
         }
         public static string Delete4ByteVariable(string varName) => $"\tlea rax, {varName}\n" + "\tmov dword ptr [rax], 0\n";
 
+        public static string CreateInfiniteLoopPLACEHOLDER()
+        {
+            return
+                $"\tlea rcx, [EXIT_MESSAGE]\n" +
+                $"\tcall printf\n" +
+                $"\tlea rdx, [EXIT_LOOP_CODE]\n" +
+                $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n"+
+                $"\tcall scanf\n";
+        }
     }
 }

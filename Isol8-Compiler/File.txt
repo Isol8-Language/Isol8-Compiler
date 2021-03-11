@@ -1,14 +1,26 @@
-create testBool as bool true;
-create testBoolTwo as bool false;
-create myInt as int 1;
-
-create myIntTwo as int 2;
+a as int 0;
+b as int 0;
+input as string "Please input a number";
+output as string "Your result is:";
+aptr as ptr null;
+myBool as bool true;
 Initial() ret int
 {
+	out(input\n);
+	in(a);
+	out(input\n);
+	in(b);
+	out(output\n);
+	a = a - b;
+	
 	for (9)
 	{
-		out(myInt);
-		myInt += 1;
+		out(a\n);
+		if myBool == true
+		{
+			break;
+		}
 	}
+
 	ret 0;
 }
