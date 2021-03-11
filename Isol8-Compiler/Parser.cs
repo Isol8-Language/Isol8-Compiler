@@ -371,6 +371,8 @@ namespace Isol8_Compiler
                 {
                     case ">": instruction.instructionType = GREATERTHAN; break;
                     case "<": instruction.instructionType = LESSTHAN; break;
+                    case ">=": instruction.instructionType = GREATEREQUAL; break;
+                    case "<=": instruction.instructionType = LESSEQUAL; break;
                 }
 
                 func.body.Add(instruction);

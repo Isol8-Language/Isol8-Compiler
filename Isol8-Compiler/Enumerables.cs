@@ -78,6 +78,8 @@ namespace Isol8_Compiler
             DIVIDE,
             LESSTHAN,
             GREATERTHAN,
+            LESSEQUAL,
+            GREATEREQUAL,
         }   
     }
 }

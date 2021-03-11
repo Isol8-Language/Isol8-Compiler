@@ -6,9 +6,7 @@ ab as bool false;
 cd as bool false;
 Initial() ret int
 {
-	ab = a < b;
-	cd = c < d;
+	ab = b <= b;
 	out(ab\n);
-	out(cd\n);
 	ret 0;
 }
