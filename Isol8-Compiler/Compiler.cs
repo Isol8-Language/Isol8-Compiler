@@ -539,25 +539,53 @@ namespace Isol8_Compiler
                                     $"\t\tmov {functions[i].body[x].lineContent[0]}, 0\n" +
                                     $"\t{exitLabel}:\n";
 
-                        /*string jleLabel = $"_jle_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex().ToString()}";
-                        string jgLabel = $"_jg_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex().ToString()}";
-                        string exitLabel = $"_exit_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex().ToString()}";
+
+                        output += ";END START LESS THAN OR EQUAL TO\n\n";
+                    } 
+                    else if(functions[i].body[x].instructionType == GREATERTHAN)
+                    {
+                        output += ";START GREATER THAN\n";
+
+                        string jgLabel = $"_jg_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string jngLabel = $"_jng_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string exitLabel = $"_exit_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex()}";
 
                         output += $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
                                     $"\tmov ebx, {functions[i].body[x].lineContent[4]}\n" +
                                     $"\tcmp eax, ebx\n" +
-                                    $"\tjle {jleLabel}\n" +
                                     $"\tjg {jgLabel}\n" +
-                                    $"\t{jleLabel}:\n" +
+                                    $"\tjng {jngLabel}\n" +
+                                    $"\t{jgLabel}:\n" +
                                     $"\t\tmov {functions[i].body[x].lineContent[0]}, 1\n" +
                                     $"\t\tjmp {exitLabel}\n" +
-                                    $"\t{jgLabel}:\n" +
+                                    $"\t{jngLabel}:\n" +
                                     $"\t\tmov {functions[i].body[x].lineContent[0]}, 0\n" +
-                                    $"\t{exitLabel}:\n";*/
+                                    $"\t{exitLabel}:\n";
 
-                        output += ";END START LESS THAN OR EQUAL TO\n\n";
+                        output += ";END GREATER THAN\n\n";
+                    } 
+                    else if(functions[i].body[x].instructionType == LESSTHAN)
+                    {
+                        output += ";START LESS THAN\n";
+
+                        string jlLabel = $"_jl_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string jnlLabel = $"_jnl_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string exitLabel = $"_exit_{functions[i].body[x].lineContent[0]}_{WindowsNativeAssembly.GenerateLabelIndex()}";
+
+                        output += $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                    $"\tmov ebx, {functions[i].body[x].lineContent[4]}\n" +
+                                    $"\tcmp eax, ebx\n" +
+                                    $"\tjl {jlLabel}\n" +
+                                    $"\tjnl {jnlLabel}\n" +
+                                    $"\t{jlLabel}:\n" +
+                                    $"\t\tmov {functions[i].body[x].lineContent[0]}, 1\n" +
+                                    $"\t\tjmp {exitLabel}\n" +
+                                    $"\t{jnlLabel}:\n" +
+                                    $"\t\tmov {functions[i].body[x].lineContent[0]}, 0\n" +
+                                    $"\t{exitLabel}:\n";
+
+                        output += ";END LESS THAN\n\n";
                     }
-
                     else
                         throw new Exception("This should never occur");
                 }

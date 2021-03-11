@@ -2,11 +2,13 @@ a as int 7;
 b as int 2;
 c as int 4;
 d as int 9;
-ab as bool false;
+ab as bool true;
 cd as bool false;
 Initial() ret int
 {
-	ab = b <= b;
-	out(ab\n);
+	ab = b <= a; 
+	cd = c > d;
+	out(ab);
+	out(cd);
 	ret 0;
 }
