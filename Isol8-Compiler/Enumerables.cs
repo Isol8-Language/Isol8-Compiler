@@ -76,6 +76,8 @@ namespace Isol8_Compiler
             MINUS,
             MULTIPLY,
             DIVIDE,
+            LESSTHAN,
+            GREATERTHAN,
         }   
     }
 }

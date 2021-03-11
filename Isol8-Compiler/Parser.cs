@@ -61,6 +61,9 @@ namespace Isol8_Compiler
                 else if (Patterns.forPattern.Match(line) != Match.Empty)
                     return ParseSubLoop(FOR, ref func, ref instruction, fileText, ref i);
 
+                else if (Patterns.comparativeOperator.Match(line) != Match.Empty)
+                    return ParseComparativeOp(ref instruction, ref func);
+
                 else if (line == string.Empty)
                     return NO_ERROR;
                 return SetLastError(i, NO_PATTERN_MATCH, fileText[i]);
@@ -352,6 +355,23 @@ namespace Isol8_Compiler
                 }
                 else
                     throw new NotImplementedException();
+
+                func.body.Add(instruction);
+                return NO_ERROR;
+            }
+
+            static ErrorCodes ParseComparativeOp(ref Instruction instruction, ref Function func)
+            {
+                if (!CheckVarState(instruction.lineContent[0].Replace("\t", ""), out _))
+                    throw new NotImplementedException("ToDo"); //ToDo: fail on non-existant variable OR inactive variable.
+
+                instruction.lineContent[0].Replace("\t", "");
+
+                switch(instruction.lineContent[3])
+                {
+                    case ">": instruction.instructionType = GREATERTHAN; break;
+                    case "<": instruction.instructionType = LESSTHAN; break;
+                }
 
                 func.body.Add(instruction);
                 return NO_ERROR;

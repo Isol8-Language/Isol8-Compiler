@@ -1,26 +1,14 @@
-a as int 0;
-b as int 0;
-input as string "Please input a number";
-output as string "Your result is:";
-aptr as ptr null;
-myBool as bool true;
+a as int 7;
+b as int 2;
+c as int 4;
+d as int 9;
+ab as bool false;
+cd as bool false;
 Initial() ret int
 {
-	out(input\n);
-	in(a);
-	out(input\n);
-	in(b);
-	out(output\n);
-	a = a - b;
-	
-	for (9)
-	{
-		out(a\n);
-		if myBool == true
-		{
-			break;
-		}
-	}
-
+	ab = a < b;
+	cd = c < d;
+	out(ab\n);
+	out(cd\n);
 	ret 0;
 }
