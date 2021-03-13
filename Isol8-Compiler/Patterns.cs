@@ -29,7 +29,7 @@ namespace Isol8_Compiler
         #region Maths Patterns
         public static readonly Regex simpleSelfAdditionOperator = new Regex("^[A-Za-z]+ \\+= [A-Za-z0-9]+;$");
         public static readonly Regex simpleMathsOperator = new Regex(@"(?:([A-Za-z]+ \= ))?[A-Za-z]+ (\+|\-|\/|\*) [A-Za-z0-9]+;$");
-        public static readonly Regex comparativeOperator = new Regex(@"^[A-Za-z]+ \= [A-Za-z]+ (\<|\>|\>=|\<=) [A-Za-z]+;$");
+        public static readonly Regex comparativeOperator = new Regex(@"^[A-Za-z]+ \= [A-Za-z]+ (\<|\>|\>=|\<=|\==|\!=) [A-Za-z]+;$");
         #endregion
         #region Memory Patterns
         public static readonly Regex deletePattern = new Regex("^del\\s[A-Za-z]+;", RegexOptions.IgnoreCase);

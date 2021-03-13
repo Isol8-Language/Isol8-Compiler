@@ -91,8 +91,8 @@ namespace Isol8_Compiler
             //       without using constants?
             output += ".CONST\n";
             output += $"\tNEW_LINE DB 10, 0\n";
-            output += $"\tISOL8_true_msg DB \"true\", 10, 0\n";
-            output += $"\tISOL8_false_msg DB \"false\", 10, 0\n";
+            output += $"\tISOL8_true_msg DB \"true\", 0\n";
+            output += $"\tISOL8_false_msg DB \"false\", 0\n";
             output += $"\tEXIT_MESSAGE DB \"Press Enter To Exit...\",10,0\n";
             output += $"\tPRINTF_DECIMAL_FLAG DD \"d%\"\n";
             output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
@@ -585,6 +585,50 @@ namespace Isol8_Compiler
                                     $"\t{exitLabel}:\n";
 
                         output += ";END LESS THAN\n\n";
+                    }
+                    else if (functions[i].body[x].instructionType == ISEQUAL)
+                    {
+                        output += ";START IS EQUAL CHECK\n";
+
+                        string jeLabel = $"{functions[i].body[x].lineContent[0]}_je_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string jneLabel = $"{functions[i].body[x].lineContent[0]}_jne_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string exitLabel = $"{functions[i].body[x].lineContent[0]}_exit_{WindowsNativeAssembly.GenerateLabelIndex()}";
+
+                        output += $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                    $"\tmov ebx, {functions[i].body[x].lineContent[4]}\n" +
+                                    $"\tcmp eax, ebx\n" +
+                                    $"\tje {jeLabel}\n" +
+                                    $"\tjne {jneLabel}\n" +
+                                    $"\t{jeLabel}:\n" +
+                                    $"\t\tmov {functions[i].body[x].lineContent[0]}, 1\n" +
+                                    $"\t\tjmp {exitLabel}\n" +
+                                    $"\t{jneLabel}:\n" +
+                                    $"\t\tmov {functions[i].body[x].lineContent[0]}, 0\n" +
+                                    $"\t{exitLabel}:\n";
+
+                        output += ";END IS EQUAL CHECK\n\n";
+                    }
+                    else if (functions[i].body[x].instructionType == ISNOTEQUAL)
+                    {
+                        output += ";START IS NOT EQUAL CHECK\n";
+
+                        string jneLabel = $"{functions[i].body[x].lineContent[0]}_jne_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string jeLabel = $"{functions[i].body[x].lineContent[0]}_je_{WindowsNativeAssembly.GenerateLabelIndex()}";
+                        string exitLabel = $"{functions[i].body[x].lineContent[0]}_exit_{WindowsNativeAssembly.GenerateLabelIndex()}";
+
+                        output += $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
+                                    $"\tmov ebx, {functions[i].body[x].lineContent[4]}\n" +
+                                    $"\tcmp eax, ebx\n" +
+                                    $"\tjne {jneLabel}\n" +
+                                    $"\tje {jeLabel}\n" +
+                                    $"\t{jneLabel}:\n" +
+                                    $"\t\tmov {functions[i].body[x].lineContent[0]}, 1\n" +
+                                    $"\t\tjmp {exitLabel}\n" +
+                                    $"\t{jeLabel}:\n" +
+                                    $"\t\tmov {functions[i].body[x].lineContent[0]}, 0\n" +
+                                    $"\t{exitLabel}:\n";
+
+                        output += ";END IS NOT EQUAL CHECK\n\n";
                     }
                     else
                         throw new Exception("This should never occur");
