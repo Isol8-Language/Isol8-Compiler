@@ -8,7 +8,7 @@ Initial() ret int
 {
 	ab = b != a; 
 	cd = c == c;
-	out(ab);
-	out(cd);
+	out(ab\n);
+	out(cd\n);
 	ret 0;
 }
