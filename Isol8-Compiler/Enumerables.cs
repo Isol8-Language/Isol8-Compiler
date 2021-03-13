@@ -80,6 +80,8 @@ namespace Isol8_Compiler
             GREATERTHAN,
             LESSEQUAL,
             GREATEREQUAL,
+            ISEQUAL,
+            ISNOTEQUAL,
         }   
     }
 }
