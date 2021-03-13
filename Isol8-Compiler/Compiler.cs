@@ -655,11 +655,23 @@ namespace Isol8_Compiler
       
         public ErrorCodes Assemble(string fileName)
         {
+            string folderPath = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64";
             Process ml64 = new Process()
             {
+                
                 StartInfo =
                 {
-                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi /link /subsystem:console /defaultlib:\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64\\msvcrt.lib\" \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64\\legacy_stdio_definitions.lib\" \"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64\\legacy_stdio_wide_specifiers.lib\" \"C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.18362.0\\ucrt\\x64\\ucrt.lib\" /entry:Initial /out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+                    Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi " +
+                    $"/link " +
+                    $"/subsystem:console " +
+                    $"/defaultlib:" +
+                    $"\"{folderPath}\\msvcrt.lib\" " +
+                    $"\"{folderPath}\\legacy_stdio_definitions.lib\" " +
+                    $"\"{folderPath}\\legacy_stdio_wide_specifiers.lib\" " +
+                    $"\"C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.18362.0\\ucrt\\x64\\ucrt.lib\" " +
+                    $"/entry:Initial " +
+                    $"/out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+
                     FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
