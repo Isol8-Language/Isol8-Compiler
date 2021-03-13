@@ -6,6 +6,7 @@
 	- [Variable Declaration](#variable-declaration)
 	- [Function Declaration](#function-declaration)
 	- [Maths Operations](#maths-operations)
+	- [Comparative Operators](#comparative-operators)
 	- [Arrays](#arrays)
 	- [Pointers](#pointers)
 	- [Input / Output](#input--output)
@@ -100,6 +101,20 @@ intVar as int 1;
 intVar += 1;		// 'intVar' now equals 2
 ```
 ____
+### Comparative Operators
+Valid operators:<br>
+* Less than - ``<``
+* Greater than - ``>``
+* Less than or equal to - ``<=``
+* Greater than or equal to - ``>=``
+* Is equal to - ``==``
+* Is not equal to - ``!=``
+
+Generic syntax for using comparative operators in ISOL8:
+```
+<BooleanVariable> = <Variable One> <operator> <Variable Two>;
+```
+____
 
 ### Arrays
 ```
@@ -145,4 +160,6 @@ for (<count>)
 	<action>
 }
 ```
+
+It is possible to break out of the for loop by using the ``break`` keyword.
 ___
