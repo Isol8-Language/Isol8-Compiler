@@ -13,6 +13,7 @@
 	- [Deleting Variables](#deleting-variables)
 	- [If Statements](#if-statements)
 	- [For Loops](#for-loops)
+	- [Comments](#comments)
 
 ## Documentation To-Do
 - [ ] ...
@@ -27,26 +28,30 @@
 ```
 No ``create`` keyword is necessary to define variables.<br><br>
 
-Supported variable types:
-* Integer (signed 32bit) - ``int`` 
-* String - ``string``
-* Pointers - ``ptr`` 
-* Boolean - ``bool`` 
-* Byte - ``byte`` 
+| Variable Type |ISOL8 Syntax | Signed? | Min. Value | Max. Value |
+|---|---|---|:---:|:---:|
+|8-bit integer|``byte``|?|0|255|
+|16-bit integer|``short``|yes|-2<sup>15</sup>|2<sup>15</sup> - 1|
+|32-bit integer|``int``|yes|-2<sup>31</sup>|2<sup>31</sup>-1|
+|64-bit integer|``long``|yes|-2<sup>63</sup>|2<sup>63</sup>-1|
+|Pointers|``ptr``|-|-|-|
+|Strings|``string``|-|-|-|
+|Booleans|``bool``|-|0|1|
+<br>
 
 Booleans can be defined in multiple ways:
 ```
-	// true/false are not case sensitive
-	bool_x as bool TRUE;
-	bool_y as bool false;
+// true/false are not case sensitive
+bool_x as bool TRUE;
+bool_y as bool false;
 
-	// numeric values instead of true/false
-	create bool_a as bool 1;
-	create bool_b as bool 0;
+// numeric values instead of true/false
+create bool_a as bool 1;
+create bool_b as bool 0;
 
-	// range of values - these get converted into 1 or 0
-	create bool_i as bool 4534;		// true
-	create bool_j as bool -66;		// false
+// range of values - these get converted into 1 or 0
+create bool_i as bool 4534;		// true
+create bool_j as bool -66;		// false
 ```
 Variables can be assigned a value after declaration, the syntax and use case follow:
 ```
@@ -72,12 +77,14 @@ ___
 
 ### Maths Operations
 
-Valid operators:<br>
-* Addition - ``+``
-* Addition Assignment - ``+=``
-* Subtraction - ``-``
-* Multiplication - ``*``
-* Division - ``/``
+|Operator|ISOL8 Syntax|
+|---|:---:|
+|Addition|``+``|
+|Addition Assignment|``+=``|
+|Subtraction|``-``|
+|Multiplication|``*``|
+|Division|``/``|
+<br>
 
 Generic syntax for using maths in ISOL8 (except for the addition assignment operator) is as follows:
 ```
@@ -102,13 +109,15 @@ intVar += 1;		// 'intVar' now equals 2
 ```
 ____
 ### Comparative Operators
-Valid operators:<br>
-* Less than - ``<``
-* Greater than - ``>``
-* Less than or equal to - ``<=``
-* Greater than or equal to - ``>=``
-* Is equal to - ``==``
-* Is not equal to - ``!=``
+
+|Operator|ISOL8 Syntax|
+|---|:---:|
+|Less than|``<``|
+|Greater than|``>``|
+|Less than or equal to|``<=``|
+|Greater than or equal to|``>=``|
+|Is equal to|``==``|
+|Is not equal to|``!=``|
 
 Generic syntax for using comparative operators in ISOL8:
 ```
@@ -138,6 +147,7 @@ Output:
 ```
 out(<VariableName>);
 ```
+Currently the ``out`` function will treat integers as signed.<br> 
 It is also possible to add a new line ``\n`` when using ``out()``, i.e. ``out(<variable>\n)`` .
 ___
 ### Deleting Variables
@@ -162,4 +172,16 @@ for (<count>)
 ```
 
 It is possible to break out of the for loop by using the ``break`` keyword.
+___
+### Comments
+Comment characters: ``##``
+
+Syntax:
+```
+##a as int 43;
+out(a/n);
+```
+This will result in a compiler error as ``a`` will not have been declared.
+
+These (``##``) must be the first two characters of the line.
 ___
