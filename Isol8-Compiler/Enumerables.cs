@@ -25,6 +25,7 @@ namespace Isol8_Compiler
             NULL,
             BYTE,
             SHORT,
+            LONG,
             INT,
             STRING,
             PTR,

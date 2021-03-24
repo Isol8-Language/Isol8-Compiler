@@ -1,8 +1,12 @@
-b as int 6435;
-a as short 0;
+a as short 32767;
+b as short -32768;
+c as long 9223372036854775807;
+d as long -9223372036854775808;
 Initial() ret int
 {
-	out(b\n);
 	out(a\n);
+	out(b\n);
+	out(c\n);
+	out(d\n);
 	ret 0;
 }

@@ -82,6 +82,9 @@ namespace Isol8_Compiler
                     case (Types.SHORT):                    
                         output += $"DW {declarationStatements[i].value}\n";
                         break;
+                    case (Types.LONG):
+                        output += $"DQ {declarationStatements[i].value}\n";
+                        break;
                 }
             }
 
@@ -95,6 +98,8 @@ namespace Isol8_Compiler
             output += $"\tEXIT_MESSAGE DB \"Press Enter To Exit...\",10,0\n";
             output += $"\tPRINTF_DECIMAL_FLAG DD \"d%\"\n";
             output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
+            output += $"\tPRINTF_SHORT_FLAG DD \"ih%\"\n";
+            output += $"\tPRINTF_LONG_FLAG DD \"ill%\"\n";
 
             //Add the .CODE section
             output += ".CODE\n";    

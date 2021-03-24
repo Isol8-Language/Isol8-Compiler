@@ -37,8 +37,15 @@ namespace Isol8_Compiler
             else if (Parser.variables[i].type == Types.SHORT)
             {
                 outString =
-                    $"\tmovzx edx, [{variableName}]\n" +
-                    $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
+                    $"\tmov dx, [{variableName}]\n" +
+                    $"\tlea rcx, [PRINTF_SHORT_FLAG]\n" +
+                    $"\tcall printf\n";
+            }
+            else if (Parser.variables[i].type == Types.LONG)
+            {
+                outString =
+                    $"\tmov rdx, [{variableName}]\n" +
+                    $"\tlea rcx, [PRINTF_LONG_FLAG]\n" +
                     $"\tcall printf\n";
             }
             else if (Parser.variables[i].type == Types.BOOL)

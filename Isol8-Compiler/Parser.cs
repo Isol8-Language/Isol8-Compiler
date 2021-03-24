@@ -96,7 +96,7 @@ namespace Isol8_Compiler
                 var trueValue = values[3].Replace(";", string.Empty);
 
                 //If the type of declaration is an INT or a pointer
-                if (declaration.type == Types.INT || declaration.type == Types.PTR || declaration.type == Types.BYTE || declaration.type == Types.SHORT || declaration.type == Types.INTARRAY)
+                if (declaration.type == Types.INT || declaration.type == Types.PTR || declaration.type == Types.BYTE || declaration.type == Types.SHORT || declaration.type == Types.INTARRAY || declaration.type == Types.LONG)
                 {
                     if (declaration.type == Types.BYTE)
                     {
@@ -106,6 +106,17 @@ namespace Isol8_Compiler
                     {
                         if (Convert.ToInt32(trueValue) > 65535)
                             throw new NotImplementedException("Short (DW) can only be 65535 max");
+                    } else if (declaration.type == Types.LONG)
+                    {
+                        try
+                        {
+                            //if (Convert.ToInt64(trueValue) > 9223372036854775807)
+                            //    throw new NotImplementedException("Long (DQ) can only be in range -2^63 to 2^63-1");
+                            long.TryParse(trueValue, out _);
+                        } catch (OverflowException)
+                        {
+                            throw new Exception("Long (DQ) can only be in range -2^63 to 2^63-1");
+                        }
                     }
 
                     //If value declared as hex, remove 0x notation for assembly conversion to Xh. 
@@ -121,14 +132,38 @@ namespace Isol8_Compiler
                     }
 
                     //If the string is NULL then it's essentially 0 in assembly.
-                    if (trueValue.ToUpper() == "NULL")
+                    /*if (trueValue.ToUpper() == "NULL")
                         declaration.value = "0";
 
                     //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
                     else if (int.TryParse(trueValue, out _))
                         declaration.value = trueValue;
                     else
-                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);*/
+
+                    if(trueValue.ToUpper() == "NULL")
+                    {
+                        declaration.value = "0";
+                    } else if (declaration.type == Types.INT || declaration.type == Types.SHORT)
+                    {
+                        if(int.TryParse(trueValue, out _))
+                        {
+                            declaration.value = trueValue;
+                        } else
+                        {
+                            return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                        }
+                    } else if (declaration.type == Types.LONG)
+                    {
+                        if (long.TryParse(trueValue, out _))
+                        {
+                            declaration.value = trueValue;
+                        } else
+                        {
+                            return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                        }
+                    }
+
                 } 
                 else if (declaration.type == Types.BOOL)
                 {
