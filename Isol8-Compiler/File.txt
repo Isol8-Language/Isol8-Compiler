@@ -4,7 +4,7 @@ c as long 9223372036854775807;
 d as long -9223372036854775808;
 Initial() ret int
 {
-	out(a\n);
+##  out(a\n);
 	out(b\n);
 	out(c\n);
 	out(d\n);

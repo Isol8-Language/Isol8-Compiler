@@ -110,8 +110,6 @@ namespace Isol8_Compiler
                     {
                         try
                         {
-                            //if (Convert.ToInt64(trueValue) > 9223372036854775807)
-                            //    throw new NotImplementedException("Long (DQ) can only be in range -2^63 to 2^63-1");
                             long.TryParse(trueValue, out _);
                         } catch (OverflowException)
                         {
@@ -130,21 +128,15 @@ namespace Isol8_Compiler
                             return SetLastError(lineIndex, INVALID_VAR_VALUE, lineContent);
 
                     }
-
+                    
                     //If the string is NULL then it's essentially 0 in assembly.
-                    /*if (trueValue.ToUpper() == "NULL")
-                        declaration.value = "0";
-
-                    //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
-                    else if (int.TryParse(trueValue, out _))
-                        declaration.value = trueValue;
-                    else
-                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);*/
-
                     if(trueValue.ToUpper() == "NULL")
                     {
                         declaration.value = "0";
-                    } else if (declaration.type == Types.INT || declaration.type == Types.SHORT)
+                    }
+                    //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
+                    // long is seperatred from int and short due to size, requiring different method of parsing
+                    else if (declaration.type == Types.INT || declaration.type == Types.SHORT)
                     {
                         if(int.TryParse(trueValue, out _))
                         {
@@ -448,18 +440,17 @@ namespace Isol8_Compiler
             //For every line in the file
             for (int i = 0; i < fileText.Count; i++)
             {
+                //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
+                if (fileText[i].Length >= 2 && fileText[i][0..2] == "##")
+                    continue;
+
                 //Remove tabs and leading spaces.
                 for (int b = 0; b < fileText.Count; b++)
                     fileText[b] = fileText[b].Replace("\t", "").Trim(' ');
                 
 
-
                 /*Loop will look for global declarations or functions. 
-                 * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/
-
-                //Ignore comments - ToDo: pass to assembly file, comments start with ; in MASM?
-                if (fileText[i].Length >= 2 && fileText[i][0..2] == "��")
-                    continue;
+                 * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/              
 
                 #region Declarations
                 //If a standard declaration pattern is found
@@ -519,6 +510,11 @@ namespace Isol8_Compiler
                                 closeFunction = true;
                                 break;
                             }
+
+                            //Ignore comments
+                            //TODO: duplicate function from above as checking did not occur within function brackets, possible bug? 
+                            if (fileText[i].Length >= 2 && fileText[i][0..2] == "##")
+                                continue;
 
                             //Create a new instruction and grab the line content, remove the ; and split on the characters.
                             Instruction instruction = new Instruction
