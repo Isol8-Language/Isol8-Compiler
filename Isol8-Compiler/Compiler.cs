@@ -77,12 +77,11 @@ namespace Isol8_Compiler
                         output += "DB " + declarationStatements[i].value + '\n';
                         break;
                     case (Types.INTARRAY):
-                   {
                         output += $"DD {Convert.ToInt32(declarationStatements[i].value)} dup(0)\n";
                         break;
-                    }
-
-
+                    case (Types.SHORT):                    
+                        output += $"DW {declarationStatements[i].value}\n";
+                        break;
                 }
             }
 

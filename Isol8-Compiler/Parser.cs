@@ -96,13 +96,18 @@ namespace Isol8_Compiler
                 var trueValue = values[3].Replace(";", string.Empty);
 
                 //If the type of declaration is an INT or a pointer
-                if (declaration.type == Types.INT || declaration.type == Types.PTR || declaration.type == Types.BYTE || declaration.type == Types.INTARRAY)
+                if (declaration.type == Types.INT || declaration.type == Types.PTR || declaration.type == Types.BYTE || declaration.type == Types.SHORT || declaration.type == Types.INTARRAY)
                 {
                     if (declaration.type == Types.BYTE)
                     {
                         if (Convert.ToInt32(trueValue) > 255)
                             throw new NotImplementedException("ToDo: bytes can only be 255 max");
+                    } else if (declaration.type == Types.SHORT)
+                    {
+                        if (Convert.ToInt32(trueValue) > 65535)
+                            throw new NotImplementedException("Short (DW) can only be 65535 max");
                     }
+
                     //If value declared as hex, remove 0x notation for assembly conversion to Xh. 
                     if (trueValue.Contains("0x"))
                     {

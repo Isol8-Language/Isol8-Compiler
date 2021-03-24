@@ -21,7 +21,6 @@ namespace Isol8_Compiler
                 newline = true;
             }
 
-
             int i;
             for (i = 0; i < Parser.variables.Count-1; i++)
                 if (variableName == Parser.variables[i].name)
@@ -35,9 +34,16 @@ namespace Isol8_Compiler
                     $"\tcall printf\n";
                     
             }
+            else if (Parser.variables[i].type == Types.SHORT)
+            {
+                outString =
+                    $"\tmovzx edx, [{variableName}]\n" +
+                    $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" +
+                    $"\tcall printf\n";
+            }
             else if (Parser.variables[i].type == Types.BOOL)
             {
-                string exitLabel = variableName +  "_Exit_LI" + GenerateLabelIndex().ToString();
+                string exitLabel = variableName + "_Exit_LI" + GenerateLabelIndex().ToString();
                 string trueLabel = variableName + "_True_LI" + GenerateLabelIndex().ToString();
                 string falseLabel = variableName + "_False_LI" + GenerateLabelIndex().ToString();
                 outString =
@@ -53,28 +59,28 @@ namespace Isol8_Compiler
                     $"\t\tcall printf\n" +
                     //$"\t\tjmp {exitLabel}\n" +
                     $"\t{exitLabel}:\n";//+
-                    //$"\t\tnop\n";
+                                        //$"\t\tnop\n";
             }
             else if (Parser.variables[i].type == Types.PTR)
             {
                 outString =
-                        $"\tmov rax, [{variableName}]\n" + 
+                        $"\tmov rax, [{variableName}]\n" +
                         $"\tmov rbx, [rax]\n" +
-                        $"\tmov r10, 40\n" + 
-                        $"\tmov [rsp+r10], rbx\n" + 
+                        $"\tmov r10, 40\n" +
+                        $"\tmov [rsp+r10], rbx\n" +
                         $"\tmov eax, [rsp+r10]\n" +
-                        $"\t_ascii_conv:\n" +                        
+                        $"\t_ascii_conv:\n" +
                         $"\t\tmov ecx, 10\n" +
-                        $"\t\txor edx, edx\n" + 
-                        $"\t\tdiv ecx\n" + 
-                        $"\t\tadd edx, 30h\n" +  
+                        $"\t\txor edx, edx\n" +
+                        $"\t\tdiv ecx\n" +
+                        $"\t\tadd edx, 30h\n" +
                         $"\t\tmov [rsp+r10], rdx\n" +
                         $"\t\tlea rcx, [rsp+r10]\n" +
-                        $"\t\tmov rbx, rax\n" + 
-                        $"\t\tcall printf\n" + 
+                        $"\t\tmov rbx, rax\n" +
+                        $"\t\tcall printf\n" +
                         $"\t\tmov rax, rbx\n" +
                         //$"\t\tinc r10\n" + 
-                        $"\t\ttest eax, eax\n" + 
+                        $"\t\ttest eax, eax\n" +
                         $"\t\tjnz _ascii_conv\n";
 
                 /*
@@ -104,7 +110,7 @@ namespace Isol8_Compiler
                 outString =
                 $"\tlea rcx, [{variableName}]\n" +
                 "\tcall printf\n";
-            
+
             }
             if (newline)
             {

@@ -1,14 +1,8 @@
-a as int 7;
-b as int 2;
-c as int 4;
-d as int 9;
-ab as bool true;
-cd as bool false;
+b as int 6435;
+a as short 0;
 Initial() ret int
 {
-	ab = b != a; 
-	cd = c == c;
-	out(ab\n);
-	out(cd\n);
+	out(b\n);
+	out(a\n);
 	ret 0;
 }
