@@ -136,7 +136,7 @@ namespace Isol8_Compiler
                     }
                     //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
                     // long is seperatred from int and short due to size, requiring different method of parsing
-                    else if (declaration.type == Types.INT || declaration.type == Types.SHORT)
+                    else if (declaration.type == Types.INT || declaration.type == Types.SHORT || declaration.type == Types.BYTE)
                     {
                         if(int.TryParse(trueValue, out _))
                         {
