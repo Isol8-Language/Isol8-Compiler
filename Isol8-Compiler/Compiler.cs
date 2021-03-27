@@ -372,6 +372,11 @@ namespace Isol8_Compiler
 #endif
                     }
 
+                    else if (functions[i].body[x].instructionType == FUNCASSIGNMENT)
+                    {
+                        int me = 5;
+                    }
+
                     else if(functions[i].body[x].instructionType == PLUS)
                     {
 #if (ASMComment)

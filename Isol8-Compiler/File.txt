@@ -4,13 +4,19 @@ b as short -32768;
 c as long 9223372036854775807;
 d as long -9223372036854775808;
 e as int 2147483647;
+f as int 0;
 Initial() ret int
 {
-	out(x\n);
-    out(a\n);
-	out(b\n);
-	out(c\n);
-	out(d\n);
-	out(e\n);
+##	out(x\n);
+##  out(a\n);
+##	out(b\n);
+##	out(c\n);
+##	out(d\n);
+##	out(e\n);
+	f = TestMe();
 	ret 0;
+}
+TestMe() ret int
+{
+	ret 5;
 }

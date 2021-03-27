@@ -54,6 +54,11 @@ namespace Isol8_Compiler
 
                 else if (Patterns.assignPattern.Match(line) != Match.Empty)
                     return ParseAssignment(ref instruction, ref func);
+                
+                else if (Patterns.funcAssignPattern.Match(line) != Match.Empty)
+                {
+                    throw new NotImplementedException("ToDo");
+                }
 
                 else if (Patterns.ifPattern.Match(line) != Match.Empty)
                     return ParseSubLoop(IF, ref func, ref instruction, fileText, ref i);

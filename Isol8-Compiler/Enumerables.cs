@@ -65,6 +65,7 @@ namespace Isol8_Compiler
             RET,
             PLUSEQUALS,
             ASSIGNMENT,
+            FUNCASSIGNMENT,
             ASSIGNPTR,
             OUT,
             IN,
