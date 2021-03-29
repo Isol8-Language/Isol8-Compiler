@@ -440,6 +440,9 @@ namespace Isol8_Compiler
             #endregion
 
             //Read all the files into a list of strings.
+            if (!File.Exists(inputFileName))
+                return SetLastError(-1, INPUT_FILE_DOES_NOT_EXIST, inputFileName);
+            
             var fileText = File.ReadLines(inputFileName).ToList();
 
             //For every line in the file
