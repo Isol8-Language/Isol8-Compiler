@@ -9,6 +9,7 @@ namespace Isol8_Compiler
 {
     public static class Patterns
     {
+        public static readonly Regex dependPattern = new Regex("^depend .*$", RegexOptions.IgnoreCase);
         public static readonly Regex assignPattern = new Regex("^[a-zA-Z]+ = \"?[a-zA-Z0-9]+\"?;$");
         public static readonly Regex funcAssignPattern = new Regex("^[a-zA-Z]+ = \"?[a-zA-Z0-9]+\\(\\)\"?;$");
         public static readonly Regex standardDeclarePattern = new Regex(@"^\w+ \b(AS|as)\b \b(?:INT|STRING|PTR|BOOL|BYTE|SHORT|LONG)\b (.*);$", RegexOptions.IgnoreCase);

@@ -51,7 +51,7 @@ namespace Isol8_Compiler
             
             //Add the .DATA section -- ToDo: remove hardcoded printf
             string output = "EXTERN printf :PROC\nEXTERN scanf :PROC\n.DATA\n";
-            output += $"\tEXIT_LOOP_CODE DD 0\n";
+            output += $"\tEXIT_LOOP_CODE DD 0\n"; 
 
             //For every declaration statement found in the parse.
             for (var i = 0; i < declarationStatements.Count; i++)
@@ -664,7 +664,12 @@ namespace Isol8_Compiler
       
         public ErrorCodes Assemble(string fileName)
         {
-            string folderPath = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Tools\\MSVC\\14.28.29333\\lib\\x64";
+            
+            string links = "/defaultlib:";
+            for (int i = 0; i < dependancies.Count; i++)
+                links += $"\"{dependancies[i]}\"" + " ";
+            
+
             Process ml64 = new Process()
             {
                 
@@ -673,13 +678,9 @@ namespace Isol8_Compiler
                     Arguments = $"\"{Environment.CurrentDirectory}\\Output\\{fileName}.asm\" /Zi " +
                     $"/link " +
                     $"/subsystem:console " +
-                    $"/defaultlib:" +
-                    $"\"{folderPath}\\msvcrt.lib\" " +
-                    $"\"{folderPath}\\legacy_stdio_definitions.lib\" " +
-                    $"\"{folderPath}\\legacy_stdio_wide_specifiers.lib\" " +
-                    $"\"C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.18362.0\\ucrt\\x64\\ucrt.lib\" " +
+                    links + 
                     $"/entry:Initial " +
-                    $"/out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\"",
+                    $"/out:\"{Directory.GetCurrentDirectory()}\\Output\\{outputName}.exe\" ",
 
                     FileName = Path.Combine(Directory.GetCurrentDirectory(), "ML64\\ml64.exe"),
                     UseShellExecute = false,
@@ -687,7 +688,9 @@ namespace Isol8_Compiler
                     CreateNoWindow = true,
                 }
                 
+                
             };
+            
             try
             {
                 ml64.Start();

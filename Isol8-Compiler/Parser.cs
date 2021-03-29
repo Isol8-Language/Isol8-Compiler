@@ -15,6 +15,7 @@ namespace Isol8_Compiler
     public static class Parser
     {
         internal static readonly List<Variable> variables = new List<Variable>();
+        internal static readonly List<string> dependancies = new List<string>();
         internal static readonly List<Declaration> declarationStatements = new List<Declaration>();
         internal static readonly List<Function> functions = new List<Function>();
 
@@ -455,14 +456,30 @@ namespace Isol8_Compiler
                 //Remove tabs and leading spaces.
                 for (int b = 0; b < fileText.Count; b++)
                     fileText[b] = fileText[b].Replace("\t", "").Trim(' ');
-                
 
-                /*Loop will look for global declarations or functions. 
-                 * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/              
+
+                /*Loop will look for global declarations, dependancies, or functions. 
+                 * There is nothing else to check for, as other instructions must be made INSIDE of functions.*/
+
+                #region Dependancies
+                if (Patterns.dependPattern.Match(fileText[i]) != Match.Empty)
+                {
+                    ErrorCodes errorCode;
+                    string dependency = fileText[i].Split("depend ")[1].Replace('"', ' ').Trim();
+                    if (File.Exists(dependency))
+                    {
+                        dependancies.Add(dependency);
+                    }
+                    else
+                    {
+                        throw new Exception("File not found TODO:");
+                    }
+                }
+                #endregion
 
                 #region Declarations
                 //If a standard declaration pattern is found
-                if (Patterns.standardDeclarePattern.Match(fileText[i]) != Match.Empty)
+                else if (Patterns.standardDeclarePattern.Match(fileText[i]) != Match.Empty)
                 {
                     //Generate an array of values from the line, splitting on a space.
                     var values = fileText[i].Split(" ");
