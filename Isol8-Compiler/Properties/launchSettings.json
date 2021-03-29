@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Isol8-Compiler": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "File.txt HelloWord"
     }
   }
 }
