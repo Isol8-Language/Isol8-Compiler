@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Isol8-Compiler": {
-      "commandName": "Project",
-      "commandLineArgs": "File.txt MyApplication"
+      "commandName": "Project"
     }
   }
 }

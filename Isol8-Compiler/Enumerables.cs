@@ -48,6 +48,9 @@ namespace Isol8_Compiler
             DUPLICATE_FUNC_NAME = 0x20011,
             NO_PATTERN_MATCH = 0x20012,
             INACTIVE_VAR = 0x20013,
+            TOO_MANY_CL_ARGUMENTS = 0x20014,
+            INVALID_FILE_NAME = 0x20015,
+            TOO_FEW_CLI_ARGUMENTS = 0x20016,
         }
         internal enum Scope
         {
