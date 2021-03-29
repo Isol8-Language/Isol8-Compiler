@@ -16,12 +16,13 @@ namespace Isol8_Compiler
     }
     class Program
     {
-
         static void Main(string[] args)
         {
+            string fileName = args[0];
+            string outputName = args[1];
             Console.WriteLine($"{Resources.title}");
 
-            Compiler isol8Compiler = new Compiler("File.txt", "OutputName");
+            Compiler isol8Compiler = new Compiler(fileName, outputName);
          
             Console.WriteLine($"Compiling {isol8Compiler.outputName} to Assembly...");
             ErrorCodes eStatus = isol8Compiler.CreateAssemblyFile();
