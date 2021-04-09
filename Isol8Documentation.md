@@ -2,9 +2,11 @@
 # ISOL8 Language Documentation
 
 - [Documentation To-Do](#documentation-to-do)
+- [ISOL8 Dependencies](#isol8-dependencies)
 - [Language Syntax](#language-syntax)
 	- [Variable Declaration](#variable-declaration)
 	- [Function Declaration](#function-declaration)
+	- [External Libraries](#external-libraries)
 	- [Maths Operations](#maths-operations)
 	- [Comparative Operators](#comparative-operators)
 	- [Arrays](#arrays)
@@ -20,13 +22,17 @@
 <br>
 <br>
 
+## ISOL8 Dependencies
+Currently recommended to have **Microsoft Visual Studio 2019 Enterprise** installed for maximum compatability.
+<br>
+<br>
+
 ## Language Syntax
 
 ### Variable Declaration
 ```
 <VariableName> as <VariableType> <VariableValue>;
 ```
-No ``create`` keyword is necessary to define variables.<br><br>
 
 | Variable Type |ISOL8 Syntax | Signed? | Min. Value | Max. Value |
 |---|---|---|:---:|:---:|
@@ -46,12 +52,12 @@ bool_x as bool TRUE;
 bool_y as bool false;
 
 // numeric values instead of true/false
-create bool_a as bool 1;
-create bool_b as bool 0;
+bool_a as bool 1;
+bool_b as bool 0;
 
 // range of values - these get converted into 1 or 0
-create bool_i as bool 4534;		// true
-create bool_j as bool -66;		// false
+bool_i as bool 4534;		// true
+bool_j as bool -66;		// false
 ```
 Variables can be assigned a value after declaration, the syntax and use case follow:
 ```
@@ -74,7 +80,13 @@ ___
 ```
 The program must contain one method/function which is called ``Initial()``, this is the entry point.
 ___
-
+### External Libraries
+Generic syntax for importing external libraries:
+```
+depend "<path to library>"
+```
+These should be placed at the very beginning of the file.
+___
 ### Maths Operations
 
 |Operator|ISOL8 Syntax|
@@ -143,11 +155,21 @@ Input:
 ```
 in(<variableName>);
 ```
-Output:
+Output:<br>
 ```
 out(<VariableName>);
 ```
-Currently the ``out`` function will treat integers as signed.<br> 
+
+To use ``out()``, the required ``printf`` libraries must first be declared (see [external libraries](#external-libraries) for more):
+
+```
+depend "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\ucrt\x64\ucrt.lib"
+depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\msvcrt.lib"
+depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\legacy_stdio_definitions.lib"
+depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\legacy_stdio_wide_specifiers.lib"
+```
+
+Currently the ``out()`` function will treat integers as signed.<br> 
 It is also possible to add a new line ``\n`` when using ``out()``, i.e. ``out(<variable>\n)`` .
 ___
 ### Deleting Variables
