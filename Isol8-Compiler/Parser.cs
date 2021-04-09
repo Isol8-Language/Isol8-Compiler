@@ -235,7 +235,14 @@ namespace Isol8_Compiler
 
                     instruction.assignmentType = variables[index].type;
                 }
-
+                if (type == FOR)
+                {
+                    if (!int.TryParse(instruction.lineContent[2], out int _))
+                        if (!CheckVarState(instruction.lineContent[2], out int index))
+                            throw new NotImplementedException("Fail on non existent var or inactive");
+                        else
+                            instruction.assignmentType = variables[index].type;
+                }
                 instruction.instructionType = type;
                 func.body.Add(instruction);
 

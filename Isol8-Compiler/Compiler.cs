@@ -143,7 +143,7 @@ namespace Isol8_Compiler
                         //If only adding 1, add some efficiency by using INC as opposed to ADD.
                         if (functions[i].body[x].lineContent[2] == "1")
                             output += $"\tinc " +
-                            $"[{functions[i].body[x].lineContent[0][1..]}]\n";
+                            $"[{functions[i].body[x].lineContent[0]/*[1..]*/}]\n";
 
                         //If the right hand side of the operator is a variable.
                         else if (!int.TryParse(functions[i].body[x].lineContent[2], out int _))
@@ -153,7 +153,7 @@ namespace Isol8_Compiler
 
                         else
                             output += $"\tadd " +
-                            $"[{functions[i].body[x].lineContent[0][1..]}], " +
+                            $"[{functions[i].body[x].lineContent[0]/*[1..]*/}], " +
                             $"{functions[i].body[x].lineContent[2]}\n";
 #if (ASMComment)
                         output += ";END INC/ADD ROUTINE\n\n";
@@ -297,19 +297,26 @@ namespace Isol8_Compiler
                             }
                         }
 
-                        if (Convert.ToInt32(functions[i].body[x].lineContent[2]) >= int.MaxValue)
-                            throw new NotImplementedException("64-bit loops not yet implemented");
-                        
                         register = "eax";
                         countRegister = "ecx";
-
                         output += $"\txor {countRegister}, {countRegister}\n";
-                        output += $"\tmov {register}, {functions[i].body[x].lineContent[2]}\n";
+
+                        if (functions[i].body[x].assignmentType !=  Types.NULL)
+                        {
+                            output += $"\tmov {register}, [{functions[i].body[x].lineContent[2]}]\n";
+                        }
+                        else
+                        {
+                            if (Convert.ToInt32(functions[i].body[x].lineContent[2]) >= int.MaxValue)
+                                throw new NotImplementedException("64-bit loops not yet implemented");
+                            output += $"\tmov {register}, {functions[i].body[x].lineContent[2]}\n";
+                        }
                         output += $"\t{continueLoopLabel}:\n";
                         output += $"\tcmp {register}, {countRegister}\n";
                         output += $"\tje {endLoopLabel}\n";
                         output += $"\tmov [rsp+20h], {register}\n";
                         output += $"\tmov [rsp+24h], {countRegister}\n";
+
                     }
                     else if (functions[i].body[x].instructionType == ENDFOR)
                     {
