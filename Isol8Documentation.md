@@ -2,7 +2,7 @@
 # ISOL8 Language Documentation
 
 - [Documentation To-Do](#documentation-to-do)
-- [ISOL8 Dependancies](#isol8-dependancies)
+- [ISOL8 Dependencies](#isol8-dependencies)
 - [Language Syntax](#language-syntax)
 	- [Variable Declaration](#variable-declaration)
 	- [Function Declaration](#function-declaration)
@@ -21,7 +21,8 @@
 - [ ] ...
 <br>
 <br>
-## ISOL8 Dependancies
+
+## ISOL8 Dependencies
 Currently recommended to have **Microsoft Visual Studio 2019 Enterprise** installed for maximum compatability.
 <br>
 <br>
