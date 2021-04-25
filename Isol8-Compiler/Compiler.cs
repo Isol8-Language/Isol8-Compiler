@@ -50,7 +50,7 @@ namespace Isol8_Compiler
             var outputFile = File.Create($"Output\\{outputName}.asm");
             
             //Add the .DATA section -- ToDo: remove hardcoded printf
-            string output = "EXTERN printf :PROC\nEXTERN scanf :PROC\n.DATA\n";
+            string output = "EXTERN printf :PROC\nEXTERN scanf :PROC\nEXTERN scanf_s :PROC\n.DATA\n";
             output += $"\tEXIT_LOOP_CODE DD 0\n"; 
 
             //For every declaration statement found in the parse.

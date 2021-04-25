@@ -142,12 +142,12 @@ namespace Isol8_Compiler
                 return  $"\tlea rdx, [{variableName}]\n" + 
                         $"\tlea rcx, [PRINTF_DECIMAL_FLAG]\n" + 
                         $"\tcall scanf\n";
-            } /*else if (Parser.variables[i].type == Types.STRING)
+            } else if (Parser.variables[i].type == Types.STRING)
             {
                 return  $"\tlea rdx, [{variableName}]\n" + 
                         $"\tlea rcx, [PRINTF_STRING_FLAG]\n" + 
                         $"\tcall scanf_s\n";
-            }*/else
+            } else
             {
                 throw new NotImplementedException("Todo");
             }

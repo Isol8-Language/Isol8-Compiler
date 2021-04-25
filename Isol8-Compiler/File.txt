@@ -2,30 +2,21 @@ depend "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.18362.0\ucrt\x64\ucrt.li
 depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\msvcrt.lib"
 depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\legacy_stdio_definitions.lib"
 depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\legacy_stdio_wide_specifiers.lib"
-x as int 1;
-a as int 100;
-b as short -32768;
-c as long 9223372036854775807;
-d as long -9223372036854775808;
-e as int 2147483647;
-f as int 0;
+fname as string "\0";
+fnamePrompt as string "Enter your first name:";
+sname as string "\0";
+snamePrompt as string "Enter your surname:";
+namePrompt as string "Your name is ";
+emptyPrompt as string " ";
 Initial() ret int
 {
-	out(x\n);
-	out(a\n);
-	out(b\n);
-	out(c\n);
-	out(d\n);
-	out(e\n);
-	for (a)
-	{
-		out(x\n);
-		x += 1;
-	}
-	##f = TestMe();
+	out(fnamePrompt\n);
+	in(fname);
+	out(snamePrompt\n);
+	in(sname);
+	out(namePrompt);
+	out(fname);
+	out(emptyPrompt);
+	out(sname\n);
 	ret 0;
-}
-TestMe() ret int
-{
-	ret 5;
 }
