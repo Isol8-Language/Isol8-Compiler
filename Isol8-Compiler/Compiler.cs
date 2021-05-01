@@ -169,7 +169,7 @@ namespace Isol8_Compiler
                         output += $"\tlea " +
                             $"rax, " +
                             $"[{functions[i].body[x].lineContent[4]}]\n";
-                        output += $"\tmov {functions[i].body[x].lineContent[0][1..]}, rax\n";
+                        output += $"\tmov {functions[i].body[x].lineContent[0]}, rax\n";
                         output += $"\tpop rax\n";
 #if (ASMComment)
                         output += $";END ASSIGNPTR ROUTINE\n\n";
