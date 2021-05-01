@@ -166,9 +166,7 @@ namespace Isol8_Compiler
 #endif
                         //ToDo: effiency? 
                         output += $"\tpush rax\n";
-                        output += $"\tlea " +
-                            $"rax, " +
-                            $"[{functions[i].body[x].lineContent[4]}]\n";
+                        output += $"\tlea " + $"rax, " + $"[{functions[i].body[x].lineContent[4]}]\n";
                         output += $"\tmov {functions[i].body[x].lineContent[0]}, rax\n";
                         output += $"\tpop rax\n";
 #if (ASMComment)
