@@ -95,7 +95,7 @@ namespace Isol8_Compiler
             output += $"\tNEW_LINE DB 10, 0\n";
             output += $"\tISOL8_true_msg DB \"true\", 0\n";
             output += $"\tISOL8_false_msg DB \"false\", 0\n";
-            output += $"\tEXIT_MESSAGE DB \"Press Enter To Exit...\",10,0\n";
+            output += $"\tEXIT_MESSAGE DB \"Type any key and press enter To Exit...\",10,0\n";
             output += $"\tPRINTF_DECIMAL_FLAG DD \"d%\"\n";
             output += $"\tPRINTF_STRING_FLAG DD \"s%\"\n";
             output += $"\tPRINTF_SHORT_FLAG DD \"ih%\"\n";
