@@ -108,11 +108,13 @@ namespace Isol8_Compiler
                     {
                         if (Convert.ToInt32(trueValue) > 255)
                             throw new NotImplementedException("ToDo: bytes can only be 255 max");
-                    } else if (declaration.type == Types.SHORT)
+                    } 
+                    else if (declaration.type == Types.SHORT)
                     {
                         if (Convert.ToInt32(trueValue) > 65535)
                             throw new NotImplementedException("Short (DW) can only be 65535 max");
-                    } else if (declaration.type == Types.LONG)
+                    } 
+                    else if (declaration.type == Types.LONG)
                     {
                         try
                         {
@@ -122,6 +124,9 @@ namespace Isol8_Compiler
                             throw new Exception("Long (DQ) can only be in range -2^63 to 2^63-1");
                         }
                     }
+                    else if (declaration.type == Types.PTR)
+                        if (trueValue.ToUpper() != "NULL")
+                            return SetLastError(lineIndex, ErrorCodes.INVALID_VAR_VALUE, lineContent);
 
                     //If value declared as hex, remove 0x notation for assembly conversion to Xh. 
                     if (trueValue.Contains("0x"))
@@ -151,7 +156,8 @@ namespace Isol8_Compiler
                         {
                             return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
                         }
-                    } else if (declaration.type == Types.LONG)
+                    } 
+                    else if (declaration.type == Types.LONG)
                     {
                         if (long.TryParse(trueValue, out _))
                         {
