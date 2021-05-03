@@ -289,7 +289,7 @@ namespace Isol8_Compiler
 
                         ErrorCodes errorCodes = ParseGenerics(fileText[i], ref innerInstruction, ref func, fileText, ref i);
                         if (errorCodes != NO_ERROR)
-                            throw new NotImplementedException("ToDo");
+                            return SetLastError(i, errorCodes, fileText[i]);
 
                     }
 
