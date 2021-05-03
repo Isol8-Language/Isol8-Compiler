@@ -32,7 +32,7 @@ Initial() ret int
 			}
 			if sunOut == false
 			{
-				out(noSunPrompt\n)
+				out(noSunPrompt\n);
 			}
 		}
 
