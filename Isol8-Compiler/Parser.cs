@@ -637,10 +637,10 @@ namespace Isol8_Compiler
                 else
                 {
                     //Temporary fix:
-                    if (fileText[i].Contains("{") || fileText[i].Contains("}"))
+                    if (fileText[i].Contains("{") || fileText[i].Contains("}") || fileText[i] == string.Empty)
                         continue;
                     
-                    return SetLastError(i, NO_PATTERN_MATCH, fileText[i]);
+                    return SetLastError(i+1, NO_PATTERN_MATCH, fileText[i]);
                     
                 }
             }
