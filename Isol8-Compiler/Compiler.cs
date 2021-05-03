@@ -1,17 +1,13 @@
-﻿//Remove this define before release
-#define ASMComment
+﻿#define ASMComment
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using static Isol8_Compiler.Enumerables;
 using static Isol8_Compiler.Enumerables.InstructionTypes;
 using static Isol8_Compiler.Enumerables.ErrorCodes;
 using static Isol8_Compiler.Parser;
-using System.Linq;
 
 
 namespace Isol8_Compiler
@@ -68,7 +64,7 @@ namespace Isol8_Compiler
                         output += "DQ " + declarationStatements[i].value + '\n'; 
                         break;
                     case (Types.STRING):
-                        output += "DB " + declarationStatements[i].value + ", 0" +/*", 10, 0"+*/ '\n';
+                        output += "DB " + declarationStatements[i].value + ", 0" + '\n';
                         break;
                     case (Types.BOOL):
                         output += "DB " + declarationStatements[i].value + '\n';
@@ -88,9 +84,7 @@ namespace Isol8_Compiler
                 }
             }
 
-            //Adding the .CONST section
-            // TODO: Is there a better way to print true/false for booleans
-            //       without using constants?
+            //Add the .CONST section.
             output += ".CONST\n";
             output += $"\tNEW_LINE DB 10, 0\n";
             output += $"\tISOL8_true_msg DB \"true\", 0\n";
@@ -124,16 +118,13 @@ namespace Isol8_Compiler
 #if (ASMComment)
                         output += ";START FUNCTION EPILOGUE\n";
 #endif
-
                         if (functions[i].body[x].lineContent.Length >= 2)
                             output += Assembly.CreateFunctionClose(functions[i].name, functions[i].body[x].lineContent[1]);
                         else
                             output += Assembly.CreateFunctionClose(functions[i].name);
-
 #if (ASMComment)
                         output += ";END FUNCTION EPILOGUE\n";
 #endif
-
                     }
                     else if (functions[i].body[x].instructionType == PLUSEQUALS)
                     {
@@ -164,7 +155,7 @@ namespace Isol8_Compiler
 #if (ASMComment)
                         output += $";START ASSIGNPTR ROUTINE\n";
 #endif
-                        //ToDo: effiency? 
+                        //ToDo: Make more efficient.
                         output += $"\tpush rax\n";
                         output += $"\tlea " + $"rax, " + $"[{functions[i].body[x].lineContent[4]}]\n";
                         output += $"\tmov {functions[i].body[x].lineContent[0]}, rax\n";
@@ -187,7 +178,7 @@ namespace Isol8_Compiler
                         }
                         else
                         {
-                            //ToDo: Brandon
+                            //ToDo: Add Linux Implementation.
                             throw new Exception("ToDo: Linux Implementation");
                         }
                     }
@@ -201,30 +192,30 @@ namespace Isol8_Compiler
 
                             output += $";END SCANF ROUTINE\n\n";
                         }
+                        //ToDo: Add Linux implementation.
+                        else
+                            throw new NotImplementedException();
                     }
                     else if (functions[i].body[x].instructionType == DELETE)
                     {
                         int varIndex = -1;
                         for (int vari = 0; vari < variables.Count; vari++)
-                        {
                             if (variables[vari].name == functions[i].body[x].lineContent[1])
                                 varIndex = vari;
-                        }
+                        
 
                         if (variables[varIndex].type == Types.INT)
                         {
 #if (ASMComment)
                             output += ";START DEL ROUTINE\n";
 #endif
-
                             output += Assembly.Delete4ByteVariable(functions[i].body[x].lineContent[1]);
 #if (ASMComment)
                             output += ";END DEL ROUTINE\n\n";
 #endif
                         }
                         else
-                            throw new NotImplementedException("ToDo");
-
+                            throw new NotImplementedException();
                     }
 
                     else if (functions[i].body[x].instructionType == IF)
@@ -233,8 +224,6 @@ namespace Isol8_Compiler
                         output += ";START IF ROUTINE\n";
 #endif
                         string ifnotTrueLabel = "False_LI" + WindowsNativeAssembly.GenerateLabelIndex().ToString();
-
-                        //if (functions[i].body[x].)
 
                         if (functions[i].body[x].assignmentType == Types.INT)
                             output += $"\tmov eax, [{functions[i].body[x].lineContent[1]}]\n";
@@ -279,36 +268,33 @@ namespace Isol8_Compiler
 
 
                         for (int xi = x; xi < functions[i].body.Count; xi++)
-                        {
                             if (functions[i].body[xi].instructionType == ENDFOR)
                             {
 
                                 endLoopLabel = functions[i].body[xi].lineContent[0];
                                 continueLoopLabel = functions[i].body[xi].lineContent[1];
                                 for (int xii = x; xii < functions[i].body.Count; xii++)
-                                {
                                     if (functions[i].body[xii].instructionType == BREAK)
                                         functions[i].body[xii].lineContent[0] = endLoopLabel;
 
-                                }
                                 break;
                             }
-                        }
+                        
 
                         register = "eax";
                         countRegister = "ecx";
                         output += $"\txor {countRegister}, {countRegister}\n";
 
                         if (functions[i].body[x].assignmentType !=  Types.NULL)
-                        {
                             output += $"\tmov {register}, [{functions[i].body[x].lineContent[2]}]\n";
-                        }
+                        
                         else
                         {
                             if (Convert.ToInt32(functions[i].body[x].lineContent[2]) >= int.MaxValue)
                                 throw new NotImplementedException("64-bit loops not yet implemented");
                             output += $"\tmov {register}, {functions[i].body[x].lineContent[2]}\n";
                         }
+
                         output += $"\t{continueLoopLabel}:\n";
                         output += $"\tcmp {register}, {countRegister}\n";
                         output += $"\tje {endLoopLabel}\n";
@@ -368,6 +354,7 @@ namespace Isol8_Compiler
 
                             else if (functions[i].body[x].lineContent[2].ToUpper() == "TRUE")
                                 output += $"\tmov [{functions[i].body[x].lineContent[0].Replace("\t", "")}], 1\n";
+                            
                             else //it's a variable
                                 throw new NotImplementedException();
                         }
@@ -377,11 +364,10 @@ namespace Isol8_Compiler
 #endif
                     }
 
+                    //ToDo: Add function assignment.
                     else if (functions[i].body[x].instructionType == FUNCASSIGNMENT)
-                    {
-                        int me = 5;
-                    }
-
+                        throw new NotImplementedException();
+                    
                     else if(functions[i].body[x].instructionType == PLUS)
                     {
 #if (ASMComment)
@@ -398,27 +384,24 @@ namespace Isol8_Compiler
                                 // TODO: check which operand is "1", so that 1 + x is a valid expression?
                                 //       (regex would need to be updated in that case)
                                 if (functions[i].body[x].lineContent[2] == "1")
-                                {
                                     output +=   $"\tinc {functions[i].body[x].lineContent[0].Replace("\n", "")}\n";
-                                } else
-                                {
+                                
+                                else
                                     output +=   $"\tmov eax, {functions[i].body[x].lineContent[2]}\n" +
                                                 $"\tadd {functions[i].body[x].lineContent[0].Replace("\t", "")}, eax\n";
-                                }
+
                                 break;
 
                             case 5:
                                 if (functions[i].body[x].lineContent[4] == "1")
-                                {
                                     output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
                                                 $"\tinc eax\n" + 
                                                 $"\tmov {functions[i].body[x].lineContent[0]}, eax\n";
-                                } else
-                                {
+                                else
                                     output +=   $"\tmov eax,{functions[i].body[x].lineContent[2]}\n" +
                                                 $"\tadd eax,{functions[i].body[x].lineContent[4]}\n" +
                                                 $"\tmov {functions[i].body[x].lineContent[0].Replace("\t", "")},eax\n";
-                                }
+                                
                                 break;
                         }
 
@@ -691,9 +674,7 @@ namespace Isol8_Compiler
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     CreateNoWindow = true,
-                }
-                
-                
+                }  
             };
             
             try

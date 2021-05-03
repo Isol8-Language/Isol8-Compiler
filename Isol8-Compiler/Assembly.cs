@@ -33,9 +33,8 @@ namespace Isol8_Compiler
         {
             //ToDo: add RSP, stackspace
             string ret = default;
-
-
             Variable var = default;
+
             if (Parser.variables.Any(v => v.name == retVal))
                 for (int i = 0; i < Parser.variables.Count; i++)
                     if (Parser.variables[i].name == retVal)
@@ -48,6 +47,7 @@ namespace Isol8_Compiler
             else if (retVal != null)
                 ret += $"\tmov rax, {retVal}\n";
 
+            //Do NOT simplify interpolation due to VS bug.
             ret += $"\tadd rsp, {stackSpace.ToString("X")}h\n";
             ret += $"\tret\n" + $"{functionName} ENDP\n";
             return ret;

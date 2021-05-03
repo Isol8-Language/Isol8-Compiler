@@ -57,9 +57,8 @@ namespace Isol8_Compiler
                     return ParseAssignment(ref instruction, ref func);
                 
                 else if (Patterns.funcAssignPattern.Match(line) != Match.Empty)
-                {
-                    throw new NotImplementedException("ToDo");
-                }
+                    throw new NotImplementedException();
+                
 
                 else if (Patterns.ifPattern.Match(line) != Match.Empty)
                     return ParseSubLoop(IF, ref func, ref instruction, fileText, ref i);
@@ -142,9 +141,8 @@ namespace Isol8_Compiler
                     
                     //If the string is NULL then it's essentially 0 in assembly.
                     if(trueValue.ToUpper() == "NULL")
-                    {
                         declaration.value = "0";
-                    }
+                    
                     //Ensure the assignment is of the same type, I.E int = int, and not int = string etc.
                     // long is seperatred from int and short due to size, requiring different method of parsing
                     else if (declaration.type == Types.INT || declaration.type == Types.SHORT || declaration.type == Types.BYTE)
