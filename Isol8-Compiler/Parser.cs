@@ -34,7 +34,6 @@ namespace Isol8_Compiler
                     else return errorCode;
                 }
 
-
                 else if (Patterns.simpleSelfAdditionOperator.Match(line) != Match.Empty)
                     return ParseSelfAddition(ref instruction, ref func);
 
@@ -288,7 +287,7 @@ namespace Isol8_Compiler
                             continue;
                         }
 
-                        ErrorCodes errorCodes = ParseGenerics(fileText[i]/*.Replace("\t", "")*/, ref innerInstruction, ref func, fileText, ref i);
+                        ErrorCodes errorCodes = ParseGenerics(fileText[i], ref innerInstruction, ref func, fileText, ref i);
                         if (errorCodes != NO_ERROR)
                             throw new NotImplementedException("ToDo");
 
@@ -396,7 +395,7 @@ namespace Isol8_Compiler
                     instruction.assignmentType = Types.BOOL;
                     string assignmentValue = instruction.lineContent[2].Replace("\t", "");
                     if (assignmentValue.ToUpper() == "TRUE" || assignmentValue.ToUpper() == "FALSE")
-                        return NO_ERROR;
+                        ;//return NO_ERROR;
 
                     //Check if it's a variable instead
                     else if (!CheckVarState(assignmentValue, out varIndex))

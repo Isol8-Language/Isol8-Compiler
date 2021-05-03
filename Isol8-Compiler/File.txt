@@ -3,26 +3,59 @@ depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\
 depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\legacy_stdio_definitions.lib"
 depend "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\lib\x64\legacy_stdio_wide_specifiers.lib"
 
-entryPrompt as string "Enter a starting number.";
-startInt as int 0;
+blueSky as bool true;
+sunOut as bool true;
 
-endPrompt as string "Enter an ending number.";
-endInt as int 5;
+myCounter as int 1;
 
-printPrompt as string "Printing numbers:";
+bluePrompt as string "The sky is blue.";
+cloudyPrompt as string "The sky is cloudy.";
+
+sunPrompt as string "The sun is out.";
+noSunPrompt as string "The sun is not out.";
+
+lookedPrompt as string "I have looked at the sky this many times:";
 
 Initial() ret int
 {
-	out(entryPrompt\n);
-	in(startInt);
-	out(endPrompt\n);
-	in(endInt);
-
-	for (endInt)
+	##Simple demonstration of nested if statements inside a for loop.
+	
+	for (10)
 	{
-		out(startInt\n);
-		startInt += 1;
-	}
+		if blueSky == true
+		{
+			out(bluePrompt\n);
 
+			if sunOut == true
+			{
+				out(sunPrompt\n);
+			}
+			if sunOut == false
+			{
+				out(noSunPrompt\n);
+			}
+		}
+
+		if blueSky == false
+		{
+			out(cloudyPrompt\n);
+			out(noSunPrompt\n); 
+		}
+	
+		if myCounter == 3
+		{
+			sunOut = false;
+		}
+
+		if myCounter == 7
+		{
+			blueSky = false;
+		}
+
+		out(lookedPrompt);
+		out(myCounter\n);
+		
+		myCounter += 1;
+	}
 	ret 0;
 }

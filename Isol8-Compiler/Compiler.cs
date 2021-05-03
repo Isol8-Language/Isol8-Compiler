@@ -41,7 +41,6 @@ namespace Isol8_Compiler
             if (error != NO_ERROR)
                 return error;
         
-
             //Create the output file
             var outputFile = File.Create($"Output\\{outputName}.asm");
             
