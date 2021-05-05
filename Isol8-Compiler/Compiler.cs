@@ -174,7 +174,7 @@ namespace Isol8_Compiler
                     }
                     else if (functions[i].body[x].instructionType == OUT)
                     {
-                        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                        if (true)
                         {
 #if (ASMComment)
                             output += $";START PRINTF ROUTINE\n";
@@ -183,11 +183,6 @@ namespace Isol8_Compiler
 #if (ASMComment)
                             output += $";END PRINTF ROUTINE\n\n";
 #endif
-                        }
-                        else
-                        {
-                            //ToDo: Brandon
-                            throw new Exception("ToDo: Linux Implementation");
                         }
                     }
                     else if (functions[i].body[x].instructionType == IN)
