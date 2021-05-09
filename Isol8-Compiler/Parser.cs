@@ -182,19 +182,29 @@ namespace Isol8_Compiler
                 else if (declaration.type == Types.STRING)
                 {
                     trueValue = null;
-                    /*Index 4 will always be the start of the string value in the pattern. ToDo: declare as const?
-                    For every value after 4, append it to the trueValue string.*/
-                    for (int i = 3; i < values.Length; i++)
-                        trueValue += values[i] + " ";
 
-                    //Remove the last ; and space
-                    trueValue = trueValue.Remove(trueValue.Length - 2);
+                    // Index 4 will always be the start of the string value in the pattern.
+                    if (values[3] == "")
+                    {
+                        // If the user attempts to declare an empty string, set the true value to be empty.
+                        trueValue = "";
+                    } else
+                    {
+                        // If there is a value declared, loop through every value after 4,
+                        // and append it to the trueValue string.
+                        for (int i = 3; i < values.Length; i++)
+                            trueValue += values[i] + " ";
 
-                    //Ensure the assigned value is actually a String
-                    if (Patterns.stringPattern.Match(trueValue) != Match.Empty)
-                        declaration.value = trueValue;
-                    else
-                        return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                        // Remove the last ; and space
+                        trueValue = trueValue.Remove(trueValue.Length - 2);
+
+                        // Ensure the assigned value is actually a string
+                        if (Patterns.stringPattern.Match(trueValue) != Match.Empty)
+                            declaration.value = trueValue;
+                        else
+                            return SetLastError(lineIndex, TYPE_MISMATCH, lineContent);
+                    }
+
                 }
 
                 //Create a new variable and add it to the existing variables list.

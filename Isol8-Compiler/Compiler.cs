@@ -63,7 +63,12 @@ namespace Isol8_Compiler
                         output += "DQ " + declarationStatements[i].value + '\n'; 
                         break;
                     case (Types.STRING):
-                        output += "DB " + declarationStatements[i].value + ", 0" + '\n';
+                        // if the string was declared as empty in the source, define it as null in asm
+                        if (declarationStatements[i].value == "\"\"")
+                            output += "DB 0 \n";
+                        else
+                            // else declare string with value and null terminator
+                            output += "DB " + declarationStatements[i].value + ", 0" + '\n';
                         break;
                     case (Types.BOOL):
                         output += "DB " + declarationStatements[i].value + '\n';
