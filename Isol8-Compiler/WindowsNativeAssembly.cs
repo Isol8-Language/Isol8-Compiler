@@ -70,13 +70,15 @@ namespace Isol8_Compiler
             }
             else if (Parser.variables[i].type == Types.PTR)
             {
+                string asciiConvLabel = $"{variableName}_{GenerateLabelIndex()}";
+
                 outString =
                         $"\tmov rax, [{variableName}]\n" +
                         $"\tmov rbx, [rax]\n" +
                         $"\tmov r10, 40\n" +
                         $"\tmov [rsp+r10], rbx\n" +
                         $"\tmov eax, [rsp+r10]\n" +
-                        $"\t_ascii_conv:\n" +
+                        $"\t_ascii_conv_{asciiConvLabel}:\n" +
                         $"\t\tmov ecx, 10\n" +
                         $"\t\txor edx, edx\n" +
                         $"\t\tdiv ecx\n" +
@@ -88,7 +90,7 @@ namespace Isol8_Compiler
                         $"\t\tmov rax, rbx\n" +
                         //$"\t\tinc r10\n" + 
                         $"\t\ttest eax, eax\n" +
-                        $"\t\tjnz _ascii_conv\n";
+                        $"\t\tjnz _ascii_conv_{asciiConvLabel}\n";
 
                 /*
                  *  move address into rax
