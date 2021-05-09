@@ -1,14 +1,8 @@
 # ISOL8 Language & Compiler
 
-## Language Syntax & Documentation
-Syntax and documentation for the language can be found [here](Isol8Documentation.md). 
+All documentation for the language & compiler can be found on the [ISOL8-Docs repo](https://github.com/Isol8-Language/Isol8-Docs).
 <br>
 <br>
-
-## Testing Documentation
-Language test cases and examples can be found [here](Isol8Testing.md).
-<br>
-<br>
-
+___
 ## The Group
 Made by TSE Group 36
