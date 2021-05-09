@@ -492,7 +492,7 @@ namespace Isol8_Compiler
                     }
                     else
                     {
-                        throw new Exception("File not found TODO:");
+                        return SetLastError(i, DEPEND_FILE_DOES_NOT_EXIST, fileText[i]);
                     }
                 }
                 #endregion

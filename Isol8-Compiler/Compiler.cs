@@ -65,7 +65,7 @@ namespace Isol8_Compiler
                     case (Types.STRING):
                         // if the string was declared as empty in the source, define it as null in asm
                         if (declarationStatements[i].value == "\"\"")
-                            output += "DB 0 \n";
+                            output += "DQ ?\n\t\tDQ ?\n\t\tDQ ?\n";
                         else
                             // else declare string with value and null terminator
                             output += "DB " + declarationStatements[i].value + ", 0" + '\n';

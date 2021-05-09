@@ -52,6 +52,7 @@ namespace Isol8_Compiler
             INVALID_FILE_NAME = 0x20015,
             TOO_FEW_CLI_ARGUMENTS = 0x20016,
             INPUT_FILE_DOES_NOT_EXIST = 0x20017,
+            DEPEND_FILE_DOES_NOT_EXIST = 0x20018,
         }
         internal enum Scope
         {
